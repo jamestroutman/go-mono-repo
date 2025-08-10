@@ -6,9 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 For detailed information about the monorepo architecture and patterns, refer to:
 
+### Core Documentation (Root /docs)
 - **[Architecture Overview](./docs/ARCHITECTURE.md)** - Core design principles, module strategy, and workspace configuration
 - **[Protobuf Patterns](./docs/PROTOBUF_PATTERNS.md)** - Protocol buffer conventions, message design patterns, and code generation
 - **[Service Development Guide](./docs/SERVICE_DEVELOPMENT.md)** - Step-by-step guide for creating new services, implementation patterns, and best practices
+- **[Spec-Driven Development](./docs/SPEC_DRIVEN_DEVELOPMENT.md)** - How to write and use specifications for features
+- **[Spec Template](./docs/SPEC_TEMPLATE.md)** - Template for creating new feature specifications
+
+### Service Documentation Pattern
+Each service maintains its own documentation in `services/{domain}/{service-name}/docs/`:
+- **specs/** - Feature specifications (numbered sequentially: 001-feature.md, 002-feature.md)
+- **adrs/** - Architecture Decision Records for service-specific decisions
+- **runbooks/** - Operational guides for deployment and troubleshooting
+
+Example: `services/treasury-services/ledger-service/docs/specs/001-account-management.md`
 
 ## Build and Run Commands
 
@@ -82,3 +93,12 @@ This is a Go monorepo using **Go Workspaces** (Go 1.24+) for managing multiple m
 4. Create proto files with `go_package = "example.com/go-mono-repo/proto/{package}"`
 5. Add Makefile target for proto generation and service startup
 6. Import generated types from root module in service implementation
+
+### Spec-Driven Development Process
+
+When implementing new features:
+1. **Write Spec First**: Create a specification in `services/{domain}/{service-name}/docs/specs/` using the [Spec Template](./docs/SPEC_TEMPLATE.md)
+2. **Get Approval**: Have the spec reviewed and approved before implementation
+3. **Implement**: Follow the approved specification exactly
+4. **Link to Spec**: Reference the spec in code comments, tests, and documentation
+5. **Update Status**: Mark the spec as "Implemented" when complete
