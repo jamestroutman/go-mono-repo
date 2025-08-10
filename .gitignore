@@ -50,8 +50,6 @@ temp/
 # proto/**/*_grpc.pb.go
 
 # Service specific binaries
-services/**/ledger-service
-services/**/main
 
 # Debug files
 *.pprof

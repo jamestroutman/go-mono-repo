@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package ledger;
+option go_package = "example.com/go-mono-repo/proto/ledger";
+
+// The manifest service definition.
+service Manifest {
+  // Sends a greeting
+  rpc GetManifest (ManifestRequest) returns (ManifestResponse) {}
+}
+
+// The empty request
+message ManifestRequest {
+}
+
+// The response message containing the greetings
+message ManifestResponse {
+  string message = 1;
+}
