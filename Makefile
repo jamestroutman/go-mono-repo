@@ -1,4 +1,4 @@
-.PHONY: install-reqs dev ledger-service treasury-service all-services
+.PHONY: install-reqs dev ledger-service treasury-service all-services infrastructure-up infrastructure-down infrastructure-status infrastructure-clean
 
 install-reqs:
 	@echo "Checking prerequisites..."
@@ -25,6 +25,31 @@ install-reqs:
 	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 	@echo "✓ Go protobuf plugins installed"
 	@echo "All prerequisites are installed!"
+
+# Infrastructure commands
+infrastructure-up:
+	@echo "Starting infrastructure services..."
+	@docker-compose -f infrastructure/docker-compose.yml up -d
+	@echo "Waiting for PostgreSQL to be ready..."
+	@for i in $$(seq 1 30); do \
+		docker-compose -f infrastructure/docker-compose.yml exec -T postgres pg_isready -U postgres >/dev/null 2>&1 && break || \
+		(echo "Waiting for PostgreSQL... ($$i/30)" && sleep 2); \
+	done
+	@echo "✓ Infrastructure services are running"
+
+infrastructure-down:
+	@echo "Stopping infrastructure services..."
+	@docker-compose -f infrastructure/docker-compose.yml down
+	@echo "✓ Infrastructure services stopped"
+
+infrastructure-status:
+	@echo "Infrastructure service status:"
+	@docker-compose -f infrastructure/docker-compose.yml ps
+
+infrastructure-clean:
+	@echo "Cleaning infrastructure (removing volumes)..."
+	@docker-compose -f infrastructure/docker-compose.yml down -v
+	@echo "✓ Infrastructure cleaned"
 
 ledger-service:
 	@echo "Starting ledger service..."
@@ -59,7 +84,8 @@ all-services:
 	@wait
 
 dev:
-	@make install-reqs &
+	@make install-reqs
+	@make infrastructure-up
 	@make all-services
 
 # Health check commands

@@ -10,6 +10,10 @@ A Go monorepo using **Go Workspaces** for managing multiple microservices with s
 ├── Makefile                 # Build automation and service management
 ├── go.work                  # Go workspace configuration
 ├── go.mod                   # Root module for shared dependencies
+├── infrastructure/          # Infrastructure services (Docker Compose)
+│   ├── docker-compose.yml  # PostgreSQL and other infrastructure
+│   ├── init-scripts/        # Database initialization scripts
+│   └── README.md           # Infrastructure documentation
 ├── proto/                   # Generated protobuf Go files
 │   ├── ledger/
 │   │   ├── *.pb.go         # Generated protocol buffer types
@@ -70,28 +74,41 @@ The Makefile will automatically install these if missing:
 - Go 1.24+
 - Protocol Buffers compiler (`protoc`)
 - Go protobuf plugins
+- Docker and Docker Compose (for infrastructure services)
 
 ### Quick Start
 ```bash
-# Start the ledger service
-make ledger-service
-
-# Or run all services
-make all-services
-
-# Or use the dev alias
+# Start everything (infrastructure + services)
 make dev
+
+# Or start components individually:
+make infrastructure-up    # Start PostgreSQL
+make ledger-service      # Start ledger service
+make treasury-service    # Start treasury service
 ```
 
 ### Available Commands
 
+#### Development
 | Command | Description |
 |---------|-------------|
+| `make dev` | Start infrastructure and all services |
 | `make install-reqs` | Install prerequisites (Go, protoc, plugins) |
+| `make all-services` | Start all application services |
+
+#### Infrastructure
+| Command | Description |
+|---------|-------------|
+| `make infrastructure-up` | Start PostgreSQL and other infrastructure |
+| `make infrastructure-down` | Stop infrastructure services |
+| `make infrastructure-status` | View infrastructure status |
+| `make infrastructure-clean` | Remove infrastructure and volumes |
+
+#### Services
+| Command | Description |
+|---------|-------------|
 | `make ledger-service` | Generate protos and start ledger service |
 | `make treasury-service` | Generate protos and start treasury service |
-| `make all-services` | Start all services (ledger and treasury) |
-| `make dev` | Alias for ledger-service |
 
 ## Services
 
@@ -124,6 +141,29 @@ make treasury-service
 # Test with grpcurl (in another terminal)
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
 ```
+
+## Infrastructure
+
+### PostgreSQL Database
+- **Local**: Docker container with PostgreSQL 16
+- **Port**: 5432
+- **Credentials**: postgres/postgres
+- **Database**: monorepo_dev
+- **Production**: Amazon RDS
+
+### Managing Infrastructure
+```bash
+# Start infrastructure before development
+make infrastructure-up
+
+# Check status
+make infrastructure-status
+
+# Clean everything (including data)
+make infrastructure-clean
+```
+
+For detailed infrastructure documentation, see [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md).
 
 ## Development Workflow
 

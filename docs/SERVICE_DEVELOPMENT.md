@@ -2,19 +2,57 @@
 
 ## Creating a New Service
 
-This guide walks through the complete process of adding a new microservice to the monorepo.
+This guide walks through the complete process of adding a new microservice to the monorepo following our spec-driven development approach.
+
+## Prerequisites
+
+- Go 1.24 or later installed
+- Protoc and Go plugins installed (`make install-reqs`)
+- Understanding of the [Spec-Driven Development](./SPEC_DRIVEN_DEVELOPMENT.md) process
+- Familiarity with [Protobuf Patterns](./PROTOBUF_PATTERNS.md)
 
 ## Step-by-Step Process
 
-### 1. Plan Your Service
+### 1. Write the Specification (REQUIRED)
 
-Before creating a service, determine:
+**All new services and features MUST start with an approved specification.**
+
+#### Create Initial Service Spec
+
+```bash
+# Create service documentation structure
+mkdir -p services/{domain}/{service-name}/docs/specs
+
+# Copy the spec template
+cp docs/SPEC_TEMPLATE.md services/{domain}/{service-name}/docs/specs/001-service-initialization.md
+```
+
+#### Define Service Requirements
+
+In your spec, clearly define:
+- **Problem Statement**: Why this service is needed
+- **Service Boundaries**: What this service will and won't do
+- **API Contract**: Initial RPC methods and messages
+- **Dependencies**: Other services it will interact with
+- **Port Assignment**: Unique port number (check existing services)
+- **Success Metrics**: How to measure if the service is successful
+
+#### Get Spec Approved
+
+- Create a pull request with your spec
+- Get technical and stakeholder review
+- Update spec based on feedback
+- Mark spec as "Approved" before proceeding
+
+### 2. Plan Your Service Implementation
+
+Based on your approved spec, determine:
 - **Domain**: Which business domain does it belong to?
-- **Name**: Clear, descriptive service name
-- **Port**: Unique port number (check existing services)
-- **Dependencies**: What other services will it interact with?
+- **Name**: Clear, descriptive service name (from spec)
+- **Port**: Unique port number (from spec)
+- **Dependencies**: What other services will it interact with? (from spec)
 
-### 2. Create Service Structure
+### 3. Create Service Structure
 
 ```bash
 # Create service directory
@@ -24,7 +62,7 @@ mkdir -p services/{domain}/{service-name}/proto
 cd services/{domain}/{service-name}
 ```
 
-### 3. Initialize Go Module
+### 4. Initialize Go Module
 
 ```bash
 # Initialize the module
@@ -34,9 +72,9 @@ go mod init github.com/{org}/{service-name}
 go work use ./services/{domain}/{service-name}
 ```
 
-### 4. Define Protocol Buffers
+### 5. Define Protocol Buffers
 
-Create `proto/{service}_service.proto`:
+Create `proto/{service}_service.proto` based on your approved spec:
 
 ```protobuf
 syntax = "proto3";
@@ -45,7 +83,11 @@ package {package_name};
 
 option go_package = "example.com/go-mono-repo/proto/{package_name}";
 
-// Standard Manifest service
+// Service definition based on approved specification
+// Spec: docs/specs/001-service-initialization.md
+
+// Standard Manifest service (Required)
+// Spec: docs/specs/001-manifest.md
 service Manifest {
     rpc GetManifest (ManifestRequest) returns (ManifestResponse) {}
 }
@@ -57,15 +99,36 @@ message ManifestResponse {
     string version = 2;
 }
 
+// Health service (Required)
+// Spec: docs/specs/003-health-check-liveness.md
+service Health {
+    rpc GetHealth (HealthRequest) returns (HealthResponse) {}
+    rpc GetLiveness (LivenessRequest) returns (LivenessResponse) {}
+}
+
+message HealthRequest {}
+message HealthResponse {
+    bool healthy = 1;
+    string status = 2;
+    map<string, string> details = 3;
+}
+
+message LivenessRequest {}
+message LivenessResponse {
+    bool alive = 1;
+    int64 uptime_seconds = 2;
+}
+
 // Your service definition
+// Spec: docs/specs/001-service-initialization.md#api-design
 service {ServiceName} {
-    // Add your RPC methods here
+    // Add your RPC methods here as defined in the spec
 }
 ```
 
-### 5. Implement Service
+### 6. Implement Service
 
-Create `main.go`:
+Create `main.go` implementing the methods defined in your spec:
 
 ```go
 package main
@@ -78,6 +141,7 @@ import (
     "os"
     "os/signal"
     "syscall"
+    "time"
 
     pb "example.com/go-mono-repo/proto/{package_name}"
     "google.golang.org/grpc"
@@ -87,8 +151,12 @@ import (
 type server struct {
     pb.Unimplemented{ServiceName}Server
     pb.UnimplementedManifestServer
+    pb.UnimplementedHealthServer
+    startTime time.Time
 }
 
+// GetManifest implements the Manifest service
+// Spec: docs/specs/001-manifest.md
 func (s *server) GetManifest(ctx context.Context, req *pb.ManifestRequest) (*pb.ManifestResponse, error) {
     return &pb.ManifestResponse{
         Message: "{service-name}",
@@ -96,7 +164,30 @@ func (s *server) GetManifest(ctx context.Context, req *pb.ManifestRequest) (*pb.
     }, nil
 }
 
+// GetHealth implements health check
+// Spec: docs/specs/003-health-check-liveness.md
+func (s *server) GetHealth(ctx context.Context, req *pb.HealthRequest) (*pb.HealthResponse, error) {
+    return &pb.HealthResponse{
+        Healthy: true,
+        Status:  "serving",
+        Details: map[string]string{
+            "service": "{service-name}",
+            "version": "1.0.0",
+        },
+    }, nil
+}
+
+// GetLiveness implements liveness check
+// Spec: docs/specs/003-health-check-liveness.md
+func (s *server) GetLiveness(ctx context.Context, req *pb.LivenessRequest) (*pb.LivenessResponse, error) {
+    return &pb.LivenessResponse{
+        Alive:          true,
+        UptimeSeconds:  int64(time.Since(s.startTime).Seconds()),
+    }, nil
+}
+
 // Implement your service methods here
+// Each method should reference its governing spec section
 
 func main() {
     port := ":{port_number}"
@@ -106,11 +197,16 @@ func main() {
         log.Fatalf("Failed to listen: %v", err)
     }
 
+    srv := &server{
+        startTime: time.Now(),
+    }
+
     s := grpc.NewServer()
     
     // Register services
-    pb.RegisterManifestServer(s, &server{})
-    pb.Register{ServiceName}Server(s, &server{})
+    pb.RegisterManifestServer(s, srv)
+    pb.RegisterHealthServer(s, srv)
+    pb.Register{ServiceName}Server(s, srv)
     
     // Enable reflection for debugging
     reflection.Register(s)
@@ -131,7 +227,7 @@ func main() {
 }
 ```
 
-### 6. Add Makefile Target
+### 7. Add Makefile Target
 
 Update the root `Makefile`:
 
@@ -148,7 +244,53 @@ Update the root `Makefile`:
 	@go run ./services/{domain}/{service-name}/main.go
 ```
 
-### 7. Update Documentation
+### 8. Create Service Documentation
+
+#### Create Documentation Structure
+
+```bash
+# Create documentation directories
+mkdir -p services/{domain}/{service-name}/docs/{specs,adrs,runbooks}
+
+# Create service README
+cat > services/{domain}/{service-name}/docs/README.md << 'EOF'
+# {Service Name}
+
+## Overview
+[Brief description of the service]
+
+## Specifications
+
+- [001 - Service Initialization](./specs/001-service-initialization.md) - Initial service setup and core functionality
+
+## Architecture Decision Records
+
+- [Coming soon]
+
+## Runbooks
+
+- [Deployment Guide](./runbooks/deployment.md)
+- [Troubleshooting Guide](./runbooks/troubleshooting.md)
+
+## API Documentation
+
+See the [proto file](../proto/{service}_service.proto) for detailed API documentation.
+
+## Testing
+
+```bash
+# Run unit tests
+go test ./...
+
+# Test with grpcurl
+grpcurl -plaintext localhost:{port} {package}.Manifest/GetManifest
+grpcurl -plaintext localhost:{port} {package}.Health/GetHealth
+grpcurl -plaintext localhost:{port} {package}.Health/GetLiveness
+```
+EOF
+```
+
+### 9. Update Root Documentation
 
 Update `README.md` with:
 - Service description in the Services section
@@ -160,7 +302,7 @@ Update `CLAUDE.md` with:
 - grpcurl test command
 - Port information
 
-### 8. Sync and Test
+### 10. Sync and Test
 
 ```bash
 # Sync workspace modules
@@ -174,6 +316,42 @@ grpcurl -plaintext localhost:{port} {package}.Manifest/GetManifest
 ```
 
 ## Service Implementation Patterns
+
+### Linking Specifications to Code
+
+**IMPORTANT**: All implementations MUST reference their governing specifications in code comments.
+
+#### In Service Methods
+
+```go
+// CreateResource implements resource creation
+// Spec: docs/specs/002-resource-management.md#story-1-create-resource
+func (s *server) CreateResource(ctx context.Context, req *pb.CreateResourceRequest) (*pb.CreateResourceResponse, error) {
+    // Validate input per spec requirements
+    if err := validateCreateRequest(req); err != nil {
+        return nil, status.Error(codes.InvalidArgument, err.Error())
+    }
+    
+    // Implementation following spec...
+}
+```
+
+#### In Tests
+
+```go
+// TestCreateResource verifies resource creation meets spec requirements
+// Spec: docs/specs/002-resource-management.md#acceptance-criteria
+func TestCreateResource(t *testing.T) {
+    // Test each acceptance criterion from the spec
+    t.Run("validates required fields", func(t *testing.T) {
+        // Spec: Criterion 1 - Must validate required fields
+    })
+    
+    t.Run("returns proper error codes", func(t *testing.T) {
+        // Spec: Criterion 2 - Must return appropriate gRPC status codes
+    })
+}
+```
 
 ### Configuration Management
 
@@ -289,7 +467,7 @@ s := grpc.NewServer(
 
 ### Unit Tests
 
-Create `main_test.go`:
+Create `main_test.go` that validates your spec's acceptance criteria:
 
 ```go
 package main
@@ -302,6 +480,8 @@ import (
     "github.com/stretchr/testify/assert"
 )
 
+// TestGetManifest verifies manifest endpoint meets requirements
+// Spec: docs/specs/001-manifest.md
 func TestGetManifest(t *testing.T) {
     s := &server{}
     
@@ -310,6 +490,26 @@ func TestGetManifest(t *testing.T) {
     assert.NoError(t, err)
     assert.Equal(t, "{service-name}", resp.Message)
     assert.Equal(t, "1.0.0", resp.Version)
+}
+
+// TestHealthCheck verifies health endpoint meets requirements  
+// Spec: docs/specs/003-health-check-liveness.md
+func TestHealthCheck(t *testing.T) {
+    s := &server{startTime: time.Now()}
+    
+    t.Run("health check returns healthy status", func(t *testing.T) {
+        resp, err := s.GetHealth(context.Background(), &pb.HealthRequest{})
+        assert.NoError(t, err)
+        assert.True(t, resp.Healthy)
+        assert.Equal(t, "serving", resp.Status)
+    })
+    
+    t.Run("liveness check returns alive status", func(t *testing.T) {
+        resp, err := s.GetLiveness(context.Background(), &pb.LivenessRequest{})
+        assert.NoError(t, err)
+        assert.True(t, resp.Alive)
+        assert.GreaterOrEqual(t, resp.UptimeSeconds, int64(0))
+    })
 }
 ```
 
@@ -477,13 +677,16 @@ lsof -i :{port}
 
 ## Best Practices
 
-1. **Always implement the Manifest service** for service discovery
-2. **Use graceful shutdown** to handle termination signals
-3. **Enable gRPC reflection** in development for easier debugging
-4. **Implement proper error handling** with appropriate gRPC status codes
-5. **Add structured logging** for better observability
-6. **Write tests** for all RPC methods
-7. **Document your service** in README and inline comments
-8. **Use interceptors** for cross-cutting concerns
-9. **Implement health checks** for production readiness
-10. **Keep services focused** on a single domain
+1. **Start with a specification** - Never implement without an approved spec
+2. **Reference specs in code** - Every implementation should link to its governing spec
+3. **Always implement the Manifest service** for service discovery (Spec: docs/specs/001-manifest.md)
+4. **Always implement Health/Liveness checks** for production readiness (Spec: docs/specs/003-health-check-liveness.md)
+5. **Use graceful shutdown** to handle termination signals
+6. **Enable gRPC reflection** in development for easier debugging
+7. **Implement proper error handling** with appropriate gRPC status codes
+8. **Add structured logging** for better observability
+9. **Write tests** that verify spec acceptance criteria
+10. **Document your service** following the documentation structure
+11. **Use interceptors** for cross-cutting concerns
+12. **Keep services focused** on a single domain
+13. **Update specs when requirements change** - Keep specs as living documents

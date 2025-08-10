@@ -30,6 +30,9 @@ Go Workspaces eliminate the need for `replace` directives by:
 go-mono-repo/
 ├── go.work                    # Workspace configuration
 ├── go.mod                     # Root module (shared code)
+├── infrastructure/            # Infrastructure services (Docker)
+│   ├── docker-compose.yml    # Local development services
+│   └── init-scripts/         # Database initialization
 ├── proto/                     # Generated protobuf code
 │   ├── ledger/               # Ledger service types
 │   └── treasury/             # Treasury service types
@@ -113,9 +116,27 @@ This provides:
 
 ### Makefile Targets
 - `make install-reqs`: One-time setup of build tools
+- `make infrastructure-up`: Start Docker infrastructure services
 - `make {service-name}`: Build and run individual service
 - `make all-services`: Run all services concurrently
-- `make dev`: Development mode with hot reload (when configured)
+- `make dev`: Start infrastructure and all services
+
+## Infrastructure Layer
+
+The monorepo includes infrastructure services that support the application layer:
+
+### Local Development
+- **Docker Compose**: Orchestrates infrastructure services
+- **PostgreSQL**: Primary data store (port 5432)
+- **Network Isolation**: Dedicated Docker network for services
+- **Data Persistence**: Docker volumes for stateful services
+
+### Production Environment
+- **Amazon RDS**: Managed PostgreSQL
+- **AWS Services**: Leveraging managed services for reliability
+- **Infrastructure as Code**: Terraform for production provisioning (planned)
+
+For detailed infrastructure documentation, see [INFRASTRUCTURE.md](./INFRASTRUCTURE.md).
 
 ## Deployment Considerations
 
