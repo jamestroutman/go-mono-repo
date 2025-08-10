@@ -2,6 +2,14 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Documentation
+
+For detailed information about the monorepo architecture and patterns, refer to:
+
+- **[Architecture Overview](./docs/ARCHITECTURE.md)** - Core design principles, module strategy, and workspace configuration
+- **[Protobuf Patterns](./docs/PROTOBUF_PATTERNS.md)** - Protocol buffer conventions, message design patterns, and code generation
+- **[Service Development Guide](./docs/SERVICE_DEVELOPMENT.md)** - Step-by-step guide for creating new services, implementation patterns, and best practices
+
 ## Build and Run Commands
 
 ### Primary Development Commands
