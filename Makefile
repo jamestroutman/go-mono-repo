@@ -61,3 +61,38 @@ all-services:
 dev:
 	@make install-reqs &
 	@make all-services
+
+# Health check commands
+# Spec: docs/specs/003-health-check-liveness.md
+health-check-ledger:
+	@echo "Checking ledger service health..."
+	@grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
+
+liveness-check-ledger:
+	@echo "Checking ledger service liveness..."
+	@grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
+
+health-check-treasury:
+	@echo "Checking treasury service health..."
+	@grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
+
+liveness-check-treasury:
+	@echo "Checking treasury service liveness..."
+	@grpcurl -plaintext localhost:50052 treasury.Health/GetLiveness
+
+# Combined health checks
+health-check-all:
+	@echo "==================================="
+	@echo "   CHECKING ALL SERVICE HEALTH    "
+	@echo "==================================="
+	@make health-check-ledger || true
+	@echo ""
+	@make health-check-treasury || true
+
+liveness-check-all:
+	@echo "==================================="
+	@echo "  CHECKING ALL SERVICE LIVENESS   "
+	@echo "==================================="
+	@make liveness-check-ledger || true
+	@echo ""
+	@make liveness-check-treasury || true

@@ -46,6 +46,18 @@ go work sync
 # Test gRPC endpoints
 grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
+
+# Health Check endpoints (Spec: docs/specs/003-health-check-liveness.md)
+make health-check-ledger      # Check ledger service health
+make liveness-check-ledger    # Check ledger service liveness
+make health-check-treasury    # Check treasury service health
+make liveness-check-treasury  # Check treasury service liveness
+make health-check-all         # Check all services health
+make liveness-check-all       # Check all services liveness
+
+# Or directly with grpcurl
+grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
+grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
 ```
 
 ### Working with Individual Services
