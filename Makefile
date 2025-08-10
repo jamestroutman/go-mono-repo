@@ -28,6 +28,8 @@ install-reqs:
 
 ledger-service:
 	@echo "Starting ledger service..."
+	@echo "Checking for existing service on port 50051..."
+	@lsof -ti:50051 | xargs -r kill -9 2>/dev/null || true
 	@echo "Generating protobuf code for ledger service..."
 	@export PATH="$$PATH:$$(go env GOPATH)/bin" && \
 		protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
@@ -35,10 +37,12 @@ ledger-service:
 		services/treasury-services/ledger-service/proto/ledger_service.proto
 	@echo "✓ Protobuf code generated"
 	@echo "Running ledger service..."
-	@go run ./services/treasury-services/ledger-service/main.go
+	@go run ./services/treasury-services/ledger-service/
 
 treasury-service:
 	@echo "Starting treasury service..."
+	@echo "Checking for existing service on port 50052..."
+	@lsof -ti:50052 | xargs -r kill -9 2>/dev/null || true
 	@echo "Generating protobuf code for treasury service..."
 	@export PATH="$$PATH:$$(go env GOPATH)/bin" && \
 		protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
@@ -46,7 +50,7 @@ treasury-service:
 		services/treasury-services/treasury-service/proto/treasury_service.proto
 	@echo "✓ Protobuf code generated"
 	@echo "Running treasury service..."
-	@go run ./services/treasury-services/treasury-service/main.go
+	@go run ./services/treasury-services/treasury-service/
 
 all-services: 
 	@echo "Starting all services..."

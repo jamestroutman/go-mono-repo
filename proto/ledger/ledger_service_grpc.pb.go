@@ -26,9 +26,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// The manifest service definition.
+// Spec: docs/specs/001-manifest.md
 type ManifestClient interface {
-	// Sends a greeting
+	// GetManifest returns comprehensive service metadata
 	GetManifest(ctx context.Context, in *ManifestRequest, opts ...grpc.CallOption) (*ManifestResponse, error)
 }
 
@@ -54,9 +54,9 @@ func (c *manifestClient) GetManifest(ctx context.Context, in *ManifestRequest, o
 // All implementations must embed UnimplementedManifestServer
 // for forward compatibility.
 //
-// The manifest service definition.
+// Spec: docs/specs/001-manifest.md
 type ManifestServer interface {
-	// Sends a greeting
+	// GetManifest returns comprehensive service metadata
 	GetManifest(context.Context, *ManifestRequest) (*ManifestResponse, error)
 	mustEmbedUnimplementedManifestServer()
 }

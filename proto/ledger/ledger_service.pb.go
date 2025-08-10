@@ -58,10 +58,20 @@ func (*ManifestRequest) Descriptor() ([]byte, []int) {
 	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{0}
 }
 
-// The response message containing the greetings
+// The response message containing comprehensive service metadata
+// Spec: docs/specs/001-manifest.md
 type ManifestResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Service identity
+	Identity *ServiceIdentity `protobuf:"bytes,1,opt,name=identity,proto3" json:"identity,omitempty"`
+	// Build information
+	BuildInfo *BuildInfo `protobuf:"bytes,2,opt,name=build_info,json=buildInfo,proto3" json:"build_info,omitempty"`
+	// Runtime information
+	RuntimeInfo *RuntimeInfo `protobuf:"bytes,3,opt,name=runtime_info,json=runtimeInfo,proto3" json:"runtime_info,omitempty"`
+	// Service metadata
+	Metadata *ServiceMetadata `protobuf:"bytes,4,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	// Service capabilities
+	Capabilities  *ServiceCapabilities `protobuf:"bytes,5,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -96,11 +106,471 @@ func (*ManifestResponse) Descriptor() ([]byte, []int) {
 	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ManifestResponse) GetMessage() string {
+func (x *ManifestResponse) GetIdentity() *ServiceIdentity {
 	if x != nil {
-		return x.Message
+		return x.Identity
+	}
+	return nil
+}
+
+func (x *ManifestResponse) GetBuildInfo() *BuildInfo {
+	if x != nil {
+		return x.BuildInfo
+	}
+	return nil
+}
+
+func (x *ManifestResponse) GetRuntimeInfo() *RuntimeInfo {
+	if x != nil {
+		return x.RuntimeInfo
+	}
+	return nil
+}
+
+func (x *ManifestResponse) GetMetadata() *ServiceMetadata {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+func (x *ManifestResponse) GetCapabilities() *ServiceCapabilities {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+type ServiceIdentity struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                               // Service name (e.g., "ledger-service")
+	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`                         // Semantic version (e.g., "1.2.3")
+	ApiVersion    string                 `protobuf:"bytes,3,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"` // API version (e.g., "v1")
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`                 // Brief service description
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceIdentity) Reset() {
+	*x = ServiceIdentity{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceIdentity) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceIdentity) ProtoMessage() {}
+
+func (x *ServiceIdentity) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceIdentity.ProtoReflect.Descriptor instead.
+func (*ServiceIdentity) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *ServiceIdentity) GetName() string {
+	if x != nil {
+		return x.Name
 	}
 	return ""
+}
+
+func (x *ServiceIdentity) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *ServiceIdentity) GetApiVersion() string {
+	if x != nil {
+		return x.ApiVersion
+	}
+	return ""
+}
+
+func (x *ServiceIdentity) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+type BuildInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CommitHash    string                 `protobuf:"bytes,1,opt,name=commit_hash,json=commitHash,proto3" json:"commit_hash,omitempty"` // Git commit SHA
+	Branch        string                 `protobuf:"bytes,2,opt,name=branch,proto3" json:"branch,omitempty"`                           // Git branch name
+	BuildTime     string                 `protobuf:"bytes,3,opt,name=build_time,json=buildTime,proto3" json:"build_time,omitempty"`    // RFC3339 timestamp
+	Builder       string                 `protobuf:"bytes,4,opt,name=builder,proto3" json:"builder,omitempty"`                         // CI system or user
+	IsDirty       bool                   `protobuf:"varint,5,opt,name=is_dirty,json=isDirty,proto3" json:"is_dirty,omitempty"`         // Whether build had uncommitted changes
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BuildInfo) Reset() {
+	*x = BuildInfo{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BuildInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BuildInfo) ProtoMessage() {}
+
+func (x *BuildInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BuildInfo.ProtoReflect.Descriptor instead.
+func (*BuildInfo) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *BuildInfo) GetCommitHash() string {
+	if x != nil {
+		return x.CommitHash
+	}
+	return ""
+}
+
+func (x *BuildInfo) GetBranch() string {
+	if x != nil {
+		return x.Branch
+	}
+	return ""
+}
+
+func (x *BuildInfo) GetBuildTime() string {
+	if x != nil {
+		return x.BuildTime
+	}
+	return ""
+}
+
+func (x *BuildInfo) GetBuilder() string {
+	if x != nil {
+		return x.Builder
+	}
+	return ""
+}
+
+func (x *BuildInfo) GetIsDirty() bool {
+	if x != nil {
+		return x.IsDirty
+	}
+	return false
+}
+
+type RuntimeInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	InstanceId    string                 `protobuf:"bytes,1,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`           // Unique instance identifier
+	Hostname      string                 `protobuf:"bytes,2,opt,name=hostname,proto3" json:"hostname,omitempty"`                                 // Host machine name
+	StartedAt     string                 `protobuf:"bytes,3,opt,name=started_at,json=startedAt,proto3" json:"started_at,omitempty"`              // RFC3339 timestamp
+	Environment   string                 `protobuf:"bytes,4,opt,name=environment,proto3" json:"environment,omitempty"`                           // Environment (dev/staging/prod)
+	Region        string                 `protobuf:"bytes,5,opt,name=region,proto3" json:"region,omitempty"`                                     // Deployment region/zone
+	UptimeSeconds int64                  `protobuf:"varint,6,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"` // Seconds since start
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RuntimeInfo) Reset() {
+	*x = RuntimeInfo{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RuntimeInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RuntimeInfo) ProtoMessage() {}
+
+func (x *RuntimeInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RuntimeInfo.ProtoReflect.Descriptor instead.
+func (*RuntimeInfo) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *RuntimeInfo) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+func (x *RuntimeInfo) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *RuntimeInfo) GetStartedAt() string {
+	if x != nil {
+		return x.StartedAt
+	}
+	return ""
+}
+
+func (x *RuntimeInfo) GetEnvironment() string {
+	if x != nil {
+		return x.Environment
+	}
+	return ""
+}
+
+func (x *RuntimeInfo) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
+func (x *RuntimeInfo) GetUptimeSeconds() int64 {
+	if x != nil {
+		return x.UptimeSeconds
+	}
+	return 0
+}
+
+type ServiceMetadata struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	Owner            string                 `protobuf:"bytes,1,opt,name=owner,proto3" json:"owner,omitempty"`                                                                             // Team or owner email
+	RepositoryUrl    string                 `protobuf:"bytes,2,opt,name=repository_url,json=repositoryUrl,proto3" json:"repository_url,omitempty"`                                        // Source code repository
+	DocumentationUrl string                 `protobuf:"bytes,3,opt,name=documentation_url,json=documentationUrl,proto3" json:"documentation_url,omitempty"`                               // Service documentation
+	SupportContact   string                 `protobuf:"bytes,4,opt,name=support_contact,json=supportContact,proto3" json:"support_contact,omitempty"`                                     // Support contact info
+	Labels           map[string]string      `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // Additional labels/tags
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *ServiceMetadata) Reset() {
+	*x = ServiceMetadata{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceMetadata) ProtoMessage() {}
+
+func (x *ServiceMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceMetadata.ProtoReflect.Descriptor instead.
+func (*ServiceMetadata) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ServiceMetadata) GetOwner() string {
+	if x != nil {
+		return x.Owner
+	}
+	return ""
+}
+
+func (x *ServiceMetadata) GetRepositoryUrl() string {
+	if x != nil {
+		return x.RepositoryUrl
+	}
+	return ""
+}
+
+func (x *ServiceMetadata) GetDocumentationUrl() string {
+	if x != nil {
+		return x.DocumentationUrl
+	}
+	return ""
+}
+
+func (x *ServiceMetadata) GetSupportContact() string {
+	if x != nil {
+		return x.SupportContact
+	}
+	return ""
+}
+
+func (x *ServiceMetadata) GetLabels() map[string]string {
+	if x != nil {
+		return x.Labels
+	}
+	return nil
+}
+
+type ServiceCapabilities struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ApiVersions   []string               `protobuf:"bytes,1,rep,name=api_versions,json=apiVersions,proto3" json:"api_versions,omitempty"` // Supported API versions
+	Protocols     []string               `protobuf:"bytes,2,rep,name=protocols,proto3" json:"protocols,omitempty"`                        // Supported protocols (grpc, http)
+	Features      []string               `protobuf:"bytes,3,rep,name=features,proto3" json:"features,omitempty"`                          // Enabled feature flags
+	Dependencies  []*ServiceDependency   `protobuf:"bytes,4,rep,name=dependencies,proto3" json:"dependencies,omitempty"`                  // Required services
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceCapabilities) Reset() {
+	*x = ServiceCapabilities{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceCapabilities) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceCapabilities) ProtoMessage() {}
+
+func (x *ServiceCapabilities) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceCapabilities.ProtoReflect.Descriptor instead.
+func (*ServiceCapabilities) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ServiceCapabilities) GetApiVersions() []string {
+	if x != nil {
+		return x.ApiVersions
+	}
+	return nil
+}
+
+func (x *ServiceCapabilities) GetProtocols() []string {
+	if x != nil {
+		return x.Protocols
+	}
+	return nil
+}
+
+func (x *ServiceCapabilities) GetFeatures() []string {
+	if x != nil {
+		return x.Features
+	}
+	return nil
+}
+
+func (x *ServiceCapabilities) GetDependencies() []*ServiceDependency {
+	if x != nil {
+		return x.Dependencies
+	}
+	return nil
+}
+
+type ServiceDependency struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Name          string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                // Dependency service name
+	Version       string                 `protobuf:"bytes,2,opt,name=version,proto3" json:"version,omitempty"`                          // Required version (semver range)
+	IsOptional    bool                   `protobuf:"varint,3,opt,name=is_optional,json=isOptional,proto3" json:"is_optional,omitempty"` // Whether dependency is optional
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ServiceDependency) Reset() {
+	*x = ServiceDependency{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ServiceDependency) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ServiceDependency) ProtoMessage() {}
+
+func (x *ServiceDependency) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ServiceDependency.ProtoReflect.Descriptor instead.
+func (*ServiceDependency) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ServiceDependency) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ServiceDependency) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *ServiceDependency) GetIsOptional() bool {
+	if x != nil {
+		return x.IsOptional
+	}
+	return false
 }
 
 var File_services_treasury_services_ledger_service_proto_ledger_service_proto protoreflect.FileDescriptor
@@ -108,9 +578,56 @@ var File_services_treasury_services_ledger_service_proto_ledger_service_proto pr
 const file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc = "" +
 	"\n" +
 	"Dservices/treasury-services/ledger-service/proto/ledger_service.proto\x12\x06ledger\"\x11\n" +
-	"\x0fManifestRequest\",\n" +
-	"\x10ManifestResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2N\n" +
+	"\x0fManifestRequest\"\xa7\x02\n" +
+	"\x10ManifestResponse\x123\n" +
+	"\bidentity\x18\x01 \x01(\v2\x17.ledger.ServiceIdentityR\bidentity\x120\n" +
+	"\n" +
+	"build_info\x18\x02 \x01(\v2\x11.ledger.BuildInfoR\tbuildInfo\x126\n" +
+	"\fruntime_info\x18\x03 \x01(\v2\x13.ledger.RuntimeInfoR\vruntimeInfo\x123\n" +
+	"\bmetadata\x18\x04 \x01(\v2\x17.ledger.ServiceMetadataR\bmetadata\x12?\n" +
+	"\fcapabilities\x18\x05 \x01(\v2\x1b.ledger.ServiceCapabilitiesR\fcapabilities\"\x82\x01\n" +
+	"\x0fServiceIdentity\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1f\n" +
+	"\vapi_version\x18\x03 \x01(\tR\n" +
+	"apiVersion\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\"\x98\x01\n" +
+	"\tBuildInfo\x12\x1f\n" +
+	"\vcommit_hash\x18\x01 \x01(\tR\n" +
+	"commitHash\x12\x16\n" +
+	"\x06branch\x18\x02 \x01(\tR\x06branch\x12\x1d\n" +
+	"\n" +
+	"build_time\x18\x03 \x01(\tR\tbuildTime\x12\x18\n" +
+	"\abuilder\x18\x04 \x01(\tR\abuilder\x12\x19\n" +
+	"\bis_dirty\x18\x05 \x01(\bR\aisDirty\"\xca\x01\n" +
+	"\vRuntimeInfo\x12\x1f\n" +
+	"\vinstance_id\x18\x01 \x01(\tR\n" +
+	"instanceId\x12\x1a\n" +
+	"\bhostname\x18\x02 \x01(\tR\bhostname\x12\x1d\n" +
+	"\n" +
+	"started_at\x18\x03 \x01(\tR\tstartedAt\x12 \n" +
+	"\venvironment\x18\x04 \x01(\tR\venvironment\x12\x16\n" +
+	"\x06region\x18\x05 \x01(\tR\x06region\x12%\n" +
+	"\x0euptime_seconds\x18\x06 \x01(\x03R\ruptimeSeconds\"\x9c\x02\n" +
+	"\x0fServiceMetadata\x12\x14\n" +
+	"\x05owner\x18\x01 \x01(\tR\x05owner\x12%\n" +
+	"\x0erepository_url\x18\x02 \x01(\tR\rrepositoryUrl\x12+\n" +
+	"\x11documentation_url\x18\x03 \x01(\tR\x10documentationUrl\x12'\n" +
+	"\x0fsupport_contact\x18\x04 \x01(\tR\x0esupportContact\x12;\n" +
+	"\x06labels\x18\x05 \x03(\v2#.ledger.ServiceMetadata.LabelsEntryR\x06labels\x1a9\n" +
+	"\vLabelsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xb1\x01\n" +
+	"\x13ServiceCapabilities\x12!\n" +
+	"\fapi_versions\x18\x01 \x03(\tR\vapiVersions\x12\x1c\n" +
+	"\tprotocols\x18\x02 \x03(\tR\tprotocols\x12\x1a\n" +
+	"\bfeatures\x18\x03 \x03(\tR\bfeatures\x12=\n" +
+	"\fdependencies\x18\x04 \x03(\v2\x19.ledger.ServiceDependencyR\fdependencies\"b\n" +
+	"\x11ServiceDependency\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
+	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1f\n" +
+	"\vis_optional\x18\x03 \x01(\bR\n" +
+	"isOptional2N\n" +
 	"\bManifest\x12B\n" +
 	"\vGetManifest\x12\x17.ledger.ManifestRequest\x1a\x18.ledger.ManifestResponse\"\x00B'Z%example.com/go-mono-repo/proto/ledgerb\x06proto3"
 
@@ -126,19 +643,33 @@ func file_services_treasury_services_ledger_service_proto_ledger_service_proto_r
 	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescData
 }
 
-var file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_services_treasury_services_ledger_service_proto_ledger_service_proto_goTypes = []any{
-	(*ManifestRequest)(nil),  // 0: ledger.ManifestRequest
-	(*ManifestResponse)(nil), // 1: ledger.ManifestResponse
+	(*ManifestRequest)(nil),     // 0: ledger.ManifestRequest
+	(*ManifestResponse)(nil),    // 1: ledger.ManifestResponse
+	(*ServiceIdentity)(nil),     // 2: ledger.ServiceIdentity
+	(*BuildInfo)(nil),           // 3: ledger.BuildInfo
+	(*RuntimeInfo)(nil),         // 4: ledger.RuntimeInfo
+	(*ServiceMetadata)(nil),     // 5: ledger.ServiceMetadata
+	(*ServiceCapabilities)(nil), // 6: ledger.ServiceCapabilities
+	(*ServiceDependency)(nil),   // 7: ledger.ServiceDependency
+	nil,                         // 8: ledger.ServiceMetadata.LabelsEntry
 }
 var file_services_treasury_services_ledger_service_proto_ledger_service_proto_depIdxs = []int32{
-	0, // 0: ledger.Manifest.GetManifest:input_type -> ledger.ManifestRequest
-	1, // 1: ledger.Manifest.GetManifest:output_type -> ledger.ManifestResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	2, // 0: ledger.ManifestResponse.identity:type_name -> ledger.ServiceIdentity
+	3, // 1: ledger.ManifestResponse.build_info:type_name -> ledger.BuildInfo
+	4, // 2: ledger.ManifestResponse.runtime_info:type_name -> ledger.RuntimeInfo
+	5, // 3: ledger.ManifestResponse.metadata:type_name -> ledger.ServiceMetadata
+	6, // 4: ledger.ManifestResponse.capabilities:type_name -> ledger.ServiceCapabilities
+	8, // 5: ledger.ServiceMetadata.labels:type_name -> ledger.ServiceMetadata.LabelsEntry
+	7, // 6: ledger.ServiceCapabilities.dependencies:type_name -> ledger.ServiceDependency
+	0, // 7: ledger.Manifest.GetManifest:input_type -> ledger.ManifestRequest
+	1, // 8: ledger.Manifest.GetManifest:output_type -> ledger.ManifestResponse
+	8, // [8:9] is the sub-list for method output_type
+	7, // [7:8] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_services_treasury_services_ledger_service_proto_ledger_service_proto_init() }
@@ -152,7 +683,7 @@ func file_services_treasury_services_ledger_service_proto_ledger_service_proto_i
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc), len(file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
