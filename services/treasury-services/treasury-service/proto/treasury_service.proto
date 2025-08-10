@@ -4,12 +4,74 @@ package treasury;
 
 option go_package = "example.com/go-mono-repo/proto/treasury";
 
+// Spec: docs/specs/001-manifest.md
 service Manifest {
+  // GetManifest returns comprehensive service metadata
   rpc GetManifest (ManifestRequest) returns (ManifestResponse) {}
 }
 
-message ManifestRequest {}
+message ManifestRequest {
+  // No fields required - manifest is always the same for an instance
+}
 
 message ManifestResponse {
-  string message = 1;
+  // Service identity
+  ServiceIdentity identity = 1;
+  
+  // Build information
+  BuildInfo build_info = 2;
+  
+  // Runtime information
+  RuntimeInfo runtime_info = 3;
+  
+  // Service metadata
+  ServiceMetadata metadata = 4;
+  
+  // Service capabilities
+  ServiceCapabilities capabilities = 5;
+}
+
+message ServiceIdentity {
+  string name = 1;              // Service name (e.g., "treasury-service")
+  string version = 2;           // Semantic version (e.g., "1.2.3")
+  string api_version = 3;       // API version (e.g., "v1")
+  string description = 4;       // Brief service description
+}
+
+message BuildInfo {
+  string commit_hash = 1;       // Git commit SHA
+  string branch = 2;            // Git branch name
+  string build_time = 3;        // RFC3339 timestamp
+  string builder = 4;           // CI system or user
+  bool is_dirty = 5;           // Whether build had uncommitted changes
+}
+
+message RuntimeInfo {
+  string instance_id = 1;       // Unique instance identifier
+  string hostname = 2;          // Host machine name
+  string started_at = 3;        // RFC3339 timestamp
+  string environment = 4;       // Environment (dev/staging/prod)
+  string region = 5;            // Deployment region/zone
+  int64 uptime_seconds = 6;    // Seconds since start
+}
+
+message ServiceMetadata {
+  string owner = 1;             // Team or owner email
+  string repository_url = 2;    // Source code repository
+  string documentation_url = 3; // Service documentation
+  string support_contact = 4;   // Support contact info
+  map<string, string> labels = 5; // Additional labels/tags
+}
+
+message ServiceCapabilities {
+  repeated string api_versions = 1;     // Supported API versions
+  repeated string protocols = 2;        // Supported protocols (grpc, http)
+  repeated string features = 3;         // Enabled feature flags
+  repeated ServiceDependency dependencies = 4; // Required services
+}
+
+message ServiceDependency {
+  string name = 1;              // Dependency service name
+  string version = 2;           // Required version (semver range)
+  bool is_optional = 3;         // Whether dependency is optional
 }
