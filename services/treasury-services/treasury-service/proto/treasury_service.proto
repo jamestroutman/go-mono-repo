@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package treasury;
+
+option go_package = "example.com/go-mono-repo/proto/treasury";
+
+service Manifest {
+  rpc GetManifest (ManifestRequest) returns (ManifestResponse) {}
+}
+
+message ManifestRequest {}
+
+message ManifestResponse {
+  string message = 1;
+}

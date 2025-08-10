@@ -1,4 +1,4 @@
-.PHONY: install-reqs dev ledger-service all-services
+.PHONY: install-reqs dev ledger-service treasury-service all-services
 
 install-reqs:
 	@echo "Checking prerequisites..."
@@ -26,7 +26,7 @@ install-reqs:
 	@echo "✓ Go protobuf plugins installed"
 	@echo "All prerequisites are installed!"
 
-ledger-service: install-reqs
+ledger-service:
 	@echo "Starting ledger service..."
 	@echo "Generating protobuf code for ledger service..."
 	@export PATH="$$PATH:$$(go env GOPATH)/bin" && \
@@ -37,6 +37,23 @@ ledger-service: install-reqs
 	@echo "Running ledger service..."
 	@go run ./services/treasury-services/ledger-service/main.go
 
-all-services: ledger-service
+treasury-service:
+	@echo "Starting treasury service..."
+	@echo "Generating protobuf code for treasury service..."
+	@export PATH="$$PATH:$$(go env GOPATH)/bin" && \
+		protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
+		--go-grpc_out=. --go-grpc_opt=module=example.com/go-mono-repo \
+		services/treasury-services/treasury-service/proto/treasury_service.proto
+	@echo "✓ Protobuf code generated"
+	@echo "Running treasury service..."
+	@go run ./services/treasury-services/treasury-service/main.go
 
-dev: ledger-service
+all-services: 
+	@echo "Starting all services..."
+	@make ledger-service &
+	@make treasury-service &
+	@wait
+
+dev:
+	@make install-reqs &
+	@make all-services
