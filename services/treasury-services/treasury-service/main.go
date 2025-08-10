@@ -49,6 +49,11 @@ func main() {
 	// Spec: docs/specs/001-manifest.md
 	manifestServer := NewManifestServer(cfg, startTime)
 	
+	// Create health server
+	// Spec: docs/specs/003-health-check-liveness.md
+	healthServer := NewHealthServer(startTime)
+	healthServer.SetConfigLoaded(true) // Mark config as loaded after successful validation
+	
 	// Log configuration and manifest info at startup
 	fmt.Println("=================================")
 	fmt.Println("   TREASURY SERVICE STARTING    ")
@@ -72,6 +77,11 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 	pb.RegisterManifestServer(grpcServer, manifestServer)
+	pb.RegisterHealthServer(grpcServer, healthServer)
+	
+	// Mark gRPC as ready after registration
+	// Spec: docs/specs/003-health-check-liveness.md
+	healthServer.SetGRPCReady(true)
 	
 	// Register reflection service for debugging
 	reflection.Register(grpcServer)

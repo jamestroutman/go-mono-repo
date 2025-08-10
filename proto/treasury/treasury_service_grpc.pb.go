@@ -125,3 +125,155 @@ var Manifest_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
 }
+
+const (
+	Health_GetLiveness_FullMethodName = "/treasury.Health/GetLiveness"
+	Health_GetHealth_FullMethodName   = "/treasury.Health/GetHealth"
+)
+
+// HealthClient is the client API for Health service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+type HealthClient interface {
+	// GetLiveness checks if the service is alive and ready to accept traffic
+	// Should be used by load balancers and orchestrators
+	// Spec: docs/specs/003-health-check-liveness.md#story-1-service-liveness-check
+	GetLiveness(ctx context.Context, in *LivenessRequest, opts ...grpc.CallOption) (*LivenessResponse, error)
+	// GetHealth performs comprehensive health check including dependencies
+	// Should be used for monitoring and debugging
+	// Spec: docs/specs/003-health-check-liveness.md#story-2-dependency-health-monitoring
+	GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
+}
+
+type healthClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewHealthClient(cc grpc.ClientConnInterface) HealthClient {
+	return &healthClient{cc}
+}
+
+func (c *healthClient) GetLiveness(ctx context.Context, in *LivenessRequest, opts ...grpc.CallOption) (*LivenessResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LivenessResponse)
+	err := c.cc.Invoke(ctx, Health_GetLiveness_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *healthClient) GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(HealthResponse)
+	err := c.cc.Invoke(ctx, Health_GetHealth_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// HealthServer is the server API for Health service.
+// All implementations must embed UnimplementedHealthServer
+// for forward compatibility.
+type HealthServer interface {
+	// GetLiveness checks if the service is alive and ready to accept traffic
+	// Should be used by load balancers and orchestrators
+	// Spec: docs/specs/003-health-check-liveness.md#story-1-service-liveness-check
+	GetLiveness(context.Context, *LivenessRequest) (*LivenessResponse, error)
+	// GetHealth performs comprehensive health check including dependencies
+	// Should be used for monitoring and debugging
+	// Spec: docs/specs/003-health-check-liveness.md#story-2-dependency-health-monitoring
+	GetHealth(context.Context, *HealthRequest) (*HealthResponse, error)
+	mustEmbedUnimplementedHealthServer()
+}
+
+// UnimplementedHealthServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedHealthServer struct{}
+
+func (UnimplementedHealthServer) GetLiveness(context.Context, *LivenessRequest) (*LivenessResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetLiveness not implemented")
+}
+func (UnimplementedHealthServer) GetHealth(context.Context, *HealthRequest) (*HealthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
+}
+func (UnimplementedHealthServer) mustEmbedUnimplementedHealthServer() {}
+func (UnimplementedHealthServer) testEmbeddedByValue()                {}
+
+// UnsafeHealthServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to HealthServer will
+// result in compilation errors.
+type UnsafeHealthServer interface {
+	mustEmbedUnimplementedHealthServer()
+}
+
+func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
+	// If the following call pancis, it indicates UnimplementedHealthServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&Health_ServiceDesc, srv)
+}
+
+func _Health_GetLiveness_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LivenessRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServer).GetLiveness(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Health_GetLiveness_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServer).GetLiveness(ctx, req.(*LivenessRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Health_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServer).GetHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Health_GetHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServer).GetHealth(ctx, req.(*HealthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// Health_ServiceDesc is the grpc.ServiceDesc for Health service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var Health_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "treasury.Health",
+	HandlerType: (*HealthServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetLiveness",
+			Handler:    _Health_GetLiveness_Handler,
+		},
+		{
+			MethodName: "GetHealth",
+			Handler:    _Health_GetHealth_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
+}
