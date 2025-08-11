@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -45,13 +46,28 @@ func main() {
 	startTime := time.Now()
 	port := cfg.GetPort()
 	
+	// Create database manager
+	// Spec: docs/specs/001-database-connection.md
+	dbManager := NewDatabaseManager(&cfg.Database)
+	
+	// Connect to database with retry (non-blocking)
+	// Spec: docs/specs/001-database-connection.md#story-4-graceful-degradation
+	go func() {
+		ctx := context.Background()
+		log.Printf("Attempting to connect to database...")
+		if err := dbManager.ConnectWithRetry(ctx, 5); err != nil {
+			log.Printf("Warning: Failed to connect to database: %v", err)
+			log.Printf("Service will continue without database connection (degraded mode)")
+		}
+	}()
+	
 	// Create manifest server with cached data
 	// Spec: docs/specs/001-manifest.md
 	manifestServer := NewManifestServer(cfg, startTime)
 	
-	// Create health server
+	// Create health server with database checker
 	// Spec: docs/specs/003-health-check-liveness.md
-	healthServer := NewHealthServer(startTime)
+	healthServer := NewHealthServerWithDB(startTime, dbManager, cfg)
 	healthServer.SetConfigLoaded(true) // Mark config as loaded after successful validation
 	
 	// Log configuration and manifest info at startup
@@ -92,6 +108,13 @@ func main() {
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 		<-sigChan
 		fmt.Println("\nShutting down gracefully...")
+		
+		// Close database connection
+		// Spec: docs/specs/001-database-connection.md
+		if err := dbManager.Close(); err != nil {
+			log.Printf("Error closing database connection: %v", err)
+		}
+		
 		grpcServer.GracefulStop()
 	}()
 

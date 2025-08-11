@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -41,6 +43,32 @@ type Config struct {
 	// Labels - will be parsed from SERVICE_LABELS env var
 	ServiceLabels map[string]string `envconfig:"-"`
 	RawLabels     string            `envconfig:"SERVICE_LABELS" default:"team:treasury,domain:treasury"`
+
+	// Database Configuration
+	// Spec: docs/specs/001-database-connection.md
+	Database DatabaseConfig `envconfig:"-"`
+
+	// Dependency Services
+	LedgerServiceHost string `envconfig:"LEDGER_SERVICE_HOST" default:"localhost"`
+	LedgerServicePort int    `envconfig:"LEDGER_SERVICE_PORT" default:"50051"`
+}
+
+// DatabaseConfig holds database connection parameters
+// Spec: docs/specs/001-database-connection.md
+type DatabaseConfig struct {
+	Host                  string        `envconfig:"DB_HOST" default:"localhost"`
+	Port                  int           `envconfig:"DB_PORT" default:"5432"`
+	Database              string        `envconfig:"DB_NAME" default:"treasury_db"`
+	User                  string        `envconfig:"DB_USER" default:"treasury_user"`
+	Password              string        `envconfig:"DB_PASSWORD" default:"treasury_pass"`
+	Schema                string        `envconfig:"DB_SCHEMA" default:"public"`
+	SSLMode               string        `envconfig:"DB_SSL_MODE" default:"disable"`
+	MaxConnections        int           `envconfig:"DB_MAX_CONNECTIONS" default:"25"`
+	MaxIdleConnections    int           `envconfig:"DB_MAX_IDLE_CONNECTIONS" default:"5"`
+	ConnectionMaxLifetime time.Duration `envconfig:"-"`
+	ConnectionMaxIdleTime time.Duration `envconfig:"-"`
+	HealthCheckInterval   time.Duration `envconfig:"-"`
+	PingTimeout           time.Duration `envconfig:"-"`
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -76,6 +104,18 @@ func LoadConfig() (*Config, error) {
 	// Parse labels from comma-separated key:value pairs
 	cfg.ServiceLabels = parseLabels(cfg.RawLabels)
 
+	// Load database configuration
+	// Spec: docs/specs/001-database-connection.md#story-1-database-configuration-management
+	if err := envconfig.Process("", &cfg.Database); err != nil {
+		return nil, fmt.Errorf("failed to process database config: %w", err)
+	}
+
+	// Parse database durations from environment
+	cfg.Database.ConnectionMaxLifetime = parseDurationFromEnv("DB_CONNECTION_MAX_LIFETIME", 3600*time.Second)
+	cfg.Database.ConnectionMaxIdleTime = parseDurationFromEnv("DB_CONNECTION_MAX_IDLE_TIME", 900*time.Second)
+	cfg.Database.HealthCheckInterval = parseDurationFromEnv("DB_HEALTH_CHECK_INTERVAL", 30*time.Second)
+	cfg.Database.PingTimeout = parseDurationFromEnv("DB_PING_TIMEOUT", 5*time.Second)
+
 	// Log loaded configuration for debugging
 	log.Printf("Loaded configuration: %s", cfg.String())
 
@@ -98,6 +138,28 @@ func parseLabels(rawLabels string) map[string]string {
 		}
 	}
 	return labels
+}
+
+// parseDurationFromEnv parses a duration from an environment variable
+// Spec: docs/specs/001-database-connection.md
+func parseDurationFromEnv(key string, defaultValue time.Duration) time.Duration {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+
+	// If the value is just a number, treat it as seconds
+	if seconds, err := strconv.Atoi(value); err == nil {
+		return time.Duration(seconds) * time.Second
+	}
+
+	// Try to parse as a duration string
+	if duration, err := time.ParseDuration(value); err == nil {
+		return duration
+	}
+
+	log.Printf("Warning: Invalid duration value for %s: %s, using default: %v", key, value, defaultValue)
+	return defaultValue
 }
 
 // GetPort returns the port as a string with colon prefix
@@ -156,7 +218,18 @@ func (c *Config) String() string {
 	sb.WriteString(fmt.Sprintf("  Log Level: %s\n", c.LogLevel))
 	sb.WriteString(fmt.Sprintf("  Features: %v\n", c.EnabledFeatures))
 	sb.WriteString(fmt.Sprintf("  Labels: %v\n", c.ServiceLabels))
+	sb.WriteString(fmt.Sprintf("  Database: %s:%d/%s (user: %s, pool: %d/%d)\n", 
+		c.Database.Host, c.Database.Port, c.Database.Database, 
+		c.Database.User, c.Database.MaxIdleConnections, c.Database.MaxConnections))
+	sb.WriteString(fmt.Sprintf("  Ledger Service: %s:%d\n", c.LedgerServiceHost, c.LedgerServicePort))
 	return sb.String()
+}
+
+// GetConnectionString returns PostgreSQL connection string
+// Spec: docs/specs/001-database-connection.md
+func (dc *DatabaseConfig) GetConnectionString() string {
+	return fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s search_path=%s",
+		dc.Host, dc.Port, dc.User, dc.Password, dc.Database, dc.SSLMode, dc.Schema)
 }
 
 // BuildConfig holds build-time information

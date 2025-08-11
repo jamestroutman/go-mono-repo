@@ -31,6 +31,9 @@ type HealthServer struct {
 	// Ledger service configuration
 	ledgerServiceHost string
 	ledgerServicePort int32
+	
+	// Database manager (optional)
+	dbManager *DatabaseManager
 }
 
 // DependencyChecker interface for checking dependency health
@@ -57,6 +60,39 @@ func NewHealthServer(startTime time.Time) *HealthServer {
 			port:     server.ledgerServicePort,
 		},
 	}
+	
+	return server
+}
+
+// NewHealthServerWithDB creates a new health server instance with database support
+// Spec: docs/specs/001-database-connection.md#story-3-database-health-monitoring
+func NewHealthServerWithDB(startTime time.Time, dbManager *DatabaseManager, cfg *Config) *HealthServer {
+	server := &HealthServer{
+		startTime:         startTime,
+		configLoaded:      false,
+		grpcReady:         false,
+		ledgerServiceHost: cfg.LedgerServiceHost,
+		ledgerServicePort: int32(cfg.LedgerServicePort),
+		dbManager:         dbManager,
+	}
+	
+	// Add dependency checkers
+	// Spec: docs/specs/003-health-check-liveness.md#story-4-dependency-configuration-visibility
+	dependencies := []DependencyChecker{
+		// Ledger service dependency
+		&LedgerServiceChecker{
+			hostname: server.ledgerServiceHost,
+			port:     server.ledgerServicePort,
+		},
+	}
+	
+	// Add database dependency if manager is provided
+	// Spec: docs/specs/001-database-connection.md#story-3-database-health-monitoring
+	if dbManager != nil {
+		dependencies = append(dependencies, NewPostgreSQLChecker(dbManager))
+	}
+	
+	server.dependencies = dependencies
 	
 	return server
 }
@@ -173,14 +209,27 @@ func (s *HealthServer) getGRPCMessage() string {
 }
 
 func (s *HealthServer) dbPoolReady() bool {
-	// For MVP, we're using in-memory storage, so always ready
-	// This will be expanded when database is added
+	// Check if database is configured and healthy
+	// Spec: docs/specs/001-database-connection.md#story-3-database-health-monitoring
+	if s.dbManager != nil {
+		return s.dbManager.IsHealthy()
+	}
+	// If no database configured, consider it "ready" (for MVP/testing)
 	return true
 }
 
 func (s *HealthServer) getDBPoolMessage() string {
-	// For MVP, using in-memory storage
-	return "In-memory storage ready"
+	// Spec: docs/specs/001-database-connection.md#story-3-database-health-monitoring
+	if s.dbManager != nil {
+		if s.dbManager.IsHealthy() {
+			stats := s.dbManager.GetConnectionPoolStats()
+			return fmt.Sprintf("Database pool ready (%d/%d connections active)", 
+				stats.ActiveConnections, stats.MaxConnections)
+		}
+		return "Database connection unhealthy"
+	}
+	// If no database configured
+	return "Database not configured (in-memory mode)"
 }
 
 func (s *HealthServer) cacheReady() bool {
