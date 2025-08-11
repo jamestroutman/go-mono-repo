@@ -4,7 +4,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
@@ -41,6 +43,32 @@ type Config struct {
 	// Labels - will be parsed from SERVICE_LABELS env var
 	ServiceLabels map[string]string `envconfig:"-"`
 	RawLabels     string            `envconfig:"SERVICE_LABELS" default:"team:platform,domain:treasury"`
+
+	// ImmuDB Configuration
+	// Spec: docs/specs/001-immudb-connection.md
+	ImmuDB *ImmuDBConfig `envconfig:"-"`
+}
+
+// ImmuDBConfig holds ImmuDB connection parameters
+// Spec: docs/specs/001-immudb-connection.md
+type ImmuDBConfig struct {
+	Host                  string
+	Port                  int
+	Database              string
+	Username              string
+	Password              string
+	MaxConnections        int
+	MaxIdleConnections    int
+	ConnectionMaxLifetime time.Duration
+	ConnectionMaxIdleTime time.Duration
+	VerifyTransactions    bool
+	ServerSigningPubKey   string
+	ClientKeyPath         string
+	ClientCertPath        string
+	HealthCheckInterval   time.Duration
+	PingTimeout           time.Duration
+	ChunkSize             int
+	MaxRecvMsgSize        int
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -75,6 +103,14 @@ func LoadConfig() (*Config, error) {
 
 	// Parse labels from comma-separated key:value pairs
 	cfg.ServiceLabels = parseLabels(cfg.RawLabels)
+
+	// Load ImmuDB configuration
+	// Spec: docs/specs/001-immudb-connection.md#story-1-immudb-configuration-management
+	immuDBConfig, err := LoadImmuDBConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to load ImmuDB config: %w", err)
+	}
+	cfg.ImmuDB = immuDBConfig
 
 	// Log loaded configuration for debugging
 	log.Printf("Loaded configuration: %s", cfg.String())
@@ -156,5 +192,80 @@ func (c *Config) String() string {
 	sb.WriteString(fmt.Sprintf("  Log Level: %s\n", c.LogLevel))
 	sb.WriteString(fmt.Sprintf("  Features: %v\n", c.EnabledFeatures))
 	sb.WriteString(fmt.Sprintf("  Labels: %v\n", c.ServiceLabels))
+	if c.ImmuDB != nil {
+		sb.WriteString(fmt.Sprintf("  ImmuDB: %s:%d/%s\n", c.ImmuDB.Host, c.ImmuDB.Port, c.ImmuDB.Database))
+	}
 	return sb.String()
+}
+
+// LoadImmuDBConfig loads ImmuDB configuration from environment
+// Spec: docs/specs/001-immudb-connection.md#story-1-immudb-configuration-management
+func LoadImmuDBConfig() (*ImmuDBConfig, error) {
+	cfg := &ImmuDBConfig{
+		Host:               getEnvString("IMMUDB_HOST", "localhost"),
+		Port:               getEnvInt("IMMUDB_PORT", 3322),
+		Database:           getEnvString("IMMUDB_DATABASE", "ledgerdb"),
+		Username:           getEnvString("IMMUDB_USERNAME", "ledger_user"),
+		Password:           getEnvString("IMMUDB_PASSWORD", "ledger_pass"),
+		MaxConnections:     getEnvInt("IMMUDB_MAX_CONNECTIONS", 25),
+		MaxIdleConnections: getEnvInt("IMMUDB_MAX_IDLE_CONNECTIONS", 5),
+		VerifyTransactions: getEnvBool("IMMUDB_VERIFY_TRANSACTIONS", true),
+		ServerSigningPubKey: getEnvString("IMMUDB_SERVER_SIGNING_PUB_KEY", ""),
+		ClientKeyPath:      getEnvString("IMMUDB_CLIENT_KEY_PATH", ""),
+		ClientCertPath:     getEnvString("IMMUDB_CLIENT_CERT_PATH", ""),
+		ChunkSize:          getEnvInt("IMMUDB_CHUNK_SIZE", 64),
+		MaxRecvMsgSize:     getEnvInt("IMMUDB_MAX_RECV_MSG_SIZE", 4194304),
+	}
+
+	// Parse durations
+	cfg.ConnectionMaxLifetime = time.Duration(getEnvInt("IMMUDB_CONNECTION_MAX_LIFETIME", 3600)) * time.Second
+	cfg.ConnectionMaxIdleTime = time.Duration(getEnvInt("IMMUDB_CONNECTION_MAX_IDLE_TIME", 900)) * time.Second
+	cfg.HealthCheckInterval = time.Duration(getEnvInt("IMMUDB_HEALTH_CHECK_INTERVAL", 30)) * time.Second
+	cfg.PingTimeout = time.Duration(getEnvInt("IMMUDB_PING_TIMEOUT", 5)) * time.Second
+
+	// Validate configuration
+	if cfg.Host == "" {
+		return nil, fmt.Errorf("IMMUDB_HOST is required")
+	}
+	if cfg.Port < 1 || cfg.Port > 65535 {
+		return nil, fmt.Errorf("invalid IMMUDB_PORT: %d", cfg.Port)
+	}
+	if cfg.Database == "" {
+		return nil, fmt.Errorf("IMMUDB_DATABASE is required")
+	}
+	if cfg.Username == "" {
+		return nil, fmt.Errorf("IMMUDB_USERNAME is required")
+	}
+	// Don't validate password as it could be empty in some environments
+
+	// Log configuration (without sensitive data)
+	log.Printf("ImmuDB configuration loaded: %s:%d/%s", cfg.Host, cfg.Port, cfg.Database)
+
+	return cfg, nil
+}
+
+// Helper functions for environment variable parsing
+func getEnvString(key, defaultValue string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return defaultValue
+}
+
+func getEnvInt(key string, defaultValue int) int {
+	if value := os.Getenv(key); value != "" {
+		if intVal, err := strconv.Atoi(value); err == nil {
+			return intVal
+		}
+	}
+	return defaultValue
+}
+
+func getEnvBool(key string, defaultValue bool) bool {
+	if value := os.Getenv(key); value != "" {
+		if boolVal, err := strconv.ParseBool(value); err == nil {
+			return boolVal
+		}
+	}
+	return defaultValue
 }

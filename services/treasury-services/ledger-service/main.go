@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net"
@@ -54,6 +55,32 @@ func main() {
 	healthServer := NewHealthServer(startTime)
 	healthServer.SetConfigLoaded(true) // Mark config as loaded after successful validation
 	
+	// Initialize ImmuDB connection
+	// Spec: docs/specs/001-immudb-connection.md
+	var immuDBManager *ImmuDBManager
+	if cfg.ImmuDB != nil {
+		log.Println("Initializing ImmuDB connection...")
+		immuDBManager = NewImmuDBManager(cfg.ImmuDB)
+		
+		// Attempt to connect with graceful degradation
+		// Spec: docs/specs/001-immudb-connection.md#story-5-graceful-degradation
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		defer cancel()
+		
+		if err := immuDBManager.Connect(ctx); err != nil {
+			log.Printf("Warning: Failed to connect to ImmuDB: %v", err)
+			log.Printf("Service will continue without database persistence")
+			// Service continues without ImmuDB per graceful degradation spec
+		} else {
+			// Add ImmuDB health checker
+			immuDBChecker := NewImmuDBChecker(immuDBManager)
+			healthServer.AddDependencyChecker(immuDBChecker)
+			log.Println("ImmuDB connection established and health check registered")
+		}
+	} else {
+		log.Println("ImmuDB configuration not found, running in memory-only mode")
+	}
+	
 	// Log configuration and manifest info at startup
 	fmt.Println("=================================")
 	fmt.Println("    LEDGER SERVICE STARTING     ")
@@ -92,6 +119,17 @@ func main() {
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 		<-sigChan
 		fmt.Println("\nShutting down gracefully...")
+		
+		// Disconnect from ImmuDB if connected
+		// Spec: docs/specs/001-immudb-connection.md#story-2-connection-pool-management
+		if immuDBManager != nil {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+			if err := immuDBManager.Disconnect(ctx); err != nil {
+				log.Printf("Warning: Error disconnecting from ImmuDB: %v", err)
+			}
+		}
+		
 		grpcServer.GracefulStop()
 	}()
 

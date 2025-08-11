@@ -55,6 +55,13 @@ func (s *HealthServer) SetGRPCReady(ready bool) {
 	s.grpcReady = ready
 }
 
+// AddDependencyChecker adds a dependency checker to monitor
+func (s *HealthServer) AddDependencyChecker(checker DependencyChecker) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.dependencies = append(s.dependencies, checker)
+}
+
 // GetLiveness checks service readiness
 // Spec: docs/specs/003-health-check-liveness.md#story-1-service-liveness-check
 func (s *HealthServer) GetLiveness(ctx context.Context, req *pb.LivenessRequest) (*pb.LivenessResponse, error) {
@@ -178,17 +185,22 @@ func (s *HealthServer) getCacheMessage() string {
 func (s *HealthServer) checkDependencies(ctx context.Context, filter []string) []*pb.DependencyHealth {
 	var dependencies []*pb.DependencyHealth
 	
-	// For MVP, the ledger service has no external dependencies
-	// This method will be expanded as dependencies are added
+	// Check all registered dependency checkers
 	// Spec: docs/specs/003-health-check-liveness.md#story-4-dependency-configuration-visibility
+	s.mu.RLock()
+	checkers := make([]DependencyChecker, len(s.dependencies))
+	copy(checkers, s.dependencies)
+	s.mu.RUnlock()
 	
-	// Example: When a database is added, it would look like:
-	// dependencies = append(dependencies, s.checkDatabase(ctx))
-	
-	// Example: When treasury service dependency is added:
-	// if s.shouldCheckDependency("treasury-service", filter) {
-	//     dependencies = append(dependencies, s.checkTreasuryService(ctx))
-	// }
+	for _, checker := range checkers {
+		dep := checker.Check(ctx)
+		if dep != nil {
+			// Apply filter if provided
+			if len(filter) == 0 || s.shouldCheckDependency(dep.Name, filter) {
+				dependencies = append(dependencies, dep)
+			}
+		}
+	}
 	
 	return dependencies
 }
