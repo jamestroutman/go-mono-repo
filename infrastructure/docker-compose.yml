@@ -19,10 +19,39 @@ services:
     networks:
       - monorepo-network
 
+  immudb:
+    image: codenotary/immudb:latest
+    container_name: monorepo-immudb
+    environment:
+      IMMUDB_ADDRESS: 0.0.0.0
+      IMMUDB_PORT: 3322
+      IMMUDB_PGSQL_SERVER: "true"
+      IMMUDB_PGSQL_SERVER_PORT: 5433
+      IMMUDB_METRICS_SERVER: "true"
+      IMMUDB_METRICS_SERVER_PORT: 9497
+      IMMUDB_WEBCONSOLE: "true"
+      IMMUDB_WEBCONSOLE_PORT: 8080
+    ports:
+      - "3322:3322"    # ImmuDB gRPC port
+      - "5433:5433"    # PostgreSQL wire protocol port
+      - "8080:8080"    # Web console UI
+      - "9497:9497"    # Metrics port
+    volumes:
+      - immudb_data:/var/lib/immudb
+    healthcheck:
+      test: ["CMD", "immuadmin", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monorepo-network
+
 networks:
   monorepo-network:
     driver: bridge
 
 volumes:
   postgres_data:
+    driver: local
+  immudb_data:
     driver: local

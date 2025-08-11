@@ -82,7 +82,7 @@ The Makefile will automatically install these if missing:
 make dev
 
 # Or start components individually:
-make infrastructure-up    # Start PostgreSQL
+make infrastructure-up    # Start PostgreSQL and ImmuDB
 make ledger-service      # Start ledger service
 make treasury-service    # Start treasury service
 ```
@@ -99,7 +99,7 @@ make treasury-service    # Start treasury service
 #### Infrastructure
 | Command | Description |
 |---------|-------------|
-| `make infrastructure-up` | Start PostgreSQL and other infrastructure |
+| `make infrastructure-up` | Start PostgreSQL, ImmuDB and other infrastructure |
 | `make infrastructure-down` | Stop infrastructure services |
 | `make infrastructure-status` | View infrastructure status |
 | `make infrastructure-clean` | Remove infrastructure and volumes |
@@ -150,6 +150,14 @@ grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
 - **Credentials**: postgres/postgres
 - **Database**: monorepo_dev
 - **Production**: Amazon RDS
+
+### ImmuDB Database
+- **Local**: Docker container with ImmuDB (immutable database)
+- **gRPC Port**: 3322 (native ImmuDB API)
+- **Web Console UI**: http://localhost:8080
+- **PostgreSQL Wire Port**: 5433
+- **Credentials**: immudb/immudb
+- **Production**: Managed ImmuDB or self-hosted cluster
 
 ### Managing Infrastructure
 ```bash
