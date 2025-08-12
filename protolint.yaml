@@ -1,0 +1,181 @@
+# Protolint configuration for Go monorepo gRPC services
+# Based on patterns established in docs/PROTOBUF_PATTERNS.md and existing services
+
+# Lint directives
+lint:
+  rules:
+    # General rules
+    add:
+      - SYNTAX_CONSISTENT
+      - PACKAGE_DEFINED
+      - PACKAGE_LOWER_SNAKE_CASE
+      - IMPORTS_SORTED
+      - OPTION_GO_PACKAGE_DEFINED
+      - FIELD_NAMES_LOWER_SNAKE_CASE
+      - MESSAGE_NAMES_UPPER_CAMEL_CASE
+      - ENUM_NAMES_UPPER_CAMEL_CASE
+      - ENUM_FIELD_NAMES_UPPER_SNAKE_CASE
+      - ENUM_ZERO_VALUE_SUFFIX
+      - SERVICE_NAMES_UPPER_CAMEL_CASE
+      - RPC_NAMES_UPPER_CAMEL_CASE
+      - COMMENTS_NO_C_STYLE
+      - MAX_LINE_LENGTH
+      - ORDER
+      - FIELD_NAMES_EXCLUDE_PREPOSITIONS
+
+    # Remove rules that conflict with our patterns
+    remove:
+      - PROTO_PATHS_TRIM
+      - PACKAGE_SAME_DIRECTORY_NAME
+      - PROTO_FILE_SHOULD_NOT_HAVE_UNUSED_IMPORT
+      - RPC_REQUEST_STANDARD_NAME  # We use custom patterns
+      - RPC_RESPONSE_STANDARD_NAME # We use custom patterns
+
+  # Rule configurations
+  rules_option:
+    # Require proto3 syntax
+    SYNTAX_CONSISTENT:
+      syntax: proto3
+    
+    # Max line length consistent with Go standards
+    MAX_LINE_LENGTH:
+      max_chars: 120
+    
+    # Enum zero value must have UNSPECIFIED suffix for proto3 compatibility
+    ENUM_ZERO_VALUE_SUFFIX:
+      suffix: UNSPECIFIED
+    
+    # Field ordering rules
+    ORDER:
+      layout:
+        - syntax
+        - package
+        - import
+        - option
+        - message
+        - enum
+        - service
+    
+    # Package naming conventions
+    PACKAGE_LOWER_SNAKE_CASE:
+      # Our packages use simple lowercase names (e.g., "ledger", "treasury")
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # Comments formatting
+    COMMENTS_NO_C_STYLE:
+      disallow_c_style: true
+    
+    # Field naming
+    FIELD_NAMES_LOWER_SNAKE_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # Message naming  
+    MESSAGE_NAMES_UPPER_CAMEL_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # Service naming
+    SERVICE_NAMES_UPPER_CAMEL_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # RPC method naming
+    RPC_NAMES_UPPER_CAMEL_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # Enum naming
+    ENUM_NAMES_UPPER_CAMEL_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+    
+    # Enum field naming
+    ENUM_FIELD_NAMES_UPPER_SNAKE_CASE:
+      allow_leading_underscore: false
+      allow_trailing_underscore: false
+      
+    # Field name prepositions to exclude
+    FIELD_NAMES_EXCLUDE_PREPOSITIONS:
+      prepositions:
+        - for
+        - at
+        - of
+        - in
+        - to
+        - by
+        - on
+        - with
+
+# Files to lint
+directories:
+  - "services/"
+
+# Files to exclude from linting
+disable_rules:
+  # Disable rules for specific files or patterns if needed
+  # files:
+  #   - "path/to/file.proto":
+  #       - RULE_NAME
+
+# Global configurations
+config:
+  # Enforce our go_package pattern: "example.com/go-mono-repo/proto/{package}"
+  go_package:
+    prefix: "example.com/go-mono-repo/proto/"
+    
+  # Import path configurations
+  import_path:
+    # Standard Google imports allowed
+    allow_google_protobuf: true
+    
+  # Comment requirements
+  comments:
+    # Require comments on services and main messages
+    require_service_comments: true
+    require_message_comments: false  # Optional for internal messages
+    require_field_comments: false    # We use inline comments when needed
+    require_enum_comments: true
+    require_rpc_comments: true
+
+# Custom rules for our monorepo patterns
+custom_rules:
+  # Ensure all services implement required interfaces
+  required_services:
+    - Manifest   # All services must implement Manifest (docs/specs/001-manifest.md)
+    - Health     # All services must implement Health (docs/specs/003-health-check-liveness.md)
+  
+  # Required RPC methods in standard services
+  manifest_service_rpcs:
+    - GetManifest
+  
+  health_service_rpcs:
+    - GetHealth
+    - GetLiveness
+  
+  # Standard message patterns
+  request_response_pattern:
+    # All RPC methods should follow Request/Response naming
+    request_suffix: Request
+    response_suffix: Response
+  
+  # Field number ranges
+  field_numbers:
+    # Reserve 1-15 for frequently used fields (single byte encoding)
+    frequent_range: [1, 15]
+    # Use 16+ for less frequent fields
+    extended_range: [16, 536870911]  # Max field number is 2^29 - 1
+
+# File patterns
+files:
+  include:
+    - "**/*.proto"
+  exclude:
+    - "vendor/**/*.proto"
+    - "third_party/**/*.proto"
+    
+# Output configuration
+output:
+  format: "{{.FilePath}}:{{.Line}}:{{.Column}}: {{.Severity}}: {{.Message}} ({{.Rule}})"
+  severity_level: "WARNING"  # Report warnings and errors

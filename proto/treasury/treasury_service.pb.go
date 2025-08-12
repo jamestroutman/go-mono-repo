@@ -9,6 +9,8 @@ package treasury
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -132,6 +134,61 @@ func (x DependencyType) Number() protoreflect.EnumNumber {
 // Deprecated: Use DependencyType.Descriptor instead.
 func (DependencyType) EnumDescriptor() ([]byte, []int) {
 	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{1}
+}
+
+type CurrencyStatus int32
+
+const (
+	CurrencyStatus_CURRENCY_STATUS_UNSPECIFIED CurrencyStatus = 0
+	CurrencyStatus_CURRENCY_STATUS_ACTIVE      CurrencyStatus = 1
+	CurrencyStatus_CURRENCY_STATUS_INACTIVE    CurrencyStatus = 2
+	CurrencyStatus_CURRENCY_STATUS_DEPRECATED  CurrencyStatus = 3
+	CurrencyStatus_CURRENCY_STATUS_DELETED     CurrencyStatus = 4
+)
+
+// Enum value maps for CurrencyStatus.
+var (
+	CurrencyStatus_name = map[int32]string{
+		0: "CURRENCY_STATUS_UNSPECIFIED",
+		1: "CURRENCY_STATUS_ACTIVE",
+		2: "CURRENCY_STATUS_INACTIVE",
+		3: "CURRENCY_STATUS_DEPRECATED",
+		4: "CURRENCY_STATUS_DELETED",
+	}
+	CurrencyStatus_value = map[string]int32{
+		"CURRENCY_STATUS_UNSPECIFIED": 0,
+		"CURRENCY_STATUS_ACTIVE":      1,
+		"CURRENCY_STATUS_INACTIVE":    2,
+		"CURRENCY_STATUS_DEPRECATED":  3,
+		"CURRENCY_STATUS_DELETED":     4,
+	}
+)
+
+func (x CurrencyStatus) Enum() *CurrencyStatus {
+	p := new(CurrencyStatus)
+	*p = x
+	return p
+}
+
+func (x CurrencyStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CurrencyStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[2].Descriptor()
+}
+
+func (CurrencyStatus) Type() protoreflect.EnumType {
+	return &file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[2]
+}
+
+func (x CurrencyStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CurrencyStatus.Descriptor instead.
+func (CurrencyStatus) EnumDescriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{2}
 }
 
 type ManifestRequest struct {
@@ -1392,11 +1449,1007 @@ func (x *ConnectionPoolInfo) GetWaitDurationMs() int64 {
 	return 0
 }
 
+// Currency represents an ISO 4217 compliant currency
+type Currency struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	Id             string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                               // UUID
+	Code           string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`                                           // ISO 4217 code (USD, EUR)
+	NumericCode    string                 `protobuf:"bytes,3,opt,name=numeric_code,json=numericCode,proto3" json:"numeric_code,omitempty"`          // ISO 4217 numeric code
+	Name           string                 `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`                                           // Official name
+	MinorUnits     int32                  `protobuf:"varint,5,opt,name=minor_units,json=minorUnits,proto3" json:"minor_units,omitempty"`            // Decimal places
+	Symbol         string                 `protobuf:"bytes,6,opt,name=symbol,proto3" json:"symbol,omitempty"`                                       // Currency symbol
+	SymbolPosition string                 `protobuf:"bytes,7,opt,name=symbol_position,json=symbolPosition,proto3" json:"symbol_position,omitempty"` // before/after
+	CountryCodes   []string               `protobuf:"bytes,8,rep,name=country_codes,json=countryCodes,proto3" json:"country_codes,omitempty"`       // ISO 3166 codes
+	IsActive       bool                   `protobuf:"varint,9,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`                  // Active status
+	IsCrypto       bool                   `protobuf:"varint,10,opt,name=is_crypto,json=isCrypto,proto3" json:"is_crypto,omitempty"`                 // Cryptocurrency flag
+	Status         CurrencyStatus         `protobuf:"varint,11,opt,name=status,proto3,enum=treasury.CurrencyStatus" json:"status,omitempty"`        // Current status
+	ActivatedAt    *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=activated_at,json=activatedAt,proto3" json:"activated_at,omitempty"`
+	DeactivatedAt  *timestamppb.Timestamp `protobuf:"bytes,13,opt,name=deactivated_at,json=deactivatedAt,proto3" json:"deactivated_at,omitempty"`
+	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,14,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedBy      string                 `protobuf:"bytes,16,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy      string                 `protobuf:"bytes,17,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Version        int32                  `protobuf:"varint,18,opt,name=version,proto3" json:"version,omitempty"` // Optimistic locking
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *Currency) Reset() {
+	*x = Currency{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Currency) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Currency) ProtoMessage() {}
+
+func (x *Currency) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Currency.ProtoReflect.Descriptor instead.
+func (*Currency) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *Currency) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Currency) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *Currency) GetNumericCode() string {
+	if x != nil {
+		return x.NumericCode
+	}
+	return ""
+}
+
+func (x *Currency) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Currency) GetMinorUnits() int32 {
+	if x != nil {
+		return x.MinorUnits
+	}
+	return 0
+}
+
+func (x *Currency) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *Currency) GetSymbolPosition() string {
+	if x != nil {
+		return x.SymbolPosition
+	}
+	return ""
+}
+
+func (x *Currency) GetCountryCodes() []string {
+	if x != nil {
+		return x.CountryCodes
+	}
+	return nil
+}
+
+func (x *Currency) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *Currency) GetIsCrypto() bool {
+	if x != nil {
+		return x.IsCrypto
+	}
+	return false
+}
+
+func (x *Currency) GetStatus() CurrencyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CurrencyStatus_CURRENCY_STATUS_UNSPECIFIED
+}
+
+func (x *Currency) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *Currency) GetDeactivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DeactivatedAt
+	}
+	return nil
+}
+
+func (x *Currency) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Currency) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Currency) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *Currency) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *Currency) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+// Request/Response messages
+type CreateCurrencyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`                                  // Required
+	NumericCode   string                 `protobuf:"bytes,2,opt,name=numeric_code,json=numericCode,proto3" json:"numeric_code,omitempty"` // Optional
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                                  // Required
+	MinorUnits    int32                  `protobuf:"varint,4,opt,name=minor_units,json=minorUnits,proto3" json:"minor_units,omitempty"`   // Default 2
+	Symbol        string                 `protobuf:"bytes,5,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	CountryCodes  []string               `protobuf:"bytes,6,rep,name=country_codes,json=countryCodes,proto3" json:"country_codes,omitempty"`
+	IsCrypto      bool                   `protobuf:"varint,7,opt,name=is_crypto,json=isCrypto,proto3" json:"is_crypto,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCurrencyRequest) Reset() {
+	*x = CreateCurrencyRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCurrencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCurrencyRequest) ProtoMessage() {}
+
+func (x *CreateCurrencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCurrencyRequest.ProtoReflect.Descriptor instead.
+func (*CreateCurrencyRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *CreateCurrencyRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateCurrencyRequest) GetNumericCode() string {
+	if x != nil {
+		return x.NumericCode
+	}
+	return ""
+}
+
+func (x *CreateCurrencyRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateCurrencyRequest) GetMinorUnits() int32 {
+	if x != nil {
+		return x.MinorUnits
+	}
+	return 0
+}
+
+func (x *CreateCurrencyRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *CreateCurrencyRequest) GetCountryCodes() []string {
+	if x != nil {
+		return x.CountryCodes
+	}
+	return nil
+}
+
+func (x *CreateCurrencyRequest) GetIsCrypto() bool {
+	if x != nil {
+		return x.IsCrypto
+	}
+	return false
+}
+
+type CreateCurrencyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Currency      *Currency              `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateCurrencyResponse) Reset() {
+	*x = CreateCurrencyResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateCurrencyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateCurrencyResponse) ProtoMessage() {}
+
+func (x *CreateCurrencyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateCurrencyResponse.ProtoReflect.Descriptor instead.
+func (*CreateCurrencyResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CreateCurrencyResponse) GetCurrency() *Currency {
+	if x != nil {
+		return x.Currency
+	}
+	return nil
+}
+
+type GetCurrencyRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Identifier:
+	//
+	//	*GetCurrencyRequest_Code
+	//	*GetCurrencyRequest_NumericCode
+	//	*GetCurrencyRequest_Id
+	Identifier    isGetCurrencyRequest_Identifier `protobuf_oneof:"identifier"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCurrencyRequest) Reset() {
+	*x = GetCurrencyRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCurrencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrencyRequest) ProtoMessage() {}
+
+func (x *GetCurrencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCurrencyRequest.ProtoReflect.Descriptor instead.
+func (*GetCurrencyRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetCurrencyRequest) GetIdentifier() isGetCurrencyRequest_Identifier {
+	if x != nil {
+		return x.Identifier
+	}
+	return nil
+}
+
+func (x *GetCurrencyRequest) GetCode() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetCurrencyRequest_Code); ok {
+			return x.Code
+		}
+	}
+	return ""
+}
+
+func (x *GetCurrencyRequest) GetNumericCode() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetCurrencyRequest_NumericCode); ok {
+			return x.NumericCode
+		}
+	}
+	return ""
+}
+
+func (x *GetCurrencyRequest) GetId() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetCurrencyRequest_Id); ok {
+			return x.Id
+		}
+	}
+	return ""
+}
+
+type isGetCurrencyRequest_Identifier interface {
+	isGetCurrencyRequest_Identifier()
+}
+
+type GetCurrencyRequest_Code struct {
+	Code string `protobuf:"bytes,1,opt,name=code,proto3,oneof"` // Primary lookup
+}
+
+type GetCurrencyRequest_NumericCode struct {
+	NumericCode string `protobuf:"bytes,2,opt,name=numeric_code,json=numericCode,proto3,oneof"` // Alternative lookup
+}
+
+type GetCurrencyRequest_Id struct {
+	Id string `protobuf:"bytes,3,opt,name=id,proto3,oneof"` // UUID lookup
+}
+
+func (*GetCurrencyRequest_Code) isGetCurrencyRequest_Identifier() {}
+
+func (*GetCurrencyRequest_NumericCode) isGetCurrencyRequest_Identifier() {}
+
+func (*GetCurrencyRequest_Id) isGetCurrencyRequest_Identifier() {}
+
+type GetCurrencyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Currency      *Currency              `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetCurrencyResponse) Reset() {
+	*x = GetCurrencyResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetCurrencyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetCurrencyResponse) ProtoMessage() {}
+
+func (x *GetCurrencyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetCurrencyResponse.ProtoReflect.Descriptor instead.
+func (*GetCurrencyResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetCurrencyResponse) GetCurrency() *Currency {
+	if x != nil {
+		return x.Currency
+	}
+	return nil
+}
+
+type UpdateCurrencyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`                               // Required (identifies currency)
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"` // Fields to update
+	Name          string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	MinorUnits    int32                  `protobuf:"varint,4,opt,name=minor_units,json=minorUnits,proto3" json:"minor_units,omitempty"`
+	Symbol        string                 `protobuf:"bytes,5,opt,name=symbol,proto3" json:"symbol,omitempty"`
+	CountryCodes  []string               `protobuf:"bytes,6,rep,name=country_codes,json=countryCodes,proto3" json:"country_codes,omitempty"`
+	Status        CurrencyStatus         `protobuf:"varint,7,opt,name=status,proto3,enum=treasury.CurrencyStatus" json:"status,omitempty"`
+	Version       int32                  `protobuf:"varint,8,opt,name=version,proto3" json:"version,omitempty"` // For optimistic locking
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCurrencyRequest) Reset() {
+	*x = UpdateCurrencyRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCurrencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCurrencyRequest) ProtoMessage() {}
+
+func (x *UpdateCurrencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCurrencyRequest.ProtoReflect.Descriptor instead.
+func (*UpdateCurrencyRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *UpdateCurrencyRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *UpdateCurrencyRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateCurrencyRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateCurrencyRequest) GetMinorUnits() int32 {
+	if x != nil {
+		return x.MinorUnits
+	}
+	return 0
+}
+
+func (x *UpdateCurrencyRequest) GetSymbol() string {
+	if x != nil {
+		return x.Symbol
+	}
+	return ""
+}
+
+func (x *UpdateCurrencyRequest) GetCountryCodes() []string {
+	if x != nil {
+		return x.CountryCodes
+	}
+	return nil
+}
+
+func (x *UpdateCurrencyRequest) GetStatus() CurrencyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CurrencyStatus_CURRENCY_STATUS_UNSPECIFIED
+}
+
+func (x *UpdateCurrencyRequest) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+type UpdateCurrencyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Currency      *Currency              `protobuf:"bytes,1,opt,name=currency,proto3" json:"currency,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateCurrencyResponse) Reset() {
+	*x = UpdateCurrencyResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateCurrencyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateCurrencyResponse) ProtoMessage() {}
+
+func (x *UpdateCurrencyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateCurrencyResponse.ProtoReflect.Descriptor instead.
+func (*UpdateCurrencyResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *UpdateCurrencyResponse) GetCurrency() *Currency {
+	if x != nil {
+		return x.Currency
+	}
+	return nil
+}
+
+type DeactivateCurrencyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`                                   // Required
+	Status        CurrencyStatus         `protobuf:"varint,2,opt,name=status,proto3,enum=treasury.CurrencyStatus" json:"status,omitempty"` // New status (inactive/deprecated/deleted)
+	UpdatedBy     string                 `protobuf:"bytes,3,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`        // User making the change
+	Version       int32                  `protobuf:"varint,4,opt,name=version,proto3" json:"version,omitempty"`                            // For optimistic locking
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeactivateCurrencyRequest) Reset() {
+	*x = DeactivateCurrencyRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeactivateCurrencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeactivateCurrencyRequest) ProtoMessage() {}
+
+func (x *DeactivateCurrencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeactivateCurrencyRequest.ProtoReflect.Descriptor instead.
+func (*DeactivateCurrencyRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *DeactivateCurrencyRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *DeactivateCurrencyRequest) GetStatus() CurrencyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CurrencyStatus_CURRENCY_STATUS_UNSPECIFIED
+}
+
+func (x *DeactivateCurrencyRequest) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *DeactivateCurrencyRequest) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+type DeactivateCurrencyResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Currency      *Currency              `protobuf:"bytes,2,opt,name=currency,proto3" json:"currency,omitempty"` // Updated currency
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeactivateCurrencyResponse) Reset() {
+	*x = DeactivateCurrencyResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeactivateCurrencyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeactivateCurrencyResponse) ProtoMessage() {}
+
+func (x *DeactivateCurrencyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeactivateCurrencyResponse.ProtoReflect.Descriptor instead.
+func (*DeactivateCurrencyResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *DeactivateCurrencyResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DeactivateCurrencyResponse) GetCurrency() *Currency {
+	if x != nil {
+		return x.Currency
+	}
+	return nil
+}
+
+type ListCurrenciesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Status        CurrencyStatus         `protobuf:"varint,1,opt,name=status,proto3,enum=treasury.CurrencyStatus" json:"status,omitempty"` // Filter by status
+	IsActive      bool                   `protobuf:"varint,2,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`          // Filter by active flag
+	IsCrypto      bool                   `protobuf:"varint,3,opt,name=is_crypto,json=isCrypto,proto3" json:"is_crypto,omitempty"`          // Filter cryptocurrencies
+	CountryCode   string                 `protobuf:"bytes,4,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`  // Filter by country
+	PageSize      int32                  `protobuf:"varint,5,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`          // Pagination
+	PageToken     string                 `protobuf:"bytes,6,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`        // Pagination token
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCurrenciesRequest) Reset() {
+	*x = ListCurrenciesRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCurrenciesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCurrenciesRequest) ProtoMessage() {}
+
+func (x *ListCurrenciesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCurrenciesRequest.ProtoReflect.Descriptor instead.
+func (*ListCurrenciesRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ListCurrenciesRequest) GetStatus() CurrencyStatus {
+	if x != nil {
+		return x.Status
+	}
+	return CurrencyStatus_CURRENCY_STATUS_UNSPECIFIED
+}
+
+func (x *ListCurrenciesRequest) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *ListCurrenciesRequest) GetIsCrypto() bool {
+	if x != nil {
+		return x.IsCrypto
+	}
+	return false
+}
+
+func (x *ListCurrenciesRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *ListCurrenciesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListCurrenciesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+type ListCurrenciesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Currencies    []*Currency            `protobuf:"bytes,1,rep,name=currencies,proto3" json:"currencies,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListCurrenciesResponse) Reset() {
+	*x = ListCurrenciesResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListCurrenciesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListCurrenciesResponse) ProtoMessage() {}
+
+func (x *ListCurrenciesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListCurrenciesResponse.ProtoReflect.Descriptor instead.
+func (*ListCurrenciesResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *ListCurrenciesResponse) GetCurrencies() []*Currency {
+	if x != nil {
+		return x.Currencies
+	}
+	return nil
+}
+
+func (x *ListCurrenciesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListCurrenciesResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
+type BulkCreateCurrenciesRequest struct {
+	state          protoimpl.MessageState   `protogen:"open.v1"`
+	Currencies     []*CreateCurrencyRequest `protobuf:"bytes,1,rep,name=currencies,proto3" json:"currencies,omitempty"`
+	SkipDuplicates bool                     `protobuf:"varint,2,opt,name=skip_duplicates,json=skipDuplicates,proto3" json:"skip_duplicates,omitempty"` // Skip existing currencies
+	UpdateExisting bool                     `protobuf:"varint,3,opt,name=update_existing,json=updateExisting,proto3" json:"update_existing,omitempty"` // Update if exists
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BulkCreateCurrenciesRequest) Reset() {
+	*x = BulkCreateCurrenciesRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateCurrenciesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateCurrenciesRequest) ProtoMessage() {}
+
+func (x *BulkCreateCurrenciesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateCurrenciesRequest.ProtoReflect.Descriptor instead.
+func (*BulkCreateCurrenciesRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{28}
+}
+
+func (x *BulkCreateCurrenciesRequest) GetCurrencies() []*CreateCurrencyRequest {
+	if x != nil {
+		return x.Currencies
+	}
+	return nil
+}
+
+func (x *BulkCreateCurrenciesRequest) GetSkipDuplicates() bool {
+	if x != nil {
+		return x.SkipDuplicates
+	}
+	return false
+}
+
+func (x *BulkCreateCurrenciesRequest) GetUpdateExisting() bool {
+	if x != nil {
+		return x.UpdateExisting
+	}
+	return false
+}
+
+type BulkCreateCurrenciesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CreatedCount  int32                  `protobuf:"varint,1,opt,name=created_count,json=createdCount,proto3" json:"created_count,omitempty"`
+	UpdatedCount  int32                  `protobuf:"varint,2,opt,name=updated_count,json=updatedCount,proto3" json:"updated_count,omitempty"`
+	SkippedCount  int32                  `protobuf:"varint,3,opt,name=skipped_count,json=skippedCount,proto3" json:"skipped_count,omitempty"`
+	Errors        []string               `protobuf:"bytes,4,rep,name=errors,proto3" json:"errors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BulkCreateCurrenciesResponse) Reset() {
+	*x = BulkCreateCurrenciesResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateCurrenciesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateCurrenciesResponse) ProtoMessage() {}
+
+func (x *BulkCreateCurrenciesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateCurrenciesResponse.ProtoReflect.Descriptor instead.
+func (*BulkCreateCurrenciesResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *BulkCreateCurrenciesResponse) GetCreatedCount() int32 {
+	if x != nil {
+		return x.CreatedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateCurrenciesResponse) GetUpdatedCount() int32 {
+	if x != nil {
+		return x.UpdatedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateCurrenciesResponse) GetSkippedCount() int32 {
+	if x != nil {
+		return x.SkippedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateCurrenciesResponse) GetErrors() []string {
+	if x != nil {
+		return x.Errors
+	}
+	return nil
+}
+
 var File_services_treasury_services_treasury_service_proto_treasury_service_proto protoreflect.FileDescriptor
 
 const file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc = "" +
 	"\n" +
-	"Hservices/treasury-services/treasury-service/proto/treasury_service.proto\x12\btreasury\"\x11\n" +
+	"Hservices/treasury-services/treasury-service/proto/treasury_service.proto\x12\btreasury\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\x11\n" +
 	"\x0fManifestRequest\"\xb1\x02\n" +
 	"\x10ManifestResponse\x125\n" +
 	"\bidentity\x18\x01 \x01(\v2\x19.treasury.ServiceIdentityR\bidentity\x122\n" +
@@ -1513,7 +2566,99 @@ const file_services_treasury_services_treasury_service_proto_treasury_service_pr
 	"\x10idle_connections\x18\x03 \x01(\x05R\x0fidleConnections\x12\x1d\n" +
 	"\n" +
 	"wait_count\x18\x04 \x01(\x05R\twaitCount\x12(\n" +
-	"\x10wait_duration_ms\x18\x05 \x01(\x03R\x0ewaitDurationMs*9\n" +
+	"\x10wait_duration_ms\x18\x05 \x01(\x03R\x0ewaitDurationMs\"\xa8\x05\n" +
+	"\bCurrency\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12!\n" +
+	"\fnumeric_code\x18\x03 \x01(\tR\vnumericCode\x12\x12\n" +
+	"\x04name\x18\x04 \x01(\tR\x04name\x12\x1f\n" +
+	"\vminor_units\x18\x05 \x01(\x05R\n" +
+	"minorUnits\x12\x16\n" +
+	"\x06symbol\x18\x06 \x01(\tR\x06symbol\x12'\n" +
+	"\x0fsymbol_position\x18\a \x01(\tR\x0esymbolPosition\x12#\n" +
+	"\rcountry_codes\x18\b \x03(\tR\fcountryCodes\x12\x1b\n" +
+	"\tis_active\x18\t \x01(\bR\bisActive\x12\x1b\n" +
+	"\tis_crypto\x18\n" +
+	" \x01(\bR\bisCrypto\x120\n" +
+	"\x06status\x18\v \x01(\x0e2\x18.treasury.CurrencyStatusR\x06status\x12=\n" +
+	"\factivated_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\vactivatedAt\x12A\n" +
+	"\x0edeactivated_at\x18\r \x01(\v2\x1a.google.protobuf.TimestampR\rdeactivatedAt\x129\n" +
+	"\n" +
+	"created_at\x18\x0e \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x10 \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x11 \x01(\tR\tupdatedBy\x12\x18\n" +
+	"\aversion\x18\x12 \x01(\x05R\aversion\"\xdd\x01\n" +
+	"\x15CreateCurrencyRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12!\n" +
+	"\fnumeric_code\x18\x02 \x01(\tR\vnumericCode\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1f\n" +
+	"\vminor_units\x18\x04 \x01(\x05R\n" +
+	"minorUnits\x12\x16\n" +
+	"\x06symbol\x18\x05 \x01(\tR\x06symbol\x12#\n" +
+	"\rcountry_codes\x18\x06 \x03(\tR\fcountryCodes\x12\x1b\n" +
+	"\tis_crypto\x18\a \x01(\bR\bisCrypto\"H\n" +
+	"\x16CreateCurrencyResponse\x12.\n" +
+	"\bcurrency\x18\x01 \x01(\v2\x12.treasury.CurrencyR\bcurrency\"o\n" +
+	"\x12GetCurrencyRequest\x12\x14\n" +
+	"\x04code\x18\x01 \x01(\tH\x00R\x04code\x12#\n" +
+	"\fnumeric_code\x18\x02 \x01(\tH\x00R\vnumericCode\x12\x10\n" +
+	"\x02id\x18\x03 \x01(\tH\x00R\x02idB\f\n" +
+	"\n" +
+	"identifier\"E\n" +
+	"\x13GetCurrencyResponse\x12.\n" +
+	"\bcurrency\x18\x01 \x01(\v2\x12.treasury.CurrencyR\bcurrency\"\xa6\x02\n" +
+	"\x15UpdateCurrencyRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12;\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1f\n" +
+	"\vminor_units\x18\x04 \x01(\x05R\n" +
+	"minorUnits\x12\x16\n" +
+	"\x06symbol\x18\x05 \x01(\tR\x06symbol\x12#\n" +
+	"\rcountry_codes\x18\x06 \x03(\tR\fcountryCodes\x120\n" +
+	"\x06status\x18\a \x01(\x0e2\x18.treasury.CurrencyStatusR\x06status\x12\x18\n" +
+	"\aversion\x18\b \x01(\x05R\aversion\"H\n" +
+	"\x16UpdateCurrencyResponse\x12.\n" +
+	"\bcurrency\x18\x01 \x01(\v2\x12.treasury.CurrencyR\bcurrency\"\x9a\x01\n" +
+	"\x19DeactivateCurrencyRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x120\n" +
+	"\x06status\x18\x02 \x01(\x0e2\x18.treasury.CurrencyStatusR\x06status\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18\x03 \x01(\tR\tupdatedBy\x12\x18\n" +
+	"\aversion\x18\x04 \x01(\x05R\aversion\"f\n" +
+	"\x1aDeactivateCurrencyResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12.\n" +
+	"\bcurrency\x18\x02 \x01(\v2\x12.treasury.CurrencyR\bcurrency\"\xe2\x01\n" +
+	"\x15ListCurrenciesRequest\x120\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x18.treasury.CurrencyStatusR\x06status\x12\x1b\n" +
+	"\tis_active\x18\x02 \x01(\bR\bisActive\x12\x1b\n" +
+	"\tis_crypto\x18\x03 \x01(\bR\bisCrypto\x12!\n" +
+	"\fcountry_code\x18\x04 \x01(\tR\vcountryCode\x12\x1b\n" +
+	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x06 \x01(\tR\tpageToken\"\x95\x01\n" +
+	"\x16ListCurrenciesResponse\x122\n" +
+	"\n" +
+	"currencies\x18\x01 \x03(\v2\x12.treasury.CurrencyR\n" +
+	"currencies\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1f\n" +
+	"\vtotal_count\x18\x03 \x01(\x05R\n" +
+	"totalCount\"\xb0\x01\n" +
+	"\x1bBulkCreateCurrenciesRequest\x12?\n" +
+	"\n" +
+	"currencies\x18\x01 \x03(\v2\x1f.treasury.CreateCurrencyRequestR\n" +
+	"currencies\x12'\n" +
+	"\x0fskip_duplicates\x18\x02 \x01(\bR\x0eskipDuplicates\x12'\n" +
+	"\x0fupdate_existing\x18\x03 \x01(\bR\x0eupdateExisting\"\xa5\x01\n" +
+	"\x1cBulkCreateCurrenciesResponse\x12#\n" +
+	"\rcreated_count\x18\x01 \x01(\x05R\fcreatedCount\x12#\n" +
+	"\rupdated_count\x18\x02 \x01(\x05R\fupdatedCount\x12#\n" +
+	"\rskipped_count\x18\x03 \x01(\x05R\fskippedCount\x12\x16\n" +
+	"\x06errors\x18\x04 \x03(\tR\x06errors*9\n" +
 	"\rServiceStatus\x12\v\n" +
 	"\aHEALTHY\x10\x00\x12\f\n" +
 	"\bDEGRADED\x10\x01\x12\r\n" +
@@ -1525,12 +2670,25 @@ const file_services_treasury_services_treasury_service_proto_treasury_service_pr
 	"\fGRPC_SERVICE\x10\x03\x12\x10\n" +
 	"\fHTTP_SERVICE\x10\x04\x12\v\n" +
 	"\aSTORAGE\x10\x05\x12\t\n" +
-	"\x05OTHER\x10\x062R\n" +
+	"\x05OTHER\x10\x06*\xa8\x01\n" +
+	"\x0eCurrencyStatus\x12\x1f\n" +
+	"\x1bCURRENCY_STATUS_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16CURRENCY_STATUS_ACTIVE\x10\x01\x12\x1c\n" +
+	"\x18CURRENCY_STATUS_INACTIVE\x10\x02\x12\x1e\n" +
+	"\x1aCURRENCY_STATUS_DEPRECATED\x10\x03\x12\x1b\n" +
+	"\x17CURRENCY_STATUS_DELETED\x10\x042R\n" +
 	"\bManifest\x12F\n" +
 	"\vGetManifest\x12\x19.treasury.ManifestRequest\x1a\x1a.treasury.ManifestResponse\"\x002\x92\x01\n" +
 	"\x06Health\x12F\n" +
 	"\vGetLiveness\x12\x19.treasury.LivenessRequest\x1a\x1a.treasury.LivenessResponse\"\x00\x12@\n" +
-	"\tGetHealth\x12\x17.treasury.HealthRequest\x1a\x18.treasury.HealthResponse\"\x00B)Z'example.com/go-mono-repo/proto/treasuryb\x06proto3"
+	"\tGetHealth\x12\x17.treasury.HealthRequest\x1a\x18.treasury.HealthResponse\"\x002\xa4\x04\n" +
+	"\x0fCurrencyService\x12S\n" +
+	"\x0eCreateCurrency\x12\x1f.treasury.CreateCurrencyRequest\x1a .treasury.CreateCurrencyResponse\x12J\n" +
+	"\vGetCurrency\x12\x1c.treasury.GetCurrencyRequest\x1a\x1d.treasury.GetCurrencyResponse\x12S\n" +
+	"\x0eUpdateCurrency\x12\x1f.treasury.UpdateCurrencyRequest\x1a .treasury.UpdateCurrencyResponse\x12_\n" +
+	"\x12DeactivateCurrency\x12#.treasury.DeactivateCurrencyRequest\x1a$.treasury.DeactivateCurrencyResponse\x12S\n" +
+	"\x0eListCurrencies\x12\x1f.treasury.ListCurrenciesRequest\x1a .treasury.ListCurrenciesResponse\x12e\n" +
+	"\x14BulkCreateCurrencies\x12%.treasury.BulkCreateCurrenciesRequest\x1a&.treasury.BulkCreateCurrenciesResponseB)Z'example.com/go-mono-repo/proto/treasuryb\x06proto3"
 
 var (
 	file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescOnce sync.Once
@@ -1544,61 +2702,104 @@ func file_services_treasury_services_treasury_service_proto_treasury_service_pro
 	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescData
 }
 
-var file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
 var file_services_treasury_services_treasury_service_proto_treasury_service_proto_goTypes = []any{
-	(ServiceStatus)(0),          // 0: treasury.ServiceStatus
-	(DependencyType)(0),         // 1: treasury.DependencyType
-	(*ManifestRequest)(nil),     // 2: treasury.ManifestRequest
-	(*ManifestResponse)(nil),    // 3: treasury.ManifestResponse
-	(*ServiceIdentity)(nil),     // 4: treasury.ServiceIdentity
-	(*BuildInfo)(nil),           // 5: treasury.BuildInfo
-	(*RuntimeInfo)(nil),         // 6: treasury.RuntimeInfo
-	(*ServiceMetadata)(nil),     // 7: treasury.ServiceMetadata
-	(*ServiceCapabilities)(nil), // 8: treasury.ServiceCapabilities
-	(*ServiceDependency)(nil),   // 9: treasury.ServiceDependency
-	(*LivenessRequest)(nil),     // 10: treasury.LivenessRequest
-	(*LivenessResponse)(nil),    // 11: treasury.LivenessResponse
-	(*HealthRequest)(nil),       // 12: treasury.HealthRequest
-	(*HealthResponse)(nil),      // 13: treasury.HealthResponse
-	(*ComponentCheck)(nil),      // 14: treasury.ComponentCheck
-	(*LivenessInfo)(nil),        // 15: treasury.LivenessInfo
-	(*DependencyHealth)(nil),    // 16: treasury.DependencyHealth
-	(*DependencyConfig)(nil),    // 17: treasury.DependencyConfig
-	(*ConnectionPoolInfo)(nil),  // 18: treasury.ConnectionPoolInfo
-	nil,                         // 19: treasury.ServiceMetadata.LabelsEntry
-	nil,                         // 20: treasury.DependencyConfig.MetadataEntry
+	(ServiceStatus)(0),                   // 0: treasury.ServiceStatus
+	(DependencyType)(0),                  // 1: treasury.DependencyType
+	(CurrencyStatus)(0),                  // 2: treasury.CurrencyStatus
+	(*ManifestRequest)(nil),              // 3: treasury.ManifestRequest
+	(*ManifestResponse)(nil),             // 4: treasury.ManifestResponse
+	(*ServiceIdentity)(nil),              // 5: treasury.ServiceIdentity
+	(*BuildInfo)(nil),                    // 6: treasury.BuildInfo
+	(*RuntimeInfo)(nil),                  // 7: treasury.RuntimeInfo
+	(*ServiceMetadata)(nil),              // 8: treasury.ServiceMetadata
+	(*ServiceCapabilities)(nil),          // 9: treasury.ServiceCapabilities
+	(*ServiceDependency)(nil),            // 10: treasury.ServiceDependency
+	(*LivenessRequest)(nil),              // 11: treasury.LivenessRequest
+	(*LivenessResponse)(nil),             // 12: treasury.LivenessResponse
+	(*HealthRequest)(nil),                // 13: treasury.HealthRequest
+	(*HealthResponse)(nil),               // 14: treasury.HealthResponse
+	(*ComponentCheck)(nil),               // 15: treasury.ComponentCheck
+	(*LivenessInfo)(nil),                 // 16: treasury.LivenessInfo
+	(*DependencyHealth)(nil),             // 17: treasury.DependencyHealth
+	(*DependencyConfig)(nil),             // 18: treasury.DependencyConfig
+	(*ConnectionPoolInfo)(nil),           // 19: treasury.ConnectionPoolInfo
+	(*Currency)(nil),                     // 20: treasury.Currency
+	(*CreateCurrencyRequest)(nil),        // 21: treasury.CreateCurrencyRequest
+	(*CreateCurrencyResponse)(nil),       // 22: treasury.CreateCurrencyResponse
+	(*GetCurrencyRequest)(nil),           // 23: treasury.GetCurrencyRequest
+	(*GetCurrencyResponse)(nil),          // 24: treasury.GetCurrencyResponse
+	(*UpdateCurrencyRequest)(nil),        // 25: treasury.UpdateCurrencyRequest
+	(*UpdateCurrencyResponse)(nil),       // 26: treasury.UpdateCurrencyResponse
+	(*DeactivateCurrencyRequest)(nil),    // 27: treasury.DeactivateCurrencyRequest
+	(*DeactivateCurrencyResponse)(nil),   // 28: treasury.DeactivateCurrencyResponse
+	(*ListCurrenciesRequest)(nil),        // 29: treasury.ListCurrenciesRequest
+	(*ListCurrenciesResponse)(nil),       // 30: treasury.ListCurrenciesResponse
+	(*BulkCreateCurrenciesRequest)(nil),  // 31: treasury.BulkCreateCurrenciesRequest
+	(*BulkCreateCurrenciesResponse)(nil), // 32: treasury.BulkCreateCurrenciesResponse
+	nil,                                  // 33: treasury.ServiceMetadata.LabelsEntry
+	nil,                                  // 34: treasury.DependencyConfig.MetadataEntry
+	(*timestamppb.Timestamp)(nil),        // 35: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),        // 36: google.protobuf.FieldMask
 }
 var file_services_treasury_services_treasury_service_proto_treasury_service_proto_depIdxs = []int32{
-	4,  // 0: treasury.ManifestResponse.identity:type_name -> treasury.ServiceIdentity
-	5,  // 1: treasury.ManifestResponse.build_info:type_name -> treasury.BuildInfo
-	6,  // 2: treasury.ManifestResponse.runtime_info:type_name -> treasury.RuntimeInfo
-	7,  // 3: treasury.ManifestResponse.metadata:type_name -> treasury.ServiceMetadata
-	8,  // 4: treasury.ManifestResponse.capabilities:type_name -> treasury.ServiceCapabilities
-	19, // 5: treasury.ServiceMetadata.labels:type_name -> treasury.ServiceMetadata.LabelsEntry
-	9,  // 6: treasury.ServiceCapabilities.dependencies:type_name -> treasury.ServiceDependency
+	5,  // 0: treasury.ManifestResponse.identity:type_name -> treasury.ServiceIdentity
+	6,  // 1: treasury.ManifestResponse.build_info:type_name -> treasury.BuildInfo
+	7,  // 2: treasury.ManifestResponse.runtime_info:type_name -> treasury.RuntimeInfo
+	8,  // 3: treasury.ManifestResponse.metadata:type_name -> treasury.ServiceMetadata
+	9,  // 4: treasury.ManifestResponse.capabilities:type_name -> treasury.ServiceCapabilities
+	33, // 5: treasury.ServiceMetadata.labels:type_name -> treasury.ServiceMetadata.LabelsEntry
+	10, // 6: treasury.ServiceCapabilities.dependencies:type_name -> treasury.ServiceDependency
 	0,  // 7: treasury.LivenessResponse.status:type_name -> treasury.ServiceStatus
-	14, // 8: treasury.LivenessResponse.checks:type_name -> treasury.ComponentCheck
+	15, // 8: treasury.LivenessResponse.checks:type_name -> treasury.ComponentCheck
 	0,  // 9: treasury.HealthResponse.status:type_name -> treasury.ServiceStatus
-	15, // 10: treasury.HealthResponse.liveness:type_name -> treasury.LivenessInfo
-	16, // 11: treasury.HealthResponse.dependencies:type_name -> treasury.DependencyHealth
-	14, // 12: treasury.LivenessInfo.components:type_name -> treasury.ComponentCheck
+	16, // 10: treasury.HealthResponse.liveness:type_name -> treasury.LivenessInfo
+	17, // 11: treasury.HealthResponse.dependencies:type_name -> treasury.DependencyHealth
+	15, // 12: treasury.LivenessInfo.components:type_name -> treasury.ComponentCheck
 	1,  // 13: treasury.DependencyHealth.type:type_name -> treasury.DependencyType
 	0,  // 14: treasury.DependencyHealth.status:type_name -> treasury.ServiceStatus
-	17, // 15: treasury.DependencyHealth.config:type_name -> treasury.DependencyConfig
-	18, // 16: treasury.DependencyConfig.pool_info:type_name -> treasury.ConnectionPoolInfo
-	20, // 17: treasury.DependencyConfig.metadata:type_name -> treasury.DependencyConfig.MetadataEntry
-	2,  // 18: treasury.Manifest.GetManifest:input_type -> treasury.ManifestRequest
-	10, // 19: treasury.Health.GetLiveness:input_type -> treasury.LivenessRequest
-	12, // 20: treasury.Health.GetHealth:input_type -> treasury.HealthRequest
-	3,  // 21: treasury.Manifest.GetManifest:output_type -> treasury.ManifestResponse
-	11, // 22: treasury.Health.GetLiveness:output_type -> treasury.LivenessResponse
-	13, // 23: treasury.Health.GetHealth:output_type -> treasury.HealthResponse
-	21, // [21:24] is the sub-list for method output_type
-	18, // [18:21] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	18, // 15: treasury.DependencyHealth.config:type_name -> treasury.DependencyConfig
+	19, // 16: treasury.DependencyConfig.pool_info:type_name -> treasury.ConnectionPoolInfo
+	34, // 17: treasury.DependencyConfig.metadata:type_name -> treasury.DependencyConfig.MetadataEntry
+	2,  // 18: treasury.Currency.status:type_name -> treasury.CurrencyStatus
+	35, // 19: treasury.Currency.activated_at:type_name -> google.protobuf.Timestamp
+	35, // 20: treasury.Currency.deactivated_at:type_name -> google.protobuf.Timestamp
+	35, // 21: treasury.Currency.created_at:type_name -> google.protobuf.Timestamp
+	35, // 22: treasury.Currency.updated_at:type_name -> google.protobuf.Timestamp
+	20, // 23: treasury.CreateCurrencyResponse.currency:type_name -> treasury.Currency
+	20, // 24: treasury.GetCurrencyResponse.currency:type_name -> treasury.Currency
+	36, // 25: treasury.UpdateCurrencyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	2,  // 26: treasury.UpdateCurrencyRequest.status:type_name -> treasury.CurrencyStatus
+	20, // 27: treasury.UpdateCurrencyResponse.currency:type_name -> treasury.Currency
+	2,  // 28: treasury.DeactivateCurrencyRequest.status:type_name -> treasury.CurrencyStatus
+	20, // 29: treasury.DeactivateCurrencyResponse.currency:type_name -> treasury.Currency
+	2,  // 30: treasury.ListCurrenciesRequest.status:type_name -> treasury.CurrencyStatus
+	20, // 31: treasury.ListCurrenciesResponse.currencies:type_name -> treasury.Currency
+	21, // 32: treasury.BulkCreateCurrenciesRequest.currencies:type_name -> treasury.CreateCurrencyRequest
+	3,  // 33: treasury.Manifest.GetManifest:input_type -> treasury.ManifestRequest
+	11, // 34: treasury.Health.GetLiveness:input_type -> treasury.LivenessRequest
+	13, // 35: treasury.Health.GetHealth:input_type -> treasury.HealthRequest
+	21, // 36: treasury.CurrencyService.CreateCurrency:input_type -> treasury.CreateCurrencyRequest
+	23, // 37: treasury.CurrencyService.GetCurrency:input_type -> treasury.GetCurrencyRequest
+	25, // 38: treasury.CurrencyService.UpdateCurrency:input_type -> treasury.UpdateCurrencyRequest
+	27, // 39: treasury.CurrencyService.DeactivateCurrency:input_type -> treasury.DeactivateCurrencyRequest
+	29, // 40: treasury.CurrencyService.ListCurrencies:input_type -> treasury.ListCurrenciesRequest
+	31, // 41: treasury.CurrencyService.BulkCreateCurrencies:input_type -> treasury.BulkCreateCurrenciesRequest
+	4,  // 42: treasury.Manifest.GetManifest:output_type -> treasury.ManifestResponse
+	12, // 43: treasury.Health.GetLiveness:output_type -> treasury.LivenessResponse
+	14, // 44: treasury.Health.GetHealth:output_type -> treasury.HealthResponse
+	22, // 45: treasury.CurrencyService.CreateCurrency:output_type -> treasury.CreateCurrencyResponse
+	24, // 46: treasury.CurrencyService.GetCurrency:output_type -> treasury.GetCurrencyResponse
+	26, // 47: treasury.CurrencyService.UpdateCurrency:output_type -> treasury.UpdateCurrencyResponse
+	28, // 48: treasury.CurrencyService.DeactivateCurrency:output_type -> treasury.DeactivateCurrencyResponse
+	30, // 49: treasury.CurrencyService.ListCurrencies:output_type -> treasury.ListCurrenciesResponse
+	32, // 50: treasury.CurrencyService.BulkCreateCurrencies:output_type -> treasury.BulkCreateCurrenciesResponse
+	42, // [42:51] is the sub-list for method output_type
+	33, // [33:42] is the sub-list for method input_type
+	33, // [33:33] is the sub-list for extension type_name
+	33, // [33:33] is the sub-list for extension extendee
+	0,  // [0:33] is the sub-list for field type_name
 }
 
 func init() { file_services_treasury_services_treasury_service_proto_treasury_service_proto_init() }
@@ -1606,15 +2807,20 @@ func file_services_treasury_services_treasury_service_proto_treasury_service_pro
 	if File_services_treasury_services_treasury_service_proto_treasury_service_proto != nil {
 		return
 	}
+	file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[20].OneofWrappers = []any{
+		(*GetCurrencyRequest_Code)(nil),
+		(*GetCurrencyRequest_NumericCode)(nil),
+		(*GetCurrencyRequest_Id)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc), len(file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   19,
+			NumEnums:      3,
+			NumMessages:   32,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   3,
 		},
 		GoTypes:           file_services_treasury_services_treasury_service_proto_treasury_service_proto_goTypes,
 		DependencyIndexes: file_services_treasury_services_treasury_service_proto_treasury_service_proto_depIdxs,

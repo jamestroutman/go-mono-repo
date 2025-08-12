@@ -15,9 +15,10 @@ import (
 // DatabaseManager manages database connections and health
 // Spec: docs/specs/001-database-connection.md
 type DatabaseManager struct {
-	db     *sql.DB
-	config *DatabaseConfig
-	mu     sync.RWMutex
+	db               *sql.DB
+	config           *DatabaseConfig
+	migrationManager *MigrationManager
+	mu               sync.RWMutex
 
 	// Connection metrics
 	connectTime     time.Time
@@ -128,10 +129,34 @@ func (dm *DatabaseManager) IsHealthy() bool {
 	return dm.isHealthy
 }
 
+// SetMigrationManager stores the migration manager for health checks
+// Spec: docs/specs/002-database-migrations.md
+func (dm *DatabaseManager) SetMigrationManager(mm *MigrationManager) {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	dm.migrationManager = mm
+}
+
+// GetMigrationManager returns the migration manager
+// Spec: docs/specs/002-database-migrations.md
+func (dm *DatabaseManager) GetMigrationManager() *MigrationManager {
+	dm.mu.RLock()
+	defer dm.mu.RUnlock()
+	return dm.migrationManager
+}
+
 // Close closes the database connection
 func (dm *DatabaseManager) Close() error {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
+
+	// Close migration manager if exists
+	if dm.migrationManager != nil {
+		if err := dm.migrationManager.Close(); err != nil {
+			log.Printf("Warning: Failed to close migration manager: %v", err)
+		}
+		dm.migrationManager = nil
+	}
 
 	if dm.db != nil {
 		err := dm.db.Close()

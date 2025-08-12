@@ -74,6 +74,13 @@ make liveness-check-all       # Check all services liveness
 # Or directly with grpcurl
 grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
 grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
+
+# Database Migration Commands (Spec: services/treasury-services/treasury-service/docs/specs/002-database-migrations.md)
+make migration-create-treasury  # Create new migration files
+make migrate-up-treasury       # Run pending migrations
+make migrate-down-treasury     # Rollback last migration
+make migrate-status-treasury   # Check current migration version
+make migrate-force-treasury    # Force migration version (use with caution)
 ```
 
 ### Working with Individual Services

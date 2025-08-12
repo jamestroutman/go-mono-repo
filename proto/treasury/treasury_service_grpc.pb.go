@@ -277,3 +277,323 @@ var Health_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
 }
+
+const (
+	CurrencyService_CreateCurrency_FullMethodName       = "/treasury.CurrencyService/CreateCurrency"
+	CurrencyService_GetCurrency_FullMethodName          = "/treasury.CurrencyService/GetCurrency"
+	CurrencyService_UpdateCurrency_FullMethodName       = "/treasury.CurrencyService/UpdateCurrency"
+	CurrencyService_DeactivateCurrency_FullMethodName   = "/treasury.CurrencyService/DeactivateCurrency"
+	CurrencyService_ListCurrencies_FullMethodName       = "/treasury.CurrencyService/ListCurrencies"
+	CurrencyService_BulkCreateCurrencies_FullMethodName = "/treasury.CurrencyService/BulkCreateCurrencies"
+)
+
+// CurrencyServiceClient is the client API for CurrencyService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Currency service for managing ISO 4217 compliant currencies
+type CurrencyServiceClient interface {
+	// Create a new currency
+	// Spec: docs/specs/003-currency-management.md#story-1-create-new-currency
+	CreateCurrency(ctx context.Context, in *CreateCurrencyRequest, opts ...grpc.CallOption) (*CreateCurrencyResponse, error)
+	// Get currency information
+	// Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+	GetCurrency(ctx context.Context, in *GetCurrencyRequest, opts ...grpc.CallOption) (*GetCurrencyResponse, error)
+	// Update currency metadata
+	// Spec: docs/specs/003-currency-management.md#story-3-update-currency-metadata
+	UpdateCurrency(ctx context.Context, in *UpdateCurrencyRequest, opts ...grpc.CallOption) (*UpdateCurrencyResponse, error)
+	// Deactivate currency (soft delete only - hard delete not supported)
+	// Spec: docs/specs/003-currency-management.md#story-4-deactivate-currency
+	DeactivateCurrency(ctx context.Context, in *DeactivateCurrencyRequest, opts ...grpc.CallOption) (*DeactivateCurrencyResponse, error)
+	// List currencies with filters
+	// Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+	ListCurrencies(ctx context.Context, in *ListCurrenciesRequest, opts ...grpc.CallOption) (*ListCurrenciesResponse, error)
+	// Bulk create currencies
+	// Spec: docs/specs/003-currency-management.md#story-5-bulk-currency-operations
+	BulkCreateCurrencies(ctx context.Context, in *BulkCreateCurrenciesRequest, opts ...grpc.CallOption) (*BulkCreateCurrenciesResponse, error)
+}
+
+type currencyServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewCurrencyServiceClient(cc grpc.ClientConnInterface) CurrencyServiceClient {
+	return &currencyServiceClient{cc}
+}
+
+func (c *currencyServiceClient) CreateCurrency(ctx context.Context, in *CreateCurrencyRequest, opts ...grpc.CallOption) (*CreateCurrencyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateCurrencyResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_CreateCurrency_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyServiceClient) GetCurrency(ctx context.Context, in *GetCurrencyRequest, opts ...grpc.CallOption) (*GetCurrencyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetCurrencyResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_GetCurrency_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyServiceClient) UpdateCurrency(ctx context.Context, in *UpdateCurrencyRequest, opts ...grpc.CallOption) (*UpdateCurrencyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateCurrencyResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_UpdateCurrency_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyServiceClient) DeactivateCurrency(ctx context.Context, in *DeactivateCurrencyRequest, opts ...grpc.CallOption) (*DeactivateCurrencyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeactivateCurrencyResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_DeactivateCurrency_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyServiceClient) ListCurrencies(ctx context.Context, in *ListCurrenciesRequest, opts ...grpc.CallOption) (*ListCurrenciesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListCurrenciesResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_ListCurrencies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *currencyServiceClient) BulkCreateCurrencies(ctx context.Context, in *BulkCreateCurrenciesRequest, opts ...grpc.CallOption) (*BulkCreateCurrenciesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BulkCreateCurrenciesResponse)
+	err := c.cc.Invoke(ctx, CurrencyService_BulkCreateCurrencies_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// CurrencyServiceServer is the server API for CurrencyService service.
+// All implementations must embed UnimplementedCurrencyServiceServer
+// for forward compatibility.
+//
+// Currency service for managing ISO 4217 compliant currencies
+type CurrencyServiceServer interface {
+	// Create a new currency
+	// Spec: docs/specs/003-currency-management.md#story-1-create-new-currency
+	CreateCurrency(context.Context, *CreateCurrencyRequest) (*CreateCurrencyResponse, error)
+	// Get currency information
+	// Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+	GetCurrency(context.Context, *GetCurrencyRequest) (*GetCurrencyResponse, error)
+	// Update currency metadata
+	// Spec: docs/specs/003-currency-management.md#story-3-update-currency-metadata
+	UpdateCurrency(context.Context, *UpdateCurrencyRequest) (*UpdateCurrencyResponse, error)
+	// Deactivate currency (soft delete only - hard delete not supported)
+	// Spec: docs/specs/003-currency-management.md#story-4-deactivate-currency
+	DeactivateCurrency(context.Context, *DeactivateCurrencyRequest) (*DeactivateCurrencyResponse, error)
+	// List currencies with filters
+	// Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+	ListCurrencies(context.Context, *ListCurrenciesRequest) (*ListCurrenciesResponse, error)
+	// Bulk create currencies
+	// Spec: docs/specs/003-currency-management.md#story-5-bulk-currency-operations
+	BulkCreateCurrencies(context.Context, *BulkCreateCurrenciesRequest) (*BulkCreateCurrenciesResponse, error)
+	mustEmbedUnimplementedCurrencyServiceServer()
+}
+
+// UnimplementedCurrencyServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedCurrencyServiceServer struct{}
+
+func (UnimplementedCurrencyServiceServer) CreateCurrency(context.Context, *CreateCurrencyRequest) (*CreateCurrencyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateCurrency not implemented")
+}
+func (UnimplementedCurrencyServiceServer) GetCurrency(context.Context, *GetCurrencyRequest) (*GetCurrencyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetCurrency not implemented")
+}
+func (UnimplementedCurrencyServiceServer) UpdateCurrency(context.Context, *UpdateCurrencyRequest) (*UpdateCurrencyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateCurrency not implemented")
+}
+func (UnimplementedCurrencyServiceServer) DeactivateCurrency(context.Context, *DeactivateCurrencyRequest) (*DeactivateCurrencyResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeactivateCurrency not implemented")
+}
+func (UnimplementedCurrencyServiceServer) ListCurrencies(context.Context, *ListCurrenciesRequest) (*ListCurrenciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListCurrencies not implemented")
+}
+func (UnimplementedCurrencyServiceServer) BulkCreateCurrencies(context.Context, *BulkCreateCurrenciesRequest) (*BulkCreateCurrenciesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BulkCreateCurrencies not implemented")
+}
+func (UnimplementedCurrencyServiceServer) mustEmbedUnimplementedCurrencyServiceServer() {}
+func (UnimplementedCurrencyServiceServer) testEmbeddedByValue()                         {}
+
+// UnsafeCurrencyServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to CurrencyServiceServer will
+// result in compilation errors.
+type UnsafeCurrencyServiceServer interface {
+	mustEmbedUnimplementedCurrencyServiceServer()
+}
+
+func RegisterCurrencyServiceServer(s grpc.ServiceRegistrar, srv CurrencyServiceServer) {
+	// If the following call pancis, it indicates UnimplementedCurrencyServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&CurrencyService_ServiceDesc, srv)
+}
+
+func _CurrencyService_CreateCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateCurrencyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).CreateCurrency(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_CreateCurrency_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).CreateCurrency(ctx, req.(*CreateCurrencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CurrencyService_GetCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetCurrencyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).GetCurrency(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_GetCurrency_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).GetCurrency(ctx, req.(*GetCurrencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CurrencyService_UpdateCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateCurrencyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).UpdateCurrency(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_UpdateCurrency_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).UpdateCurrency(ctx, req.(*UpdateCurrencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CurrencyService_DeactivateCurrency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeactivateCurrencyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).DeactivateCurrency(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_DeactivateCurrency_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).DeactivateCurrency(ctx, req.(*DeactivateCurrencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CurrencyService_ListCurrencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListCurrenciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).ListCurrencies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_ListCurrencies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).ListCurrencies(ctx, req.(*ListCurrenciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CurrencyService_BulkCreateCurrencies_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BulkCreateCurrenciesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CurrencyServiceServer).BulkCreateCurrencies(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CurrencyService_BulkCreateCurrencies_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CurrencyServiceServer).BulkCreateCurrencies(ctx, req.(*BulkCreateCurrenciesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// CurrencyService_ServiceDesc is the grpc.ServiceDesc for CurrencyService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var CurrencyService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "treasury.CurrencyService",
+	HandlerType: (*CurrencyServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateCurrency",
+			Handler:    _CurrencyService_CreateCurrency_Handler,
+		},
+		{
+			MethodName: "GetCurrency",
+			Handler:    _CurrencyService_GetCurrency_Handler,
+		},
+		{
+			MethodName: "UpdateCurrency",
+			Handler:    _CurrencyService_UpdateCurrency_Handler,
+		},
+		{
+			MethodName: "DeactivateCurrency",
+			Handler:    _CurrencyService_DeactivateCurrency_Handler,
+		},
+		{
+			MethodName: "ListCurrencies",
+			Handler:    _CurrencyService_ListCurrencies_Handler,
+		},
+		{
+			MethodName: "BulkCreateCurrencies",
+			Handler:    _CurrencyService_BulkCreateCurrencies_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
+}

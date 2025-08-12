@@ -90,6 +90,11 @@ func NewHealthServerWithDB(startTime time.Time, dbManager *DatabaseManager, cfg 
 	// Spec: docs/specs/001-database-connection.md#story-3-database-health-monitoring
 	if dbManager != nil {
 		dependencies = append(dependencies, NewPostgreSQLChecker(dbManager))
+		
+		// Add migration checker if migrations are configured
+		// Spec: docs/specs/002-database-migrations.md#story-4-migration-status-monitoring
+		// Note: Migration manager is set asynchronously after DB connection
+		// so we'll check for it dynamically in the health check
 	}
 	
 	server.dependencies = dependencies
@@ -250,6 +255,16 @@ func (s *HealthServer) checkDependencies(ctx context.Context, filter []string) [
 	// Spec: docs/specs/003-health-check-liveness.md#story-4-dependency-configuration-visibility
 	for _, checker := range s.dependencies {
 		dep := checker.Check(ctx)
+		if s.shouldCheckDependency(dep.Name, filter) {
+			dependencies = append(dependencies, dep)
+		}
+	}
+	
+	// Dynamically add migration checker if available
+	// Spec: docs/specs/002-database-migrations.md#story-4-migration-status-monitoring
+	if s.dbManager != nil && s.dbManager.GetMigrationManager() != nil {
+		migrationChecker := NewMigrationChecker(s.dbManager.GetMigrationManager())
+		dep := migrationChecker.Check(ctx)
 		if s.shouldCheckDependency(dep.Name, filter) {
 			dependencies = append(dependencies, dep)
 		}

@@ -50,16 +50,45 @@ func main() {
 	// Spec: docs/specs/001-database-connection.md
 	dbManager := NewDatabaseManager(&cfg.Database)
 	
-	// Connect to database with retry (non-blocking)
+	// Connect to database synchronously with timeout
 	// Spec: docs/specs/001-database-connection.md#story-4-graceful-degradation
-	go func() {
-		ctx := context.Background()
-		log.Printf("Attempting to connect to database...")
-		if err := dbManager.ConnectWithRetry(ctx, 5); err != nil {
-			log.Printf("Warning: Failed to connect to database: %v", err)
-			log.Printf("Service will continue without database connection (degraded mode)")
+	ctx := context.Background()
+	log.Printf("Attempting to connect to database...")
+	if err := dbManager.ConnectWithRetry(ctx, 5); err != nil {
+		log.Printf("Warning: Failed to connect to database: %v", err)
+		log.Printf("Service will continue without database connection (degraded mode)")
+	} else {
+		// Database connected successfully, handle migrations
+		// Spec: docs/specs/002-database-migrations.md#story-1-automated-migration-on-startup
+		if cfg.Migration.AutoMigrate {
+			log.Printf("Running database migrations...")
+			migrationManager, err := NewMigrationManager(dbManager.GetDB(), &cfg.Migration)
+			if err != nil {
+				log.Printf("Warning: Failed to create migration manager: %v", err)
+			} else {
+				if err := migrationManager.Migrate(ctx); err != nil {
+					log.Printf("Error: Failed to run migrations: %v", err)
+					// In production, you might want to fail the service here
+					// For now, continue in degraded mode
+				} else {
+					log.Printf("Database migrations completed successfully")
+				}
+				// Store migration manager for health checks
+				dbManager.SetMigrationManager(migrationManager)
+			}
+		} else {
+			log.Printf("Auto-migration disabled, skipping migrations")
 		}
-	}()
+	}
+	
+	// Initialize currency server if database is available
+	// Spec: docs/specs/003-currency-management.md
+	var currencyServer *CurrencyServer
+	if dbManager.GetDB() != nil {
+		currencyManager := NewCurrencyManager(dbManager.GetDB())
+		currencyServer = NewCurrencyServer(currencyManager)
+		log.Printf("Currency service initialized")
+	}
 	
 	// Create manifest server with cached data
 	// Spec: docs/specs/001-manifest.md
@@ -94,6 +123,13 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterManifestServer(grpcServer, manifestServer)
 	pb.RegisterHealthServer(grpcServer, healthServer)
+	
+	// Register currency service if available
+	// Spec: docs/specs/003-currency-management.md
+	if currencyServer != nil {
+		pb.RegisterCurrencyServiceServer(grpcServer, currencyServer)
+		log.Printf("Currency service registered with gRPC server")
+	}
 	
 	// Mark gRPC as ready after registration
 	// Spec: docs/specs/003-health-check-liveness.md

@@ -2,6 +2,9 @@ syntax = "proto3";
 
 package treasury;
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
 option go_package = "example.com/go-mono-repo/proto/treasury";
 
 // Spec: docs/specs/001-manifest.md
@@ -243,4 +246,148 @@ message ConnectionPoolInfo {
   int32 idle_connections = 3;
   int32 wait_count = 4;
   int64 wait_duration_ms = 5;
+}
+
+// ============================================================================
+// Currency Management Service
+// Spec: docs/specs/003-currency-management.md
+// ============================================================================
+
+// Currency service for managing ISO 4217 compliant currencies
+service CurrencyService {
+  // Create a new currency
+  // Spec: docs/specs/003-currency-management.md#story-1-create-new-currency
+  rpc CreateCurrency(CreateCurrencyRequest) returns (CreateCurrencyResponse);
+  
+  // Get currency information
+  // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+  rpc GetCurrency(GetCurrencyRequest) returns (GetCurrencyResponse);
+  
+  // Update currency metadata
+  // Spec: docs/specs/003-currency-management.md#story-3-update-currency-metadata
+  rpc UpdateCurrency(UpdateCurrencyRequest) returns (UpdateCurrencyResponse);
+  
+  // Deactivate currency (soft delete only - hard delete not supported)
+  // Spec: docs/specs/003-currency-management.md#story-4-deactivate-currency
+  rpc DeactivateCurrency(DeactivateCurrencyRequest) returns (DeactivateCurrencyResponse);
+  
+  // List currencies with filters
+  // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
+  rpc ListCurrencies(ListCurrenciesRequest) returns (ListCurrenciesResponse);
+  
+  // Bulk create currencies
+  // Spec: docs/specs/003-currency-management.md#story-5-bulk-currency-operations
+  rpc BulkCreateCurrencies(BulkCreateCurrenciesRequest) returns (BulkCreateCurrenciesResponse);
+}
+
+// Currency represents an ISO 4217 compliant currency
+message Currency {
+  string id = 1;                              // UUID
+  string code = 2;                            // ISO 4217 code (USD, EUR)
+  string numeric_code = 3;                    // ISO 4217 numeric code
+  string name = 4;                            // Official name
+  int32 minor_units = 5;                      // Decimal places
+  string symbol = 6;                          // Currency symbol
+  string symbol_position = 7;                 // before/after
+  repeated string country_codes = 8;          // ISO 3166 codes
+  bool is_active = 9;                         // Active status
+  bool is_crypto = 10;                        // Cryptocurrency flag
+  CurrencyStatus status = 11;                 // Current status
+  google.protobuf.Timestamp activated_at = 12;
+  google.protobuf.Timestamp deactivated_at = 13;
+  google.protobuf.Timestamp created_at = 14;
+  google.protobuf.Timestamp updated_at = 15;
+  string created_by = 16;
+  string updated_by = 17;
+  int32 version = 18;                         // Optimistic locking
+}
+
+enum CurrencyStatus {
+  CURRENCY_STATUS_UNSPECIFIED = 0;
+  CURRENCY_STATUS_ACTIVE = 1;
+  CURRENCY_STATUS_INACTIVE = 2;
+  CURRENCY_STATUS_DEPRECATED = 3;
+  CURRENCY_STATUS_DELETED = 4;
+}
+
+// Request/Response messages
+message CreateCurrencyRequest {
+  string code = 1;                            // Required
+  string numeric_code = 2;                    // Optional
+  string name = 3;                            // Required
+  int32 minor_units = 4;                      // Default 2
+  string symbol = 5;
+  repeated string country_codes = 6;
+  bool is_crypto = 7;
+}
+
+message CreateCurrencyResponse {
+  Currency currency = 1;
+}
+
+message GetCurrencyRequest {
+  oneof identifier {
+    string code = 1;                        // Primary lookup
+    string numeric_code = 2;                // Alternative lookup
+    string id = 3;                          // UUID lookup
+  }
+}
+
+message GetCurrencyResponse {
+  Currency currency = 1;
+}
+
+message UpdateCurrencyRequest {
+  string code = 1;                            // Required (identifies currency)
+  google.protobuf.FieldMask update_mask = 2;  // Fields to update
+  string name = 3;
+  int32 minor_units = 4;
+  string symbol = 5;
+  repeated string country_codes = 6;
+  CurrencyStatus status = 7;
+  int32 version = 8;                          // For optimistic locking
+}
+
+message UpdateCurrencyResponse {
+  Currency currency = 1;
+}
+
+message DeactivateCurrencyRequest {
+  string code = 1;                            // Required
+  CurrencyStatus status = 2;                  // New status (inactive/deprecated/deleted)
+  string updated_by = 3;                      // User making the change
+  int32 version = 4;                          // For optimistic locking
+}
+
+message DeactivateCurrencyResponse {
+  bool success = 1;
+  Currency currency = 2;                      // Updated currency
+}
+
+message ListCurrenciesRequest {
+  CurrencyStatus status = 1;                  // Filter by status
+  bool is_active = 2;                         // Filter by active flag
+  bool is_crypto = 3;                         // Filter cryptocurrencies
+  string country_code = 4;                    // Filter by country
+  int32 page_size = 5;                        // Pagination
+  string page_token = 6;                      // Pagination token
+}
+
+message ListCurrenciesResponse {
+  repeated Currency currencies = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message BulkCreateCurrenciesRequest {
+  repeated CreateCurrencyRequest currencies = 1;
+  bool skip_duplicates = 2;                   // Skip existing currencies
+  bool update_existing = 3;                   // Update if exists
+}
+
+message BulkCreateCurrenciesResponse {
+  int32 created_count = 1;
+  int32 updated_count = 2;
+  int32 skipped_count = 3;
+  repeated string errors = 4;
 }

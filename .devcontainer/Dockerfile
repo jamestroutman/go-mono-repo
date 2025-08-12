@@ -25,6 +25,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   jq \
   nano \
   vim \
+  lsof \
+  curl \
+  wget \
+  postgresql-client \
   && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Ensure default node user has access to /usr/local/share
@@ -54,8 +58,26 @@ RUN ARCH=$(dpkg --print-architecture) && \
   sudo dpkg -i "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb" && \
   rm "git-delta_${GIT_DELTA_VERSION}_${ARCH}.deb"
 
+# Install grpcurl
+RUN wget "https://github.com/fullstorydev/grpcurl/releases/download/v1.9.1/grpcurl_1.9.1_linux_x86_64.tar.gz" \
+  && tar -xzf grpcurl_1.9.1_linux_x86_64.tar.gz \
+  && mv grpcurl /usr/local/bin/ \
+  && chmod +x /usr/local/bin/grpcurl \
+  && rm grpcurl_1.9.1_linux_x86_64.tar.gz
+
+# Install golang-migrate
+RUN wget "https://github.com/golang-migrate/migrate/releases/download/v4.17.1/migrate.linux-amd64.tar.gz" \
+  && tar -xzf migrate.linux-amd64.tar.gz \
+  && mv migrate /usr/local/bin/ \
+  && chmod +x /usr/local/bin/migrate \
+  && rm migrate.linux-amd64.tar.gz
+
 # Set up non-root user
 USER node
+
+# Install Go protobuf plugins
+RUN go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+RUN go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
 
 # Install global packages
 ENV NPM_CONFIG_PREFIX=/usr/local/share/npm-global

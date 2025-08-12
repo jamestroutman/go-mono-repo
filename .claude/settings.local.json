@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go get:*)",
+      "Bash(mkdir:*)",
+      "Bash(go install:*)",
+      "Bash(make:*)",
+      "Bash(grpcurl:*)",
+      "Bash(apt-get:*)",
+      "Bash(apt-get install:*)",
+      "Bash(/dev/null)",
+      "Bash(PGPASSWORD=postgres psql -h postgres -U postgres -l)",
+      "Bash(docker exec:*)",
+      "Bash(PGPASSWORD=postgres psql -h postgres -U postgres -c \"SELECT 1\")",
+      "Bash(rm:*)",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"\\dn\")",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"SELECT * FROM treasury.migration_metadata;\")",
+      "Bash(grep:*)",
+      "Bash(protoc:*)",
+      "Bash(services/treasury-services/treasury-service/proto/treasury_service.proto)",
+      "Bash(psql:*)",
+      "Bash(go test:*)",
+      "Bash(go tool cover:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

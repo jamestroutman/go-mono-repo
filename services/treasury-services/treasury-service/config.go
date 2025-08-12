@@ -48,6 +48,10 @@ type Config struct {
 	// Spec: docs/specs/001-database-connection.md
 	Database DatabaseConfig `envconfig:"-"`
 
+	// Migration Configuration
+	// Spec: docs/specs/002-database-migrations.md
+	Migration MigrationConfig `envconfig:"-"`
+
 	// Dependency Services
 	// Note: When running in devcontainer, ledger service runs on same host (localhost)
 	// When running as separate containers, use service name (ledger-service)
@@ -120,6 +124,15 @@ func LoadConfig() (*Config, error) {
 	cfg.Database.HealthCheckInterval = parseDurationFromEnv("DB_HEALTH_CHECK_INTERVAL", 30*time.Second)
 	cfg.Database.PingTimeout = parseDurationFromEnv("DB_PING_TIMEOUT", 5*time.Second)
 
+	// Load migration configuration
+	// Spec: docs/specs/002-database-migrations.md#story-1-automated-migration-on-startup
+	cfg.Migration.MigrationsPath = getEnvOrDefault("MIGRATION_PATH", "./migrations")
+	cfg.Migration.AutoMigrate = parseBoolFromEnv("MIGRATION_AUTO_MIGRATE", true)
+	cfg.Migration.MigrateTimeout = parseDurationFromEnv("MIGRATION_TIMEOUT", 300*time.Second)
+	cfg.Migration.DryRun = parseBoolFromEnv("MIGRATION_DRY_RUN", false)
+	cfg.Migration.MaxRetries = parseIntFromEnv("MIGRATION_MAX_RETRIES", 3)
+	cfg.Migration.RetryDelay = parseDurationFromEnv("MIGRATION_RETRY_DELAY", 5*time.Second)
+
 	// Log loaded configuration for debugging
 	log.Printf("Loaded configuration: %s", cfg.String())
 
@@ -164,6 +177,38 @@ func parseDurationFromEnv(key string, defaultValue time.Duration) time.Duration 
 
 	log.Printf("Warning: Invalid duration value for %s: %s, using default: %v", key, value, defaultValue)
 	return defaultValue
+}
+
+// parseBoolFromEnv parses a boolean from an environment variable
+// Spec: docs/specs/002-database-migrations.md
+func parseBoolFromEnv(key string, defaultValue bool) bool {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+
+	b, err := strconv.ParseBool(value)
+	if err != nil {
+		log.Printf("Warning: Invalid boolean value for %s: %s, using default: %v", key, value, defaultValue)
+		return defaultValue
+	}
+	return b
+}
+
+// parseIntFromEnv parses an integer from an environment variable
+// Spec: docs/specs/002-database-migrations.md
+func parseIntFromEnv(key string, defaultValue int) int {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+
+	i, err := strconv.Atoi(value)
+	if err != nil {
+		log.Printf("Warning: Invalid integer value for %s: %s, using default: %d", key, value, defaultValue)
+		return defaultValue
+	}
+	return i
 }
 
 // GetPort returns the port as a string with colon prefix
