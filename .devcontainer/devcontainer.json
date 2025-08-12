@@ -1,25 +1,14 @@
 {
-  "name": "Claude Code Sandbox",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "TZ": "${localEnv:TZ:America/Los_Angeles}",
-      "CLAUDE_CODE_VERSION": "latest",
-      "GIT_DELTA_VERSION": "0.18.2",
-      "ZSH_IN_DOCKER_VERSION": "1.2.0"
-    }
-  },
-  "runArgs": ["--cap-add=NET_ADMIN", "--cap-add=NET_RAW"],
+  "name": "Go Mono Repo",
+  "service": "dev",
+  "dockerComposeFile": "docker-compose.yml",
   "features": {
     "ghcr.io/devcontainers/features/go:1": {},
-    "ghcr.io/devcontainers/features/docker-in-docker:1": {
-      "version": "latest",
-      "moby": true
-    },
+    // "ghcr.io/devcontainers/features/docker-in-docker:1": {},
     "ghcr.io/meaningful-ooo/devcontainer-features/homebrew:2": {},
-    "ghcr.io/devcontainers/features/aws-cli:1":{},
-    "ghcr.io/skriptfabrik/devcontainer-features/gitlab-cli:1":{},
-    "ghcr.io/devcontainers-extra/features/protoc:1":{}
+    // "ghcr.io/devcontainers/features/aws-cli:1": {},
+    "ghcr.io/skriptfabrik/devcontainer-features/gitlab-cli:1": {},
+    "ghcr.io/devcontainers-extra/features/protoc:1": {}
   },
   "customizations": {
     "vscode": {
@@ -60,7 +49,5 @@
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
-  "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=delegated",
   "workspaceFolder": "/workspace"
-  //"postCreateCommand": "sudo /usr/local/bin/init-firewall.sh"
 }

@@ -1,19 +1,21 @@
 # Go Monorepo
 
-A Go monorepo using **Go Workspaces** for managing multiple microservices with shared protocol buffer definitions.
+A Go monorepo using **Go Workspaces** for managing multiple microservices with shared protocol buffer definitions. Development is containerized using VS Code Dev Containers for a consistent, isolated environment.
 
 ## Architecture
 
 ### Monorepo Structure
 ```
 .
+├── .devcontainer/           # VS Code dev container configuration
+│   ├── devcontainer.json   # Container settings and extensions
+│   ├── docker-compose.yml  # Multi-service orchestration
+│   └── Dockerfile         # Development environment image
 ├── Makefile                 # Build automation and service management
 ├── go.work                  # Go workspace configuration
 ├── go.mod                   # Root module for shared dependencies
-├── infrastructure/          # Infrastructure services (Docker Compose)
-│   ├── docker-compose.yml  # PostgreSQL and other infrastructure
-│   ├── init-scripts/        # Database initialization scripts
-│   └── README.md           # Infrastructure documentation
+├── infrastructure/          # Legacy infrastructure location
+│   └── init-scripts/        # Database initialization scripts
 ├── proto/                   # Generated protobuf Go files
 │   ├── ledger/
 │   │   ├── *.pb.go         # Generated protocol buffer types
@@ -69,40 +71,62 @@ service Manifest {
 ## Getting Started
 
 ### Prerequisites
-The Makefile will automatically install these if missing:
-- [Homebrew](https://brew.sh) (macOS)
-- Go 1.24+
-- Protocol Buffers compiler (`protoc`)
-- Go protobuf plugins
-- Docker and Docker Compose (for infrastructure services)
+- **VS Code** with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
+- **Docker Desktop** (Windows/Mac) or Docker Engine (Linux)
+- **Git** for version control
 
 ### Quick Start
-```bash
-# Start everything (infrastructure + services)
-make dev
 
-# Or start components individually:
-make infrastructure-up    # Start PostgreSQL and ImmuDB
-make ledger-service      # Start ledger service
-make treasury-service    # Start treasury service
-```
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd go-mono-repo
+   ```
+
+2. **Open in VS Code**:
+   ```bash
+   code .
+   ```
+
+3. **Reopen in Container**:
+   - VS Code will prompt "Reopen in Container" - click it
+   - Or use Command Palette: `Dev Containers: Reopen in Container`
+   - Wait for container build (first time takes a few minutes)
+
+4. **Start services** (from devcontainer terminal):
+   ```bash
+   # Start ledger service
+   make ledger-service
+   
+   # Or start treasury service
+   make treasury-service
+   
+   # Or start all services
+   make all-services
+   ```
+
+All tools (Go, protoc, etc.) and infrastructure services (PostgreSQL, ImmuDB) are pre-configured in the container.
+
+For detailed setup instructions, see [docs/DEVCONTAINER.md](docs/DEVCONTAINER.md).
 
 ### Available Commands
+
+**Note**: All `make` commands should be run from within the devcontainer terminal.
 
 #### Development
 | Command | Description |
 |---------|-------------|
-| `make dev` | Start infrastructure and all services |
-| `make install-reqs` | Install prerequisites (Go, protoc, plugins) |
+| `make dev` | Start ledger service (default) |
 | `make all-services` | Start all application services |
+| `go work sync` | Sync workspace modules |
 
-#### Infrastructure
+#### Container Management (from host)
 | Command | Description |
 |---------|-------------|
-| `make infrastructure-up` | Start PostgreSQL, ImmuDB and other infrastructure |
-| `make infrastructure-down` | Stop infrastructure services |
-| `make infrastructure-status` | View infrastructure status |
-| `make infrastructure-clean` | Remove infrastructure and volumes |
+| `docker compose -f .devcontainer/docker-compose.yml ps` | View container status |
+| `docker compose -f .devcontainer/docker-compose.yml logs [service]` | View service logs |
+| `docker compose -f .devcontainer/docker-compose.yml restart [service]` | Restart a service |
+| `docker compose -f .devcontainer/docker-compose.yml down -v` | Remove all containers and data |
 
 #### Services
 | Command | Description |
@@ -120,11 +144,13 @@ make treasury-service    # Start treasury service
 
 #### Testing the Service
 ```bash
+# From devcontainer terminal
 # Start the service
 make ledger-service
 
-# Test with grpcurl (in another terminal)
+# Test with grpcurl (in another devcontainer terminal)
 grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
+grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
 ```
 
 ### Treasury Service
@@ -135,53 +161,61 @@ grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
 
 #### Testing the Service
 ```bash
+# From devcontainer terminal
 # Start the service
 make treasury-service
 
-# Test with grpcurl (in another terminal)
+# Test with grpcurl (in another devcontainer terminal)
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
+grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
 ```
 
-## Infrastructure
+## Infrastructure Services
+
+All infrastructure services are automatically started with the devcontainer.
 
 ### PostgreSQL Database
-- **Local**: Docker container with PostgreSQL 16
-- **Port**: 5432
-- **Credentials**: postgres/postgres
-- **Database**: monorepo_dev
-- **Production**: Amazon RDS
+- **Connection from devcontainer**: `postgres:5432`
+- **Connection from host**: `localhost:5432`
+- **Database**: `monorepo_dev`
+- **Credentials**: `postgres/postgres`
+- **Data persistence**: Docker volume `postgres_data`
 
 ### ImmuDB Database
-- **Local**: Docker container with ImmuDB (immutable database)
-- **gRPC Port**: 3322 (native ImmuDB API)
-- **Web Console UI**: http://localhost:8080
-- **PostgreSQL Wire Port**: 5433
-- **Credentials**: immudb/immudb
-- **Production**: Managed ImmuDB or self-hosted cluster
+- **gRPC from devcontainer**: `immudb:3322`
+- **gRPC from host**: `localhost:3322`
+- **PostgreSQL wire**: Port 5433
+- **Web Console**: http://localhost:8080
+- **Credentials**: `immudb/immudb`
+- **Data persistence**: Docker volume `immudb_data`
 
-### Managing Infrastructure
+### Connection Examples
 ```bash
-# Start infrastructure before development
-make infrastructure-up
+# From devcontainer
+psql -h postgres -U postgres -d monorepo_dev
+grpcurl -plaintext immudb:3322 immudb.schema.ImmuService/Health
 
-# Check status
-make infrastructure-status
-
-# Clean everything (including data)
-make infrastructure-clean
+# From host machine
+psql -h localhost -U postgres -d monorepo_dev
+grpcurl -plaintext localhost:3322 immudb.schema.ImmuService/Health
 ```
 
 For detailed infrastructure documentation, see [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md).
 
 ## Development Workflow
 
+All development should be done within the VS Code devcontainer.
+
 ### Adding a New Service
-1. Create service directory: `services/{domain}/{service-name}/`
-2. Add `go.mod`: `go mod init {org}/{service-name}`
-3. Create `.proto` files in `{service}/proto/`
-4. Add service target to Makefile
-5. Update `go.work` to include the new service
-6. Implement service in `main.go`
+1. Open terminal in devcontainer
+2. Create service directory: `services/{domain}/{service-name}/`
+3. Add `go.mod`: `go mod init {org}/{service-name}`
+4. Create `.proto` files in `{service}/proto/`
+5. Add service target to Makefile
+6. Update `go.work` to include the new service
+7. Implement service in `main.go`
+
+For detailed instructions, see [docs/SERVICE_DEVELOPMENT.md](docs/SERVICE_DEVELOPMENT.md).
 
 ### Adding New Proto Definitions
 1. Define `.proto` files in service directory
@@ -191,6 +225,7 @@ For detailed infrastructure documentation, see [docs/INFRASTRUCTURE.md](docs/INF
 
 ### Working with Workspaces
 ```bash
+# From devcontainer terminal
 # Sync all workspace modules
 go work sync
 
@@ -200,6 +235,14 @@ go work use ./services/new-service
 # View workspace status
 go work edit -print
 ```
+
+## Documentation
+
+- [Architecture Overview](docs/ARCHITECTURE.md) - System design and patterns
+- [Development Container](docs/DEVCONTAINER.md) - Container setup and usage
+- [Infrastructure](docs/INFRASTRUCTURE.md) - Database and service configuration
+- [Service Development](docs/SERVICE_DEVELOPMENT.md) - Creating new services
+- [Spec-Driven Development](docs/SPEC_DRIVEN_DEVELOPMENT.md) - Specification process
 
 ## Project Standards
 

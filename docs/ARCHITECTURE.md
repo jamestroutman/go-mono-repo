@@ -4,6 +4,8 @@
 
 This monorepo uses Go Workspaces to manage multiple microservices with shared protocol buffer definitions. The architecture is designed to provide clean separation between services while maintaining efficient code sharing and dependency management.
 
+The development environment is containerized using VS Code Dev Containers, providing a consistent development experience with all required tools and services pre-configured. See [DEVCONTAINER.md](./DEVCONTAINER.md) for detailed setup instructions.
+
 ## Core Design Principles
 
 ### 1. Module Independence
@@ -30,9 +32,10 @@ Go Workspaces eliminate the need for `replace` directives by:
 go-mono-repo/
 ├── go.work                    # Workspace configuration
 ├── go.mod                     # Root module (shared code)
-├── infrastructure/            # Infrastructure services (Docker)
-│   ├── docker-compose.yml    # Local development services
-│   └── init-scripts/         # Database initialization
+├── .devcontainer/             # Dev container configuration
+│   ├── devcontainer.json     # VS Code container settings
+│   ├── docker-compose.yml    # Multi-service orchestration
+│   └── Dockerfile            # Development image definition
 ├── proto/                     # Generated protobuf code
 │   ├── ledger/               # Ledger service types
 │   └── treasury/             # Treasury service types
@@ -41,6 +44,10 @@ go-mono-repo/
 │       ├── ledger-service/   # Individual service
 │       └── treasury-service/
 └── docs/                      # Documentation
+    ├── ARCHITECTURE.md       # This file
+    ├── DEVCONTAINER.md      # Container environment docs
+    ├── INFRASTRUCTURE.md    # Infrastructure details
+    └── SERVICE_DEVELOPMENT.md # Service creation guide
 ```
 
 ## Module Strategy

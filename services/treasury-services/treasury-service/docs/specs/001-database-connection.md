@@ -430,7 +430,7 @@ Upon implementation, update:
 - [Health Check Specification](../../../docs/specs/003-health-check-liveness.md)
 - [PostgreSQL Connection Documentation](https://www.postgresql.org/docs/current/libpq-connect.html)
 - [pgx Driver Documentation](https://github.com/jackc/pgx)
-- [Docker Compose Configuration](../../../../infrastructure/docker-compose.yml)
+- [Docker Compose Configuration](../../../../.devcontainer/docker-compose.yml)
 - [Service Development Guide](../../../../docs/SERVICE_DEVELOPMENT.md)
 
 ## Appendix

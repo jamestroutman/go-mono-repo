@@ -8,6 +8,8 @@ For detailed information about the monorepo architecture and patterns, refer to:
 
 ### Core Documentation (Root /docs)
 - **[Architecture Overview](./docs/ARCHITECTURE.md)** - Core design principles, module strategy, and workspace configuration
+- **[Development Container](./docs/DEVCONTAINER.md)** - VS Code devcontainer setup, configuration, and usage
+- **[Infrastructure](./docs/INFRASTRUCTURE.md)** - Database services, ImmuDB, and container orchestration
 - **[Protobuf Patterns](./docs/PROTOBUF_PATTERNS.md)** - Protocol buffer conventions, message design patterns, and code generation
 - **[Service Development Guide](./docs/SERVICE_DEVELOPMENT.md)** - Step-by-step guide for creating new services, implementation patterns, and best practices
 - **[Spec-Driven Development](./docs/SPEC_DRIVEN_DEVELOPMENT.md)** - How to write and use specifications for features
@@ -21,7 +23,24 @@ Each service maintains its own documentation in `services/{domain}/{service-name
 
 Example: `services/treasury-services/ledger-service/docs/specs/001-account-management.md`
 
+## Development Environment
+
+### Prerequisites
+- **VS Code** with Dev Containers extension
+- **Docker Desktop** (Windows/Mac) or Docker Engine (Linux)
+- **Git** for version control
+
+### Getting Started
+1. Open the repository in VS Code
+2. When prompted, click "Reopen in Container" (or use Command Palette: "Dev Containers: Reopen in Container")
+3. Wait for the container to build (first time takes a few minutes)
+4. All tools and services will be automatically available
+
+For detailed setup instructions, see [DEVCONTAINER.md](./docs/DEVCONTAINER.md)
+
 ## Build and Run Commands
+
+**IMPORTANT**: All commands below should be run from within the devcontainer terminal.
 
 ### Primary Development Commands
 ```bash
@@ -37,13 +56,10 @@ make all-services
 # Development alias (same as ledger-service)
 make dev
 
-# Install prerequisites (Go, protoc, plugins)
-make install-reqs
-
 # Sync workspace modules
 go work sync
 
-# Test gRPC endpoints
+# Test gRPC endpoints (from devcontainer)
 grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
 
@@ -62,18 +78,44 @@ grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
 
 ### Working with Individual Services
 ```bash
-# Run a specific service directly
+# Run a specific service directly (from devcontainer)
 go run ./services/treasury-services/ledger-service/main.go
 
-# Generate protobuf code manually
+# Generate protobuf code manually (from devcontainer)
 protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
        --go-grpc_out=. --go-grpc_opt=module=example.com/go-mono-repo \
        services/treasury-services/ledger-service/proto/ledger_service.proto
 ```
 
+### Infrastructure Services
+
+The devcontainer automatically starts these services:
+
+#### PostgreSQL
+- **Host**: postgres (from devcontainer) or localhost:5432 (from host)
+- **Database**: monorepo_dev
+- **Credentials**: postgres/postgres
+
+#### ImmuDB
+- **gRPC**: immudb:3322 (from devcontainer) or localhost:3322 (from host)
+- **PostgreSQL Wire**: immudb:5433 (from devcontainer) or localhost:5433 (from host)
+- **Web Console**: http://localhost:8080 (credentials: immudb/immudb)
+
+### Container Management
+```bash
+# View running services (from host)
+docker compose -f .devcontainer/docker-compose.yml ps
+
+# View logs (from host)
+docker compose -f .devcontainer/docker-compose.yml logs -f [service]
+
+# Restart a service (from host)
+docker compose -f .devcontainer/docker-compose.yml restart [service]
+```
+
 ## Architecture Overview
 
-This is a Go monorepo using **Go Workspaces** (Go 1.24+) for managing multiple microservices with shared protocol buffer definitions.
+This is a Go monorepo using **Go Workspaces** (Go 1.24+) for managing multiple microservices with shared protocol buffer definitions. Development is done within a VS Code devcontainer that provides a consistent, isolated environment with all required tools and services.
 
 ### Key Design Decisions
 

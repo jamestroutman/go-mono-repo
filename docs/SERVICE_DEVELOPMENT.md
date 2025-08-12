@@ -6,10 +6,23 @@ This guide walks through the complete process of adding a new microservice to th
 
 ## Prerequisites
 
-- Go 1.24 or later installed
-- Protoc and Go plugins installed (`make install-reqs`)
+- VS Code with Dev Containers extension installed
+- Docker Desktop or Docker Engine running
 - Understanding of the [Spec-Driven Development](./SPEC_DRIVEN_DEVELOPMENT.md) process
 - Familiarity with [Protobuf Patterns](./PROTOBUF_PATTERNS.md)
+
+### Development Environment Setup
+
+1. **Open the repository in VS Code**
+2. **Reopen in Container** when prompted (or use Command Palette: "Dev Containers: Reopen in Container")
+3. **Wait for container build** - all tools will be automatically installed
+4. **Verify environment**: 
+   ```bash
+   go version  # Should show Go 1.24+
+   protoc --version  # Should show libprotoc version
+   ```
+
+For detailed devcontainer setup, see [DEVCONTAINER.md](./DEVCONTAINER.md)
 
 ## Step-by-Step Process
 
@@ -249,6 +262,7 @@ Update the root `Makefile`:
 #### Create Documentation Structure
 
 ```bash
+# From within the devcontainer terminal
 # Create documentation directories
 mkdir -p services/{domain}/{service-name}/docs/{specs,adrs,runbooks}
 
@@ -276,13 +290,17 @@ cat > services/{domain}/{service-name}/docs/README.md << 'EOF'
 
 See the [proto file](../proto/{service}_service.proto) for detailed API documentation.
 
+## Development
+
+This service runs within the devcontainer environment. See [DEVCONTAINER.md](/docs/DEVCONTAINER.md) for setup.
+
 ## Testing
 
 ```bash
-# Run unit tests
+# Run unit tests (from devcontainer)
 go test ./...
 
-# Test with grpcurl
+# Test with grpcurl (from devcontainer)
 grpcurl -plaintext localhost:{port} {package}.Manifest/GetManifest
 grpcurl -plaintext localhost:{port} {package}.Health/GetHealth
 grpcurl -plaintext localhost:{port} {package}.Health/GetLiveness

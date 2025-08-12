@@ -202,7 +202,9 @@ func (c *Config) String() string {
 // Spec: docs/specs/001-immudb-connection.md#story-1-immudb-configuration-management
 func LoadImmuDBConfig() (*ImmuDBConfig, error) {
 	cfg := &ImmuDBConfig{
-		Host:               getEnvString("IMMUDB_HOST", "localhost"),
+		// Note: Default to 'immudb' which is the container service name
+		// Override with IMMUDB_HOST env var if needed
+		Host:               getEnvString("IMMUDB_HOST", "immudb"),
 		Port:               getEnvInt("IMMUDB_PORT", 3322),
 		Database:           getEnvString("IMMUDB_DATABASE", "ledgerdb"),
 		Username:           getEnvString("IMMUDB_USERNAME", "ledger_user"),

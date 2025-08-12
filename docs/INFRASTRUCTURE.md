@@ -6,29 +6,54 @@ This document describes the infrastructure services and patterns used in the mon
 
 Infrastructure services are external dependencies that our application services rely on but are not part of our custom codebase. These include databases, message queues, caching layers, and other foundational services.
 
+The development environment uses VS Code Dev Containers with Docker Compose to orchestrate all infrastructure services. This provides a fully isolated, consistent development environment. See [DEVCONTAINER.md](./DEVCONTAINER.md) for detailed setup instructions.
+
 ## Local Development Infrastructure
 
-Local development uses Docker Compose to provide a consistent, reproducible environment that mirrors production capabilities.
+Local development uses VS Code Dev Containers with Docker Compose to provide a consistent, reproducible environment that mirrors production capabilities.
 
 ### Directory Structure
 ```
-infrastructure/
-├── docker-compose.yml      # Service definitions
-├── init-scripts/          # Database initialization scripts
-└── README.md             # Quick reference guide
+.devcontainer/
+├── devcontainer.json      # VS Code container configuration
+├── docker-compose.yml     # Multi-service orchestration
+└── Dockerfile            # Development container image
+
+infrastructure/           # Legacy location (migrated to .devcontainer)
+└── init-scripts/        # Database initialization scripts
 ```
 
 ### Services
+
+#### Development Container (Primary)
+- **Purpose**: Main development environment with all tools
+- **Base**: Custom Dockerfile with Go, protoc, and development tools
+- **Features**: Go 1.24+, Protoc, Homebrew, GitLab CLI
+- **Workspace**: Project mounted at `/workspace`
+- **Network**: Connected to all infrastructure services
 
 #### PostgreSQL
 - **Purpose**: Primary relational database for transactional data
 - **Version**: PostgreSQL 16 (Alpine Linux)
 - **Container**: `monorepo-postgres`
-- **Port**: 5432
+- **Port**: 5432 (accessible from host and devcontainer)
 - **Default Database**: `monorepo_dev`
 - **Credentials**: postgres/postgres (development only)
 - **Data Persistence**: Docker volume `postgres_data`
 - **Health Checks**: Built-in with 10-second intervals
+
+#### ImmuDB
+- **Purpose**: Immutable database for audit logs and cryptographic verification
+- **Version**: Latest
+- **Container**: `monorepo-immudb`
+- **Ports**:
+  - 3322: gRPC API
+  - 5433: PostgreSQL wire protocol
+  - 8080: Web console UI
+  - 9497: Metrics endpoint
+- **Data Persistence**: Docker volume `immudb_data`
+- **Health Checks**: immuadmin status checks
+- **Web Console**: http://localhost:8080 (default: immudb/immudb)
 
 ### Network Architecture
 
@@ -40,7 +65,7 @@ All infrastructure services run on a dedicated Docker bridge network (`monorepo-
 
 ### Database Initialization
 
-The PostgreSQL container automatically executes SQL scripts placed in `infrastructure/init-scripts/` on first startup:
+The PostgreSQL container automatically executes SQL scripts placed in `.devcontainer/init-scripts/` on first startup:
 - Scripts execute in alphabetical order
 - Useful for creating schemas, tables, and seed data
 - Scripts only run on initial container creation
@@ -111,26 +136,58 @@ if os.Getenv("ENVIRONMENT") == "production" {
 - **Configuration**: `infrastructure/terraform/` (future)
 - **Philosophy**: Declarative, version-controlled, auditable
 
-## Makefile Integration
+## Container Management
 
-The root Makefile provides convenient commands for infrastructure management:
+### VS Code Commands
+- **Reopen in Container**: Start the development environment
+- **Rebuild Container**: Rebuild after Dockerfile changes
+- **Reopen Folder Locally**: Exit container environment
 
-```makefile
-# Start infrastructure and services
-make dev
+### Docker Compose Commands (from host)
+```bash
+# View all services
+docker compose -f .devcontainer/docker-compose.yml ps
 
-# Infrastructure-specific commands
-make infrastructure-up      # Start all infrastructure
-make infrastructure-down    # Stop all infrastructure
-make infrastructure-status  # View running containers
-make infrastructure-clean   # Remove containers and data
+# View logs
+docker compose -f .devcontainer/docker-compose.yml logs -f [service]
+
+# Restart a service
+docker compose -f .devcontainer/docker-compose.yml restart [service]
+
+# Stop all services
+docker compose -f .devcontainer/docker-compose.yml down
+
+# Remove all data
+docker compose -f .devcontainer/docker-compose.yml down -v
+```
+
+### Makefile Commands (from devcontainer)
+```bash
+# Start application services
+make ledger-service
+make treasury-service
+make all-services
+
+# Health checks
+make health-check-all
+make liveness-check-all
 ```
 
 ## Connection Strings
 
-### Local Development
+### From Within Dev Container
+```
+PostgreSQL: postgresql://postgres:postgres@postgres:5432/monorepo_dev
+ImmuDB gRPC: immudb:3322
+ImmuDB PostgreSQL: postgresql://immudb:immudb@immudb:5433/defaultdb
+```
+
+### From Host Machine
 ```
 PostgreSQL: postgresql://postgres:postgres@localhost:5432/monorepo_dev
+ImmuDB gRPC: localhost:3322
+ImmuDB PostgreSQL: postgresql://immudb:immudb@localhost:5433/defaultdb
+ImmuDB Web Console: http://localhost:8080
 ```
 
 ### Production (via Environment Variables)
@@ -141,9 +198,11 @@ PostgreSQL: postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NA
 ## Monitoring and Observability
 
 ### Local Development
-- Docker logs: `docker logs monorepo-postgres`
+- Docker logs: `docker compose -f .devcontainer/docker-compose.yml logs [service]`
 - Container stats: `docker stats`
 - Database logs: Available in container stdout
+- ImmuDB metrics: http://localhost:9497/metrics
+- ImmuDB web console: http://localhost:8080
 
 ### Production
 - CloudWatch Logs for RDS

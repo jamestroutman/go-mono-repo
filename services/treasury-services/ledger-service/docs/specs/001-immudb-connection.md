@@ -543,7 +543,7 @@ Upon implementation, update:
 - [Health Check Specification](../../../docs/specs/003-health-check-liveness.md)
 - [ImmuDB Documentation](https://docs.immudb.io)
 - [ImmuDB Go SDK](https://github.com/codenotary/immudb/tree/master/pkg/client)
-- [Docker Compose Configuration](../../../../infrastructure/docker-compose.yml)
+- [Docker Compose Configuration](../../../../.devcontainer/docker-compose.yml)
 - [Service Development Guide](../../../../docs/SERVICE_DEVELOPMENT.md)
 
 ## Appendix

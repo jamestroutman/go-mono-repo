@@ -49,6 +49,8 @@ type Config struct {
 	Database DatabaseConfig `envconfig:"-"`
 
 	// Dependency Services
+	// Note: When running in devcontainer, ledger service runs on same host (localhost)
+	// When running as separate containers, use service name (ledger-service)
 	LedgerServiceHost string `envconfig:"LEDGER_SERVICE_HOST" default:"localhost"`
 	LedgerServicePort int    `envconfig:"LEDGER_SERVICE_PORT" default:"50051"`
 }
@@ -56,7 +58,9 @@ type Config struct {
 // DatabaseConfig holds database connection parameters
 // Spec: docs/specs/001-database-connection.md
 type DatabaseConfig struct {
-	Host                  string        `envconfig:"DB_HOST" default:"localhost"`
+	// Note: Default to 'postgres' which is the container service name
+	// Override with DB_HOST env var if needed
+	Host                  string        `envconfig:"DB_HOST" default:"postgres"`
 	Port                  int           `envconfig:"DB_PORT" default:"5432"`
 	Database              string        `envconfig:"DB_NAME" default:"treasury_db"`
 	User                  string        `envconfig:"DB_USER" default:"treasury_user"`

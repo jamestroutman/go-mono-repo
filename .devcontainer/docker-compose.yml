@@ -1,4 +1,15 @@
 services:
+  dev:
+    build:
+      context: .
+      # This path is relative to above context.
+      dockerfile: Dockerfile
+    volumes:
+      - ..:/workspace:cached
+    command: sleep infinity
+    networks:
+      - monorepo-network
+
   postgres:
     image: postgres:16-alpine
     container_name: monorepo-postgres
@@ -10,7 +21,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./init-scripts:/docker-entrypoint-initdb.d
+      - ../infrastructure/init-scripts:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -32,10 +43,10 @@ services:
       IMMUDB_WEBCONSOLE: "true"
       IMMUDB_WEBCONSOLE_PORT: 8080
     ports:
-      - "3322:3322"    # ImmuDB gRPC port
-      - "5433:5433"    # PostgreSQL wire protocol port
-      - "8080:8080"    # Web console UI
-      - "9497:9497"    # Metrics port
+      - "3322:3322" # ImmuDB gRPC port
+      - "5433:5433" # PostgreSQL wire protocol port
+      - "8080:8080" # Web console UI
+      - "9497:9497" # Metrics port
     volumes:
       - immudb_data:/var/lib/immudb
     healthcheck:

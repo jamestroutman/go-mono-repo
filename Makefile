@@ -1,54 +1,46 @@
 .PHONY: install-reqs dev ledger-service treasury-service all-services infrastructure-up infrastructure-down infrastructure-status infrastructure-clean
 
+# Note: Prerequisites are now automatically installed in the devcontainer
+# This target is kept for backwards compatibility but is no longer needed
 install-reqs:
-	@echo "Checking prerequisites..."
-	@if ! command -v brew >/dev/null 2>&1; then \
-		echo "Error: Homebrew is not installed."; \
-		echo "Please install Homebrew first: https://brew.sh"; \
-		exit 1; \
-	fi
-	@echo "✓ Homebrew is installed"
-	@if ! command -v go >/dev/null 2>&1; then \
-		echo "Go is not installed. Installing with brew..."; \
-		brew install go; \
+	@echo "Prerequisites check..."
+	@if [ -f /.dockerenv ]; then \
+		echo "✓ Running in devcontainer - all tools pre-installed"; \
 	else \
-		echo "✓ Go is installed"; \
+		echo "⚠️  Not running in devcontainer"; \
+		echo "Please reopen this project in VS Code devcontainer for the best experience"; \
+		echo "See docs/DEVCONTAINER.md for setup instructions"; \
 	fi
-	@if ! command -v protoc >/dev/null 2>&1; then \
-		echo "protoc is not installed. Installing with brew..."; \
-		brew install protobuf; \
-	else \
-		echo "✓ protoc is installed"; \
-	fi
-	@echo "Installing Go protobuf plugins..."
-	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	@echo "✓ Go protobuf plugins installed"
-	@echo "All prerequisites are installed!"
+	@echo "Checking tool versions..."
+	@go version || echo "Go not found"
+	@protoc --version || echo "protoc not found"
+	@echo "Done!"
 
-# Infrastructure commands
+# Infrastructure commands - These should be run from the host machine
+# Note: Infrastructure is automatically started when using devcontainer
 infrastructure-up:
-	@echo "Starting infrastructure services..."
-	@docker-compose -f infrastructure/docker-compose.yml up -d
+	@echo "Note: Infrastructure is automatically started with devcontainer"
+	@echo "Starting infrastructure services manually..."
+	@docker compose -f .devcontainer/docker-compose.yml up -d postgres immudb
 	@echo "Waiting for PostgreSQL to be ready..."
 	@for i in $$(seq 1 30); do \
-		docker-compose -f infrastructure/docker-compose.yml exec -T postgres pg_isready -U postgres >/dev/null 2>&1 && break || \
+		docker compose -f .devcontainer/docker-compose.yml exec -T postgres pg_isready -U postgres >/dev/null 2>&1 && break || \
 		(echo "Waiting for PostgreSQL... ($$i/30)" && sleep 2); \
 	done
 	@echo "✓ Infrastructure services are running"
 
 infrastructure-down:
 	@echo "Stopping infrastructure services..."
-	@docker-compose -f infrastructure/docker-compose.yml down
+	@docker compose -f .devcontainer/docker-compose.yml down
 	@echo "✓ Infrastructure services stopped"
 
 infrastructure-status:
 	@echo "Infrastructure service status:"
-	@docker-compose -f infrastructure/docker-compose.yml ps
+	@docker compose -f .devcontainer/docker-compose.yml ps
 
 infrastructure-clean:
 	@echo "Cleaning infrastructure (removing volumes)..."
-	@docker-compose -f infrastructure/docker-compose.yml down -v
+	@docker compose -f .devcontainer/docker-compose.yml down -v
 	@echo "✓ Infrastructure cleaned"
 
 ledger-service:
@@ -84,9 +76,8 @@ all-services:
 	@wait
 
 dev:
-	@make install-reqs
-	@make infrastructure-up
-	@make all-services
+	@echo "Starting development services..."
+	@make ledger-service
 
 # Health check commands
 # Spec: docs/specs/003-health-check-liveness.md
