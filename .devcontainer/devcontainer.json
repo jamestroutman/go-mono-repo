@@ -49,5 +49,59 @@
     "CLAUDE_CONFIG_DIR": "/home/node/.claude",
     "POWERLEVEL9K_DISABLE_GITSTATUS": "true"
   },
-  "workspaceFolder": "/workspace"
+  "workspaceFolder": "/workspace",
+  "forwardPorts": [
+    5050,  // pgAdmin
+    5432,  // PostgreSQL
+    5433,  // ImmuDB PostgreSQL wire protocol
+    3322,  // ImmuDB gRPC
+    6379,  // Redis
+    8080,  // ImmuDB Web Console
+    8081,  // Redis Commander
+    9497,  // ImmuDB Metrics
+    50051, // Ledger Service
+    50052  // Treasury Service
+  ],
+  "portsAttributes": {
+    "5050": {
+      "label": "pgAdmin",
+      "onAutoForward": "notify"
+    },
+    "5432": {
+      "label": "PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "5433": {
+      "label": "ImmuDB PostgreSQL",
+      "onAutoForward": "silent"
+    },
+    "3322": {
+      "label": "ImmuDB gRPC",
+      "onAutoForward": "silent"
+    },
+    "6379": {
+      "label": "Redis",
+      "onAutoForward": "silent"
+    },
+    "8080": {
+      "label": "ImmuDB Console",
+      "onAutoForward": "notify"
+    },
+    "8081": {
+      "label": "Redis Commander",
+      "onAutoForward": "notify"
+    },
+    "9497": {
+      "label": "ImmuDB Metrics",
+      "onAutoForward": "silent"
+    },
+    "50051": {
+      "label": "Ledger Service",
+      "onAutoForward": "silent"
+    },
+    "50052": {
+      "label": "Treasury Service",
+      "onAutoForward": "silent"
+    }
+  }
 }

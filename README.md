@@ -179,25 +179,41 @@ All infrastructure services are automatically started with the devcontainer.
 - **Connection from host**: `localhost:5432`
 - **Database**: `monorepo_dev`
 - **Credentials**: `postgres/postgres`
+- **Admin UI**: http://localhost:5050 (pgAdmin - admin@example.com/admin)
 - **Data persistence**: Docker volume `postgres_data`
 
 ### ImmuDB Database
 - **gRPC from devcontainer**: `immudb:3322`
 - **gRPC from host**: `localhost:3322`
 - **PostgreSQL wire**: Port 5433
-- **Web Console**: http://localhost:8080
-- **Credentials**: `immudb/immudb`
+- **Web Console**: http://localhost:8080 (immudb/immudb)
 - **Data persistence**: Docker volume `immudb_data`
+
+### Redis Cache
+- **Connection from devcontainer**: `redis:6379`
+- **Connection from host**: `localhost:6379`
+- **Admin UI**: http://localhost:8081 (Redis Commander - admin/admin)
+- **Data persistence**: Docker volume `redis_data` with AOF
+
+### Web Admin Interfaces
+| Service | URL | Credentials |
+|---------|-----|-------------|
+| pgAdmin | http://localhost:5050 | admin@example.com / admin |
+| ImmuDB Console | http://localhost:8080 | immudb / immudb |
+| Redis Commander | http://localhost:8081 | admin / admin |
 
 ### Connection Examples
 ```bash
-# From devcontainer
+# PostgreSQL (from devcontainer)
 psql -h postgres -U postgres -d monorepo_dev
+
+# ImmuDB (from devcontainer)
 grpcurl -plaintext immudb:3322 immudb.schema.ImmuService/Health
 
-# From host machine
-psql -h localhost -U postgres -d monorepo_dev
-grpcurl -plaintext localhost:3322 immudb.schema.ImmuService/Health
+# Redis (from devcontainer)
+redis-cli -h redis ping
+redis-cli -h redis set key "value"
+redis-cli -h redis get key
 ```
 
 For detailed infrastructure documentation, see [docs/INFRASTRUCTURE.md](docs/INFRASTRUCTURE.md).

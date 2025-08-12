@@ -57,6 +57,55 @@ services:
     networks:
       - monorepo-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: monorepo-redis
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - monorepo-network
+
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: monorepo-redis-commander
+    environment:
+      REDIS_HOSTS: local:redis:6379
+      HTTP_USER: admin
+      HTTP_PASSWORD: admin
+    ports:
+      - "8081:8081"
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - monorepo-network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: monorepo-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - monorepo-network
+
 networks:
   monorepo-network:
     driver: bridge
@@ -65,4 +114,8 @@ volumes:
   postgres_data:
     driver: local
   immudb_data:
+    driver: local
+  redis_data:
+    driver: local
+  pgadmin_data:
     driver: local

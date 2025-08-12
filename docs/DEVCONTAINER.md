@@ -71,6 +71,37 @@ The devcontainer setup uses Docker Compose to orchestrate multiple services:
   - PostgreSQL compatibility mode
   - Web-based admin console
 
+### Redis Service
+- **Image**: `redis:7-alpine`
+- **Port**: 6379
+- **Persistent Volume**: `redis_data`
+- **Health Check**: redis-cli ping
+- **Features**:
+  - In-memory data store
+  - Cache and message broker
+  - Append-only file persistence
+
+### Redis Commander
+- **Image**: `rediscommander/redis-commander:latest`
+- **Port**: 8081
+- **Web UI**: http://localhost:8081
+- **Credentials**: admin/admin
+- **Features**:
+  - Web-based Redis management
+  - Key browsing and editing
+  - Real-time monitoring
+
+### pgAdmin
+- **Image**: `dpage/pgadmin4:latest`
+- **Port**: 5050 (maps to internal port 80)
+- **Web UI**: http://localhost:5050
+- **Credentials**: admin@example.com/admin
+- **Persistent Volume**: `pgadmin_data`
+- **Features**:
+  - PostgreSQL database management
+  - Query tool and data viewer
+  - Server monitoring
+
 ## Getting Started
 
 ### Prerequisites
@@ -174,6 +205,11 @@ psql -h postgres -U postgres -d monorepo_dev
 
 # Connection string for applications
 postgresql://postgres:postgres@postgres:5432/monorepo_dev
+
+# Web Admin Interface
+# Open browser: http://localhost:5050
+# Login: admin@example.com/admin
+# Add server: Host=postgres, Port=5432, Username=postgres, Password=postgres
 ```
 
 #### ImmuDB
@@ -187,6 +223,24 @@ conn, err := grpc.Dial("immudb:3322", grpc.WithInsecure())
 
 # PostgreSQL wire protocol
 psql -h immudb -p 5433 -U immudb
+```
+
+#### Redis
+```bash
+# Connect via redis-cli
+redis-cli -h redis
+
+# Connection string for applications
+redis://redis:6379
+
+# Web Admin Interface (Redis Commander)
+# Open browser: http://localhost:8081
+# Login: admin/admin
+
+# Common commands
+redis-cli -h redis ping
+redis-cli -h redis info
+redis-cli -h redis keys '*'
 ```
 
 ## Configuration Files

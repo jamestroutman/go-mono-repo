@@ -55,6 +55,45 @@ infrastructure/           # Legacy location (migrated to .devcontainer)
 - **Health Checks**: immuadmin status checks
 - **Web Console**: http://localhost:8080 (default: immudb/immudb)
 
+#### Redis
+- **Purpose**: In-memory data store for caching and pub/sub messaging
+- **Version**: Redis 7 (Alpine Linux)
+- **Container**: `monorepo-redis`
+- **Port**: 6379
+- **Data Persistence**: Docker volume `redis_data` with AOF enabled
+- **Health Checks**: redis-cli ping
+- **Features**:
+  - High-performance caching
+  - Pub/sub messaging
+  - Session storage
+  - Rate limiting
+
+#### Redis Commander
+- **Purpose**: Web-based Redis management interface
+- **Version**: Latest
+- **Container**: `monorepo-redis-commander`
+- **Port**: 8081
+- **Web UI**: http://localhost:8081
+- **Credentials**: admin/admin
+- **Features**:
+  - Browse and edit keys
+  - Monitor Redis performance
+  - Execute Redis commands
+
+#### pgAdmin
+- **Purpose**: Web-based PostgreSQL database administration
+- **Version**: Latest (pgAdmin 4)
+- **Container**: `monorepo-pgadmin`
+- **Port**: 5050 (maps to internal port 80)
+- **Web UI**: http://localhost:5050
+- **Credentials**: admin@example.com/admin
+- **Data Persistence**: Docker volume `pgadmin_data`
+- **Features**:
+  - Database and schema management
+  - Query tool with syntax highlighting
+  - Performance monitoring
+  - Import/export utilities
+
 ### Network Architecture
 
 All infrastructure services run on a dedicated Docker bridge network (`monorepo-network`), enabling:
@@ -92,7 +131,8 @@ Production environments use managed AWS services for reliability, scalability, a
 | Service | Local (Docker) | Production (AWS) |
 |---------|---------------|------------------|
 | PostgreSQL | postgres:16-alpine | Amazon RDS (PostgreSQL) |
-| Redis* | redis:7-alpine | Amazon ElastiCache |
+| ImmuDB | codenotary/immudb | Self-hosted or ImmuDB Cloud |
+| Redis | redis:7-alpine | Amazon ElastiCache |
 | Message Queue* | rabbitmq:3 | Amazon SQS/SNS |
 | Object Storage* | minio | Amazon S3 |
 
@@ -180,6 +220,7 @@ make liveness-check-all
 PostgreSQL: postgresql://postgres:postgres@postgres:5432/monorepo_dev
 ImmuDB gRPC: immudb:3322
 ImmuDB PostgreSQL: postgresql://immudb:immudb@immudb:5433/defaultdb
+Redis: redis://redis:6379
 ```
 
 ### From Host Machine
@@ -187,7 +228,14 @@ ImmuDB PostgreSQL: postgresql://immudb:immudb@immudb:5433/defaultdb
 PostgreSQL: postgresql://postgres:postgres@localhost:5432/monorepo_dev
 ImmuDB gRPC: localhost:3322
 ImmuDB PostgreSQL: postgresql://immudb:immudb@localhost:5433/defaultdb
-ImmuDB Web Console: http://localhost:8080
+Redis: redis://localhost:6379
+```
+
+### Web Admin Interfaces
+```
+pgAdmin: http://localhost:5050 (admin@example.com/admin)
+ImmuDB Console: http://localhost:8080 (immudb/immudb)
+Redis Commander: http://localhost:8081 (admin/admin)
 ```
 
 ### Production (via Environment Variables)
