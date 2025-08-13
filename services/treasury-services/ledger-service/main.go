@@ -11,6 +11,7 @@ import (
 	"time"
 
 	pb "example.com/go-mono-repo/proto/ledger"
+	"clarity/treasury-services/ledger-service/pkg/migration"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 )
@@ -76,6 +77,33 @@ func main() {
 			immuDBChecker := NewImmuDBChecker(immuDBManager)
 			healthServer.AddDependencyChecker(immuDBChecker)
 			log.Println("ImmuDB connection established and health check registered")
+			
+			// Add migration health checker and run migrations if configured
+			// Spec: docs/specs/002-database-migrations.md
+			if cfg.Migration != nil {
+				// Keep the migration path relative to the service directory
+				// The service runs from its own directory
+				
+				migrationChecker := migration.NewMigrationChecker(immuDBManager.GetClient(), cfg.Migration)
+				healthServer.AddDependencyChecker(migrationChecker)
+				
+				// Run migrations on boot if configured
+				// Spec: docs/specs/002-database-migrations.md#story-3-on-boot-migration-execution
+				if cfg.Migration.RunOnBoot {
+					log.Println("Running database migrations on boot...")
+					migCtx, migCancel := context.WithTimeout(context.Background(), 2*time.Minute)
+					defer migCancel()
+					
+					if err := migrationChecker.RunPendingMigrations(migCtx); err != nil {
+						log.Fatalf("Failed to run migrations: %v", err)
+					}
+					log.Println("Database migrations completed successfully")
+				}
+				
+				// Log migration status
+				summary := migrationChecker.GetMigrationSummary(context.Background())
+				log.Printf("Migration status: %s", summary)
+			}
 		}
 	} else {
 		log.Println("ImmuDB configuration not found, running in memory-only mode")

@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"clarity/treasury-services/ledger-service/pkg/migration"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
 )
@@ -47,6 +48,10 @@ type Config struct {
 	// ImmuDB Configuration
 	// Spec: docs/specs/001-immudb-connection.md
 	ImmuDB *ImmuDBConfig `envconfig:"-"`
+	
+	// Migration Configuration
+	// Spec: docs/specs/002-database-migrations.md
+	Migration *migration.MigrationConfig `envconfig:"-"`
 }
 
 // ImmuDBConfig holds ImmuDB connection parameters
@@ -111,6 +116,11 @@ func LoadConfig() (*Config, error) {
 		return nil, fmt.Errorf("failed to load ImmuDB config: %w", err)
 	}
 	cfg.ImmuDB = immuDBConfig
+	
+	// Load Migration configuration
+	// Spec: docs/specs/002-database-migrations.md
+	migrationConfig := LoadMigrationConfig()
+	cfg.Migration = migrationConfig
 
 	// Log loaded configuration for debugging
 	log.Printf("Loaded configuration: %s", cfg.String())
@@ -270,4 +280,17 @@ func getEnvBool(key string, defaultValue bool) bool {
 		}
 	}
 	return defaultValue
+}
+
+// LoadMigrationConfig loads migration configuration from environment
+// Spec: docs/specs/002-database-migrations.md
+func LoadMigrationConfig() *migration.MigrationConfig {
+	return &migration.MigrationConfig{
+		MigrationsPath: getEnvString("LEDGER_MIGRATION_PATH", "./migrations"),
+		RunOnBoot:      getEnvBool("LEDGER_MIGRATION_RUN_ON_BOOT", false),
+		DryRun:         false, // Never dry run in production
+		Timeout:        time.Duration(getEnvInt("LEDGER_MIGRATION_TIMEOUT", 30)) * time.Second,
+		TableName:      getEnvString("LEDGER_MIGRATION_TABLE", "ledger_schema_migrations"),
+		ServiceName:    "ledger",
+	}
 }
