@@ -113,12 +113,12 @@ func connectToImmuDB() (client.ImmuClient, error) {
 	password := getEnv("IMMUDB_PASSWORD", "immudb")
 	
 	// Create client with options
-	_ = client.DefaultOptions().
-		WithAddress(getEnv("IMMUDB_HOST", "localhost")).
+	opts := client.DefaultOptions().
+		WithAddress(getEnv("IMMUDB_HOST", "immudb")).
 		WithPort(getEnvInt("IMMUDB_PORT", 3322))
 	
-	// Create client (options will be used in future versions)
-	immuClient := client.NewClient()
+	// Create client with proper options
+	immuClient := client.NewClient().WithOptions(opts)
 	
 	// Open session with options
 	err := immuClient.OpenSession(context.Background(), []byte(username), []byte(password), database)

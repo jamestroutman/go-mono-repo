@@ -1,4 +1,4 @@
-package main
+package currency
 
 import (
 	"context"
@@ -6,24 +6,24 @@ import (
 	pb "example.com/go-mono-repo/proto/treasury"
 )
 
-// CurrencyServer implements the CurrencyService gRPC interface
+// Server implements the CurrencyService gRPC interface
 // Spec: docs/specs/003-currency-management.md
-type CurrencyServer struct {
+type Server struct {
 	pb.UnimplementedCurrencyServiceServer
-	manager *CurrencyManager
+	manager *Manager
 }
 
-// NewCurrencyServer creates a new currency server instance
+// NewServer creates a new currency server instance
 // Spec: docs/specs/003-currency-management.md
-func NewCurrencyServer(manager *CurrencyManager) *CurrencyServer {
-	return &CurrencyServer{
+func NewServer(manager *Manager) *Server {
+	return &Server{
 		manager: manager,
 	}
 }
 
 // CreateCurrency creates a new currency
 // Spec: docs/specs/003-currency-management.md#story-1-create-new-currency
-func (s *CurrencyServer) CreateCurrency(ctx context.Context, req *pb.CreateCurrencyRequest) (*pb.CreateCurrencyResponse, error) {
+func (s *Server) CreateCurrency(ctx context.Context, req *pb.CreateCurrencyRequest) (*pb.CreateCurrencyResponse, error) {
 	currency, err := s.manager.CreateCurrency(ctx, req)
 	if err != nil {
 		return nil, err
@@ -33,7 +33,7 @@ func (s *CurrencyServer) CreateCurrency(ctx context.Context, req *pb.CreateCurre
 
 // GetCurrency retrieves currency information
 // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
-func (s *CurrencyServer) GetCurrency(ctx context.Context, req *pb.GetCurrencyRequest) (*pb.GetCurrencyResponse, error) {
+func (s *Server) GetCurrency(ctx context.Context, req *pb.GetCurrencyRequest) (*pb.GetCurrencyResponse, error) {
 	currency, err := s.manager.GetCurrency(ctx, req)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func (s *CurrencyServer) GetCurrency(ctx context.Context, req *pb.GetCurrencyReq
 
 // UpdateCurrency updates currency metadata
 // Spec: docs/specs/003-currency-management.md#story-3-update-currency-metadata
-func (s *CurrencyServer) UpdateCurrency(ctx context.Context, req *pb.UpdateCurrencyRequest) (*pb.UpdateCurrencyResponse, error) {
+func (s *Server) UpdateCurrency(ctx context.Context, req *pb.UpdateCurrencyRequest) (*pb.UpdateCurrencyResponse, error) {
 	currency, err := s.manager.UpdateCurrency(ctx, req)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (s *CurrencyServer) UpdateCurrency(ctx context.Context, req *pb.UpdateCurre
 
 // DeactivateCurrency deactivates a currency (soft delete)
 // Spec: docs/specs/003-currency-management.md#story-4-deactivate-currency
-func (s *CurrencyServer) DeactivateCurrency(ctx context.Context, req *pb.DeactivateCurrencyRequest) (*pb.DeactivateCurrencyResponse, error) {
+func (s *Server) DeactivateCurrency(ctx context.Context, req *pb.DeactivateCurrencyRequest) (*pb.DeactivateCurrencyResponse, error) {
 	currency, err := s.manager.DeactivateCurrency(ctx, req)
 	if err != nil {
 		return nil, err
@@ -66,12 +66,12 @@ func (s *CurrencyServer) DeactivateCurrency(ctx context.Context, req *pb.Deactiv
 
 // ListCurrencies lists currencies with optional filters
 // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
-func (s *CurrencyServer) ListCurrencies(ctx context.Context, req *pb.ListCurrenciesRequest) (*pb.ListCurrenciesResponse, error) {
+func (s *Server) ListCurrencies(ctx context.Context, req *pb.ListCurrenciesRequest) (*pb.ListCurrenciesResponse, error) {
 	return s.manager.ListCurrencies(ctx, req)
 }
 
 // BulkCreateCurrencies creates multiple currencies in a single transaction
 // Spec: docs/specs/003-currency-management.md#story-5-bulk-currency-operations
-func (s *CurrencyServer) BulkCreateCurrencies(ctx context.Context, req *pb.BulkCreateCurrenciesRequest) (*pb.BulkCreateCurrenciesResponse, error) {
+func (s *Server) BulkCreateCurrencies(ctx context.Context, req *pb.BulkCreateCurrenciesRequest) (*pb.BulkCreateCurrenciesResponse, error) {
 	return s.manager.BulkCreateCurrencies(ctx, req)
 }

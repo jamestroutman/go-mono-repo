@@ -1,4 +1,4 @@
-package main
+package currency
 
 import (
 	"context"
@@ -17,16 +17,16 @@ import (
 	pb "example.com/go-mono-repo/proto/treasury"
 )
 
-// CurrencyManager handles currency database operations
+// Manager handles currency database operations
 // Spec: docs/specs/003-currency-management.md
-type CurrencyManager struct {
+type Manager struct {
 	db *sql.DB
 }
 
-// NewCurrencyManager creates a new currency manager instance
+// NewManager creates a new currency manager instance
 // Spec: docs/specs/003-currency-management.md
-func NewCurrencyManager(db *sql.DB) *CurrencyManager {
-	return &CurrencyManager{
+func NewManager(db *sql.DB) *Manager {
+	return &Manager{
 		db: db,
 	}
 }
@@ -40,7 +40,7 @@ var (
 
 // CreateCurrency creates a new currency in the database
 // Spec: docs/specs/003-currency-management.md#story-1-create-new-currency
-func (cm *CurrencyManager) CreateCurrency(ctx context.Context, req *pb.CreateCurrencyRequest) (*pb.Currency, error) {
+func (cm *Manager) CreateCurrency(ctx context.Context, req *pb.CreateCurrencyRequest) (*pb.Currency, error) {
 	// Validate ISO code format
 	if !isoCodeRegex.MatchString(req.Code) {
 		return nil, status.Error(codes.InvalidArgument, "invalid ISO code format: must be 3 uppercase letters")
@@ -115,7 +115,7 @@ func (cm *CurrencyManager) CreateCurrency(ctx context.Context, req *pb.CreateCur
 
 // GetCurrency retrieves a currency by code, numeric code, or ID
 // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
-func (cm *CurrencyManager) GetCurrency(ctx context.Context, req *pb.GetCurrencyRequest) (*pb.Currency, error) {
+func (cm *Manager) GetCurrency(ctx context.Context, req *pb.GetCurrencyRequest) (*pb.Currency, error) {
 	var query string
 	var arg interface{}
 
@@ -217,7 +217,7 @@ func (cm *CurrencyManager) GetCurrency(ctx context.Context, req *pb.GetCurrencyR
 
 // UpdateCurrency updates currency metadata
 // Spec: docs/specs/003-currency-management.md#story-3-update-currency-metadata
-func (cm *CurrencyManager) UpdateCurrency(ctx context.Context, req *pb.UpdateCurrencyRequest) (*pb.Currency, error) {
+func (cm *Manager) UpdateCurrency(ctx context.Context, req *pb.UpdateCurrencyRequest) (*pb.Currency, error) {
 	// Build dynamic update query based on update mask
 	updates := []string{}
 	args := []interface{}{}
@@ -347,7 +347,7 @@ func (cm *CurrencyManager) UpdateCurrency(ctx context.Context, req *pb.UpdateCur
 
 // DeactivateCurrency updates currency status to inactive/deprecated/deleted
 // Spec: docs/specs/003-currency-management.md#story-4-deactivate-currency
-func (cm *CurrencyManager) DeactivateCurrency(ctx context.Context, req *pb.DeactivateCurrencyRequest) (*pb.Currency, error) {
+func (cm *Manager) DeactivateCurrency(ctx context.Context, req *pb.DeactivateCurrencyRequest) (*pb.Currency, error) {
 	query := `
 		UPDATE treasury.currencies 
 		SET status = $1, 
@@ -422,7 +422,7 @@ func (cm *CurrencyManager) DeactivateCurrency(ctx context.Context, req *pb.Deact
 
 // ListCurrencies retrieves currencies with optional filters
 // Spec: docs/specs/003-currency-management.md#story-2-query-currency-information
-func (cm *CurrencyManager) ListCurrencies(ctx context.Context, req *pb.ListCurrenciesRequest) (*pb.ListCurrenciesResponse, error) {
+func (cm *Manager) ListCurrencies(ctx context.Context, req *pb.ListCurrenciesRequest) (*pb.ListCurrenciesResponse, error) {
 	query := `
 		SELECT id, code, numeric_code, name, minor_units, symbol, symbol_position,
 			   country_codes, is_active, is_crypto, status, activated_at, deactivated_at,
@@ -550,7 +550,7 @@ func (cm *CurrencyManager) ListCurrencies(ctx context.Context, req *pb.ListCurre
 
 // BulkCreateCurrencies creates multiple currencies in a single transaction
 // Spec: docs/specs/003-currency-management.md#story-5-bulk-currency-operations
-func (cm *CurrencyManager) BulkCreateCurrencies(ctx context.Context, req *pb.BulkCreateCurrenciesRequest) (*pb.BulkCreateCurrenciesResponse, error) {
+func (cm *Manager) BulkCreateCurrencies(ctx context.Context, req *pb.BulkCreateCurrenciesRequest) (*pb.BulkCreateCurrenciesResponse, error) {
 	tx, err := cm.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to begin transaction: %v", err)
@@ -630,6 +630,13 @@ func (cm *CurrencyManager) BulkCreateCurrencies(ctx context.Context, req *pb.Bul
 }
 
 // Helper functions
+func nullString(s string) sql.NullString {
+	if s == "" {
+		return sql.NullString{Valid: false}
+	}
+	return sql.NullString{String: s, Valid: true}
+}
+
 func mapCurrencyStatus(status string) pb.CurrencyStatus {
 	switch status {
 	case "active":

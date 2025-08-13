@@ -1,4 +1,4 @@
-package main
+package currency
 
 import (
 	"context"
@@ -18,13 +18,13 @@ import (
 	pb "example.com/go-mono-repo/proto/treasury"
 )
 
-// TestNewCurrencyManager tests the creation of a new CurrencyManager
-func TestNewCurrencyManager(t *testing.T) {
+// TestNewManager tests the creation of a new Manager
+func TestNewManager(t *testing.T) {
 	db, _, err := sqlmock.New()
 	require.NoError(t, err)
 	defer db.Close()
 
-	manager := NewCurrencyManager(db)
+	manager := NewManager(db)
 	assert.NotNil(t, manager)
 	assert.Equal(t, db, manager.db)
 }
@@ -158,7 +158,7 @@ func TestCreateCurrency(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.CreateCurrency(context.Background(), tt.request)
 
 			if tt.wantErr {
@@ -302,7 +302,7 @@ func TestGetCurrency(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.GetCurrency(context.Background(), tt.request)
 
 			if tt.wantErr {
@@ -418,7 +418,7 @@ func TestUpdateCurrency(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.UpdateCurrency(context.Background(), tt.request)
 
 			if tt.wantErr {
@@ -502,7 +502,7 @@ func TestDeactivateCurrency(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.DeactivateCurrency(context.Background(), tt.request)
 
 			if tt.wantErr {
@@ -614,7 +614,7 @@ func TestListCurrencies(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.ListCurrencies(context.Background(), tt.request)
 
 			if tt.wantErr {
@@ -786,7 +786,7 @@ func TestBulkCreateCurrencies(t *testing.T) {
 
 			tt.setupMock(mock)
 
-			manager := NewCurrencyManager(db)
+			manager := NewManager(db)
 			result, err := manager.BulkCreateCurrencies(context.Background(), tt.request)
 
 			if tt.wantErr {

@@ -44,43 +44,40 @@ For detailed setup instructions, see [DEVCONTAINER.md](./docs/DEVCONTAINER.md)
 
 ### Primary Development Commands
 ```bash
-# Start the ledger service (includes proto generation)
-make ledger-service
-
-# Start the treasury service (includes proto generation)
-make treasury-service
-
-# Run all services
-make all-services
-
-# Development alias (same as ledger-service)
+# Main development command - runs all migrations and starts all services
 make dev
+
+# Service Commands
+make run-ledger          # Start ledger service (includes migrations + proto generation)
+make run-treasury        # Start treasury service (includes migrations + proto generation) 
+make run-all             # Start all services (no migrations)
+
+# Migration Commands
+make migrate             # Run all service migrations
+make migrate-ledger      # Run ledger service migrations only
+make migrate-treasury    # Run treasury service migrations only
+make migrate-status      # Check all migration status
+make migrate-new-ledger NAME=description    # Create new ledger migration
+make migrate-new-treasury                   # Create new treasury migration (interactive)
+
+# Health Check Commands (Spec: docs/specs/003-health-check-liveness.md)
+make health              # Check all services health
+make health-ledger       # Check ledger service health
+make health-treasury     # Check treasury service health
+make liveness            # Check all services liveness
+make liveness-ledger     # Check ledger service liveness
+make liveness-treasury   # Check treasury service liveness
+
+# Infrastructure services (postgres, immudb, redis) are automatically started with devcontainer
 
 # Sync workspace modules
 go work sync
 
-# Test gRPC endpoints (from devcontainer)
+# Test gRPC endpoints directly (from devcontainer)
 grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
-
-# Health Check endpoints (Spec: docs/specs/003-health-check-liveness.md)
-make health-check-ledger      # Check ledger service health
-make liveness-check-ledger    # Check ledger service liveness
-make health-check-treasury    # Check treasury service health
-make liveness-check-treasury  # Check treasury service liveness
-make health-check-all         # Check all services health
-make liveness-check-all       # Check all services liveness
-
-# Or directly with grpcurl
 grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
 grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
-
-# Database Migration Commands (Spec: services/treasury-services/treasury-service/docs/specs/002-database-migrations.md)
-make migration-create-treasury  # Create new migration files
-make migrate-up-treasury       # Run pending migrations
-make migrate-down-treasury     # Rollback last migration
-make migrate-status-treasury   # Check current migration version
-make migrate-force-treasury    # Force migration version (use with caution)
 ```
 
 ### Working with Individual Services

@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/jamestroutman/treasury-service/currency"
 	pb "example.com/go-mono-repo/proto/treasury"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -83,10 +84,10 @@ func main() {
 	
 	// Initialize currency server if database is available
 	// Spec: docs/specs/003-currency-management.md
-	var currencyServer *CurrencyServer
+	var currencyServer *currency.Server
 	if dbManager.GetDB() != nil {
-		currencyManager := NewCurrencyManager(dbManager.GetDB())
-		currencyServer = NewCurrencyServer(currencyManager)
+		currencyManager := currency.NewManager(dbManager.GetDB())
+		currencyServer = currency.NewServer(currencyManager)
 		log.Printf("Currency service initialized")
 	}
 	

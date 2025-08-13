@@ -1,4 +1,4 @@
-.PHONY: install-reqs dev ledger-service treasury-service all-services infrastructure-up infrastructure-down infrastructure-status infrastructure-clean
+.PHONY: install-reqs dev run-ledger run-treasury run-all migrate migrate-ledger migrate-treasury migrate-status migrate-new-ledger migrate-new-treasury health health-ledger health-treasury liveness liveness-ledger liveness-treasury run-tests run-integration-tests
 
 # Prerequisites are automatically installed in the devcontainer
 # This target confirms the development environment is ready
@@ -21,34 +21,10 @@ install-reqs:
 		exit 1; \
 	fi
 
-# Infrastructure commands - These should be run from the host machine
-# Note: Infrastructure is automatically started when using devcontainer
-infrastructure-up:
-	@echo "Note: Infrastructure is automatically started with devcontainer"
-	@echo "Starting infrastructure services manually..."
-	@docker compose -f .devcontainer/docker-compose.yml up -d postgres immudb
-	@echo "Waiting for PostgreSQL to be ready..."
-	@for i in $$(seq 1 30); do \
-		docker compose -f .devcontainer/docker-compose.yml exec -T postgres pg_isready -U postgres >/dev/null 2>&1 && break || \
-		(echo "Waiting for PostgreSQL... ($$i/30)" && sleep 2); \
-	done
-	@echo "✓ Infrastructure services are running"
+# Infrastructure services are automatically started with devcontainer
+# See .devcontainer/docker-compose.yml for service configuration
 
-infrastructure-down:
-	@echo "Stopping infrastructure services..."
-	@docker compose -f .devcontainer/docker-compose.yml down
-	@echo "✓ Infrastructure services stopped"
-
-infrastructure-status:
-	@echo "Infrastructure service status:"
-	@docker compose -f .devcontainer/docker-compose.yml ps
-
-infrastructure-clean:
-	@echo "Cleaning infrastructure (removing volumes)..."
-	@docker compose -f .devcontainer/docker-compose.yml down -v
-	@echo "✓ Infrastructure cleaned"
-
-ledger-service: migrate-ledger
+run-ledger: migrate-ledger
 	@echo "Starting ledger service..."
 	@echo "Checking for existing service on port 50051..."
 	@lsof -ti:50051 | xargs -r kill -9 2>/dev/null || true
@@ -61,7 +37,7 @@ ledger-service: migrate-ledger
 	@go run ./services/treasury-services/ledger-service/
 
 # Optional: separate target without migrations for development
-ledger-service-fast:
+run-ledger-fast:
 	@echo "Starting ledger service (no migrations)..."
 	@echo "Checking for existing service on port 50051..."
 	@lsof -ti:50051 | xargs -r kill -9 2>/dev/null || true
@@ -74,7 +50,7 @@ ledger-service-fast:
 	@echo "Running ledger service..."
 	@go run ./services/treasury-services/ledger-service/
 
-treasury-service:
+run-treasury: migrate-treasury
 	@echo "Starting treasury service..."
 	@echo "Checking for existing service on port 50052..."
 	@lsof -ti:50052 | xargs -r kill -9 2>/dev/null || true
@@ -86,51 +62,53 @@ treasury-service:
 	@echo "Running treasury service..."
 	@go run ./services/treasury-services/treasury-service/
 
-all-services: 
+run-all: 
 	@echo "Starting all services..."
-	@make ledger-service &
-	@make treasury-service &
+	@make run-ledger &
+	@make run-treasury &
 	@wait
 
 dev:
-	@echo "Starting development services..."
-	@make migrate-all
-	@make all-services
+	@echo "Starting development environment..."
+	@echo "Running all migrations..."
+	@make migrate
+	@echo "Starting all services..."
+	@make run-all
 
 # Health check commands
 # Spec: docs/specs/003-health-check-liveness.md
-health-check-ledger:
+health-ledger:
 	@echo "Checking ledger service health..."
 	@grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
 
-liveness-check-ledger:
+liveness-ledger:
 	@echo "Checking ledger service liveness..."
 	@grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
 
-health-check-treasury:
+health-treasury:
 	@echo "Checking treasury service health..."
 	@grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
 
-liveness-check-treasury:
+liveness-treasury:
 	@echo "Checking treasury service liveness..."
 	@grpcurl -plaintext localhost:50052 treasury.Health/GetLiveness
 
 # Combined health checks
-health-check-all:
+health:
 	@echo "==================================="
 	@echo "   CHECKING ALL SERVICE HEALTH    "
 	@echo "==================================="
-	@make health-check-ledger || true
+	@make health-ledger || true
 	@echo ""
-	@make health-check-treasury || true
+	@make health-treasury || true
 
-liveness-check-all:
+liveness:
 	@echo "==================================="
 	@echo "  CHECKING ALL SERVICE LIVENESS   "
 	@echo "==================================="
-	@make liveness-check-ledger || true
+	@make liveness-ledger || true
 	@echo ""
-	@make liveness-check-treasury || true
+	@make liveness-treasury || true
 
 # Migration commands for monorepo
 # Spec: services/treasury-services/ledger-service/docs/specs/002-database-migrations.md
@@ -152,22 +130,23 @@ migrate-ledger-dry-run:
 	@echo "Ledger service migration dry run..."
 	@go run ./services/treasury-services/ledger-service/cmd/migrate up --dry-run --migrations services/treasury-services/ledger-service/migrations
 
-migration-ledger-new:
+migrate-new-ledger:
 	@if [ -z "$(NAME)" ]; then \
-		echo "Usage: make migration-ledger-new NAME=description"; \
+		echo "Usage: make migrate-new-ledger NAME=description"; \
 		exit 1; \
 	fi
 	@go run ./services/treasury-services/ledger-service/cmd/migrate create $(NAME) --migrations services/treasury-services/ledger-service/migrations
 
 # Aggregate migration commands
-migrate-all:
+migrate:
 	@echo "===================================="
 	@echo "           MIGRATE ALL              "
 	@echo "===================================="
 	@echo "Running all service migrations..."
 	@make migrate-ledger
+	@make migrate-treasury
 
-migrate-all-status:
+migrate-status:
 	@echo "===================================="
 	@echo "   ALL SERVICE MIGRATION STATUS    "
 	@echo "===================================="
@@ -179,12 +158,14 @@ migrate-all-status:
 # Spec: docs/specs/002-database-migrations.md#story-2-manual-migration-control
 
 # Create a new migration
-migration-create-treasury:
+migrate-new-treasury:
 	@read -p "Enter migration name (snake_case): " name; \
 	migrate create -ext sql -dir services/treasury-services/treasury-service/migrations -seq $$name
 	@echo "✓ Migration files created"
 
-# Run migrations up
+# Run migrations up (alias for consistency)
+migrate-treasury: migrate-up-treasury
+
 migrate-up-treasury:
 	@echo "Running treasury service migrations..."
 	@source services/treasury-services/treasury-service/.env 2>/dev/null || true; \
@@ -218,3 +199,24 @@ migrate-force-treasury:
 		-database "postgresql://$${DB_USER:-treasury_user}:$${DB_PASSWORD:-treasury_pass}@$${DB_HOST:-postgres}:$${DB_PORT:-5432}/$${DB_NAME:-treasury_db}?sslmode=$${DB_SSL_MODE:-disable}" \
 		force $$version
 	@echo "✓ Migration version forced"
+
+# Test commands
+run-tests:
+	@echo "====================================="
+	@echo "        RUNNING ALL UNIT TESTS       "
+	@echo "====================================="
+	@find services -name "*_test.go" ! -name "*_integration_test.go" -exec dirname {} \; | sort | uniq | while read dir; do \
+		echo "Running unit tests in $$dir..."; \
+		go test -v ./$$dir -run "^Test[^I].*" || exit 1; \
+	done
+	@echo "✓ All unit tests completed"
+
+run-integration-tests:
+	@echo "====================================="
+	@echo "    RUNNING ALL INTEGRATION TESTS    "
+	@echo "====================================="
+	@find services -name "*_integration_test.go" -exec dirname {} \; | sort | uniq | while read dir; do \
+		echo "Running integration tests in $$dir..."; \
+		go test -v ./$$dir -run ".*Integration.*" || exit 1; \
+	done
+	@echo "✓ All integration tests completed"

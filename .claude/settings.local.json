@@ -29,7 +29,10 @@
       "Bash(go build:*)",
       "Bash(kill:*)",
       "Bash(true)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(docker compose:*)",
+      "Bash(nslookup:*)",
+      "Bash(mv:*)"
     ],
     "deny": [],
     "ask": []
