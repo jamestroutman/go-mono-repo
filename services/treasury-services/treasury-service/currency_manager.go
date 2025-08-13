@@ -630,14 +630,6 @@ func (cm *CurrencyManager) BulkCreateCurrencies(ctx context.Context, req *pb.Bul
 }
 
 // Helper functions
-
-func nullString(s string) sql.NullString {
-	if s == "" {
-		return sql.NullString{Valid: false}
-	}
-	return sql.NullString{String: s, Valid: true}
-}
-
 func mapCurrencyStatus(status string) pb.CurrencyStatus {
 	switch status {
 	case "active":

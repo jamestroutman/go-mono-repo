@@ -20,7 +20,16 @@
       "Bash(services/treasury-services/treasury-service/proto/treasury_service.proto)",
       "Bash(psql:*)",
       "Bash(go test:*)",
-      "Bash(go tool cover:*)"
+      "Bash(go tool cover:*)",
+      "Bash(migrate:*)",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"SELECT * FROM treasury.migration_metadata ORDER BY version DESC LIMIT 5;\")",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"SELECT * FROM treasury.schema_migrations;\")",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"\\dt treasury.*\")",
+      "Bash(PGPASSWORD=treasury_pass psql -h postgres -U treasury_user -d treasury_db -c \"SELECT code, name, country_code, institution_type FROM treasury.financial_institutions;\")",
+      "Bash(go build:*)",
+      "Bash(kill:*)",
+      "Bash(true)",
+      "Bash(pkill:*)"
     ],
     "deny": [],
     "ask": []

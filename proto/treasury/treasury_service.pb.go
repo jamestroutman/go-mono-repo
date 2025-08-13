@@ -10,6 +10,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -189,6 +190,125 @@ func (x CurrencyStatus) Number() protoreflect.EnumNumber {
 // Deprecated: Use CurrencyStatus.Descriptor instead.
 func (CurrencyStatus) EnumDescriptor() ([]byte, []int) {
 	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{2}
+}
+
+type InstitutionType int32
+
+const (
+	InstitutionType_INSTITUTION_TYPE_UNSPECIFIED     InstitutionType = 0
+	InstitutionType_INSTITUTION_TYPE_BANK            InstitutionType = 1
+	InstitutionType_INSTITUTION_TYPE_CREDIT_UNION    InstitutionType = 2
+	InstitutionType_INSTITUTION_TYPE_INVESTMENT_BANK InstitutionType = 3
+	InstitutionType_INSTITUTION_TYPE_CENTRAL_BANK    InstitutionType = 4
+	InstitutionType_INSTITUTION_TYPE_SAVINGS_BANK    InstitutionType = 5
+	InstitutionType_INSTITUTION_TYPE_ONLINE_BANK     InstitutionType = 6
+	InstitutionType_INSTITUTION_TYPE_OTHER           InstitutionType = 7
+)
+
+// Enum value maps for InstitutionType.
+var (
+	InstitutionType_name = map[int32]string{
+		0: "INSTITUTION_TYPE_UNSPECIFIED",
+		1: "INSTITUTION_TYPE_BANK",
+		2: "INSTITUTION_TYPE_CREDIT_UNION",
+		3: "INSTITUTION_TYPE_INVESTMENT_BANK",
+		4: "INSTITUTION_TYPE_CENTRAL_BANK",
+		5: "INSTITUTION_TYPE_SAVINGS_BANK",
+		6: "INSTITUTION_TYPE_ONLINE_BANK",
+		7: "INSTITUTION_TYPE_OTHER",
+	}
+	InstitutionType_value = map[string]int32{
+		"INSTITUTION_TYPE_UNSPECIFIED":     0,
+		"INSTITUTION_TYPE_BANK":            1,
+		"INSTITUTION_TYPE_CREDIT_UNION":    2,
+		"INSTITUTION_TYPE_INVESTMENT_BANK": 3,
+		"INSTITUTION_TYPE_CENTRAL_BANK":    4,
+		"INSTITUTION_TYPE_SAVINGS_BANK":    5,
+		"INSTITUTION_TYPE_ONLINE_BANK":     6,
+		"INSTITUTION_TYPE_OTHER":           7,
+	}
+)
+
+func (x InstitutionType) Enum() *InstitutionType {
+	p := new(InstitutionType)
+	*p = x
+	return p
+}
+
+func (x InstitutionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (InstitutionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[3].Descriptor()
+}
+
+func (InstitutionType) Type() protoreflect.EnumType {
+	return &file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[3]
+}
+
+func (x InstitutionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use InstitutionType.Descriptor instead.
+func (InstitutionType) EnumDescriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{3}
+}
+
+type InstitutionStatus int32
+
+const (
+	InstitutionStatus_INSTITUTION_STATUS_UNSPECIFIED InstitutionStatus = 0
+	InstitutionStatus_INSTITUTION_STATUS_ACTIVE      InstitutionStatus = 1
+	InstitutionStatus_INSTITUTION_STATUS_INACTIVE    InstitutionStatus = 2
+	InstitutionStatus_INSTITUTION_STATUS_SUSPENDED   InstitutionStatus = 3
+	InstitutionStatus_INSTITUTION_STATUS_DELETED     InstitutionStatus = 4
+)
+
+// Enum value maps for InstitutionStatus.
+var (
+	InstitutionStatus_name = map[int32]string{
+		0: "INSTITUTION_STATUS_UNSPECIFIED",
+		1: "INSTITUTION_STATUS_ACTIVE",
+		2: "INSTITUTION_STATUS_INACTIVE",
+		3: "INSTITUTION_STATUS_SUSPENDED",
+		4: "INSTITUTION_STATUS_DELETED",
+	}
+	InstitutionStatus_value = map[string]int32{
+		"INSTITUTION_STATUS_UNSPECIFIED": 0,
+		"INSTITUTION_STATUS_ACTIVE":      1,
+		"INSTITUTION_STATUS_INACTIVE":    2,
+		"INSTITUTION_STATUS_SUSPENDED":   3,
+		"INSTITUTION_STATUS_DELETED":     4,
+	}
+)
+
+func (x InstitutionStatus) Enum() *InstitutionStatus {
+	p := new(InstitutionStatus)
+	*p = x
+	return p
+}
+
+func (x InstitutionStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (InstitutionStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[4].Descriptor()
+}
+
+func (InstitutionStatus) Type() protoreflect.EnumType {
+	return &file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes[4]
+}
+
+func (x InstitutionStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use InstitutionStatus.Descriptor instead.
+func (InstitutionStatus) EnumDescriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{4}
 }
 
 type ManifestRequest struct {
@@ -2445,11 +2565,1780 @@ func (x *BulkCreateCurrenciesResponse) GetErrors() []string {
 	return nil
 }
 
+// RoutingNumber represents a routing number for an institution
+type RoutingNumber struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                            // UUID
+	RoutingNumber string                 `protobuf:"bytes,2,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"` // 9-digit routing number
+	RoutingType   string                 `protobuf:"bytes,3,opt,name=routing_type,json=routingType,proto3" json:"routing_type,omitempty"`       // standard, wire, ach, fedwire, other
+	IsPrimary     bool                   `protobuf:"varint,4,opt,name=is_primary,json=isPrimary,proto3" json:"is_primary,omitempty"`            // Primary routing number flag
+	Description   string                 `protobuf:"bytes,5,opt,name=description,proto3" json:"description,omitempty"`                          // Optional description
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RoutingNumber) Reset() {
+	*x = RoutingNumber{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoutingNumber) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoutingNumber) ProtoMessage() {}
+
+func (x *RoutingNumber) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoutingNumber.ProtoReflect.Descriptor instead.
+func (*RoutingNumber) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *RoutingNumber) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *RoutingNumber) GetRoutingNumber() string {
+	if x != nil {
+		return x.RoutingNumber
+	}
+	return ""
+}
+
+func (x *RoutingNumber) GetRoutingType() string {
+	if x != nil {
+		return x.RoutingType
+	}
+	return ""
+}
+
+func (x *RoutingNumber) GetIsPrimary() bool {
+	if x != nil {
+		return x.IsPrimary
+	}
+	return false
+}
+
+func (x *RoutingNumber) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+func (x *RoutingNumber) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *RoutingNumber) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+// FinancialInstitution represents a banking institution
+type FinancialInstitution struct {
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	Id        string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                // UUID
+	Code      string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`                            // Unique institution code
+	Name      string                 `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`                            // Official name
+	ShortName string                 `protobuf:"bytes,4,opt,name=short_name,json=shortName,proto3" json:"short_name,omitempty"` // Display name
+	// US Banking identifiers (supports multiple routing numbers)
+	RoutingNumbers []*RoutingNumber `protobuf:"bytes,5,rep,name=routing_numbers,json=routingNumbers,proto3" json:"routing_numbers,omitempty"` // List of routing numbers
+	// International identifiers
+	SwiftCode  string `protobuf:"bytes,6,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`    // SWIFT/BIC code
+	IbanPrefix string `protobuf:"bytes,7,opt,name=iban_prefix,json=ibanPrefix,proto3" json:"iban_prefix,omitempty"` // IBAN prefix
+	BankCode   string `protobuf:"bytes,8,opt,name=bank_code,json=bankCode,proto3" json:"bank_code,omitempty"`       // National bank code
+	BranchCode string `protobuf:"bytes,9,opt,name=branch_code,json=branchCode,proto3" json:"branch_code,omitempty"` // Branch code
+	// Institution details
+	InstitutionType InstitutionType `protobuf:"varint,10,opt,name=institution_type,json=institutionType,proto3,enum=treasury.InstitutionType" json:"institution_type,omitempty"`
+	CountryCode     string          `protobuf:"bytes,11,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`             // ISO 3166-1 alpha-2
+	PrimaryCurrency string          `protobuf:"bytes,12,opt,name=primary_currency,json=primaryCurrency,proto3" json:"primary_currency,omitempty"` // ISO 4217 code
+	// Address
+	Address *Address `protobuf:"bytes,13,opt,name=address,proto3" json:"address,omitempty"`
+	// Contact
+	Contact *ContactInfo `protobuf:"bytes,14,opt,name=contact,proto3" json:"contact,omitempty"`
+	// Operational
+	TimeZone        string           `protobuf:"bytes,15,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
+	BusinessHours   *structpb.Struct `protobuf:"bytes,16,opt,name=business_hours,json=businessHours,proto3" json:"business_hours,omitempty"`
+	HolidayCalendar string           `protobuf:"bytes,17,opt,name=holiday_calendar,json=holidayCalendar,proto3" json:"holiday_calendar,omitempty"`
+	// Regulatory
+	RegulatoryId string           `protobuf:"bytes,18,opt,name=regulatory_id,json=regulatoryId,proto3" json:"regulatory_id,omitempty"`
+	TaxId        string           `protobuf:"bytes,19,opt,name=tax_id,json=taxId,proto3" json:"tax_id,omitempty"`
+	Licenses     *structpb.Struct `protobuf:"bytes,20,opt,name=licenses,proto3" json:"licenses,omitempty"`
+	// Status
+	Status           InstitutionStatus      `protobuf:"varint,21,opt,name=status,proto3,enum=treasury.InstitutionStatus" json:"status,omitempty"`
+	IsActive         bool                   `protobuf:"varint,22,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`
+	ActivatedAt      *timestamppb.Timestamp `protobuf:"bytes,23,opt,name=activated_at,json=activatedAt,proto3" json:"activated_at,omitempty"`
+	DeactivatedAt    *timestamppb.Timestamp `protobuf:"bytes,24,opt,name=deactivated_at,json=deactivatedAt,proto3" json:"deactivated_at,omitempty"`
+	SuspensionReason string                 `protobuf:"bytes,25,opt,name=suspension_reason,json=suspensionReason,proto3" json:"suspension_reason,omitempty"`
+	// Metadata
+	Capabilities       *structpb.Struct `protobuf:"bytes,26,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	Notes              string           `protobuf:"bytes,27,opt,name=notes,proto3" json:"notes,omitempty"`
+	ExternalReferences *structpb.Struct `protobuf:"bytes,28,opt,name=external_references,json=externalReferences,proto3" json:"external_references,omitempty"`
+	// Audit
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,29,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,30,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	CreatedBy     string                 `protobuf:"bytes,31,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
+	UpdatedBy     string                 `protobuf:"bytes,32,opt,name=updated_by,json=updatedBy,proto3" json:"updated_by,omitempty"`
+	Version       int32                  `protobuf:"varint,33,opt,name=version,proto3" json:"version,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FinancialInstitution) Reset() {
+	*x = FinancialInstitution{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FinancialInstitution) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FinancialInstitution) ProtoMessage() {}
+
+func (x *FinancialInstitution) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FinancialInstitution.ProtoReflect.Descriptor instead.
+func (*FinancialInstitution) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *FinancialInstitution) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetShortName() string {
+	if x != nil {
+		return x.ShortName
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetRoutingNumbers() []*RoutingNumber {
+	if x != nil {
+		return x.RoutingNumbers
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetSwiftCode() string {
+	if x != nil {
+		return x.SwiftCode
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetIbanPrefix() string {
+	if x != nil {
+		return x.IbanPrefix
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetBankCode() string {
+	if x != nil {
+		return x.BankCode
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetBranchCode() string {
+	if x != nil {
+		return x.BranchCode
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetInstitutionType() InstitutionType {
+	if x != nil {
+		return x.InstitutionType
+	}
+	return InstitutionType_INSTITUTION_TYPE_UNSPECIFIED
+}
+
+func (x *FinancialInstitution) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetPrimaryCurrency() string {
+	if x != nil {
+		return x.PrimaryCurrency
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetAddress() *Address {
+	if x != nil {
+		return x.Address
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetContact() *ContactInfo {
+	if x != nil {
+		return x.Contact
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetTimeZone() string {
+	if x != nil {
+		return x.TimeZone
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetBusinessHours() *structpb.Struct {
+	if x != nil {
+		return x.BusinessHours
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetHolidayCalendar() string {
+	if x != nil {
+		return x.HolidayCalendar
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetRegulatoryId() string {
+	if x != nil {
+		return x.RegulatoryId
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetTaxId() string {
+	if x != nil {
+		return x.TaxId
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetLicenses() *structpb.Struct {
+	if x != nil {
+		return x.Licenses
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetStatus() InstitutionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return InstitutionStatus_INSTITUTION_STATUS_UNSPECIFIED
+}
+
+func (x *FinancialInstitution) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *FinancialInstitution) GetActivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ActivatedAt
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetDeactivatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.DeactivatedAt
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetSuspensionReason() string {
+	if x != nil {
+		return x.SuspensionReason
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetCapabilities() *structpb.Struct {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetExternalReferences() *structpb.Struct {
+	if x != nil {
+		return x.ExternalReferences
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *FinancialInstitution) GetCreatedBy() string {
+	if x != nil {
+		return x.CreatedBy
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetUpdatedBy() string {
+	if x != nil {
+		return x.UpdatedBy
+	}
+	return ""
+}
+
+func (x *FinancialInstitution) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+type Address struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	StreetAddress_1 string                 `protobuf:"bytes,1,opt,name=street_address_1,json=streetAddress1,proto3" json:"street_address_1,omitempty"`
+	StreetAddress_2 string                 `protobuf:"bytes,2,opt,name=street_address_2,json=streetAddress2,proto3" json:"street_address_2,omitempty"`
+	City            string                 `protobuf:"bytes,3,opt,name=city,proto3" json:"city,omitempty"`
+	StateProvince   string                 `protobuf:"bytes,4,opt,name=state_province,json=stateProvince,proto3" json:"state_province,omitempty"`
+	PostalCode      string                 `protobuf:"bytes,5,opt,name=postal_code,json=postalCode,proto3" json:"postal_code,omitempty"`
+	CountryCode     string                 `protobuf:"bytes,6,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Address) Reset() {
+	*x = Address{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Address) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Address) ProtoMessage() {}
+
+func (x *Address) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Address.ProtoReflect.Descriptor instead.
+func (*Address) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *Address) GetStreetAddress_1() string {
+	if x != nil {
+		return x.StreetAddress_1
+	}
+	return ""
+}
+
+func (x *Address) GetStreetAddress_2() string {
+	if x != nil {
+		return x.StreetAddress_2
+	}
+	return ""
+}
+
+func (x *Address) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *Address) GetStateProvince() string {
+	if x != nil {
+		return x.StateProvince
+	}
+	return ""
+}
+
+func (x *Address) GetPostalCode() string {
+	if x != nil {
+		return x.PostalCode
+	}
+	return ""
+}
+
+func (x *Address) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+type ContactInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	PhoneNumber   string                 `protobuf:"bytes,1,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	FaxNumber     string                 `protobuf:"bytes,2,opt,name=fax_number,json=faxNumber,proto3" json:"fax_number,omitempty"`
+	EmailAddress  string                 `protobuf:"bytes,3,opt,name=email_address,json=emailAddress,proto3" json:"email_address,omitempty"`
+	WebsiteUrl    string                 `protobuf:"bytes,4,opt,name=website_url,json=websiteUrl,proto3" json:"website_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContactInfo) Reset() {
+	*x = ContactInfo{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContactInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContactInfo) ProtoMessage() {}
+
+func (x *ContactInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContactInfo.ProtoReflect.Descriptor instead.
+func (*ContactInfo) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *ContactInfo) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *ContactInfo) GetFaxNumber() string {
+	if x != nil {
+		return x.FaxNumber
+	}
+	return ""
+}
+
+func (x *ContactInfo) GetEmailAddress() string {
+	if x != nil {
+		return x.EmailAddress
+	}
+	return ""
+}
+
+func (x *ContactInfo) GetWebsiteUrl() string {
+	if x != nil {
+		return x.WebsiteUrl
+	}
+	return ""
+}
+
+// Request/Response messages for FinancialInstitutionService
+type CreateInstitutionRequest struct {
+	state           protoimpl.MessageState                         `protogen:"open.v1"`
+	Code            string                                         `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"` // Required, unique
+	Name            string                                         `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"` // Required
+	ShortName       string                                         `protobuf:"bytes,3,opt,name=short_name,json=shortName,proto3" json:"short_name,omitempty"`
+	RoutingNumbers  []*CreateInstitutionRequest_RoutingNumberInput `protobuf:"bytes,4,rep,name=routing_numbers,json=routingNumbers,proto3" json:"routing_numbers,omitempty"` // US banks routing numbers
+	SwiftCode       string                                         `protobuf:"bytes,5,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`                // Required for international
+	BankCode        string                                         `protobuf:"bytes,6,opt,name=bank_code,json=bankCode,proto3" json:"bank_code,omitempty"`
+	BranchCode      string                                         `protobuf:"bytes,7,opt,name=branch_code,json=branchCode,proto3" json:"branch_code,omitempty"`
+	InstitutionType InstitutionType                                `protobuf:"varint,8,opt,name=institution_type,json=institutionType,proto3,enum=treasury.InstitutionType" json:"institution_type,omitempty"` // Required
+	CountryCode     string                                         `protobuf:"bytes,9,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`                                            // Required
+	PrimaryCurrency string                                         `protobuf:"bytes,10,opt,name=primary_currency,json=primaryCurrency,proto3" json:"primary_currency,omitempty"`
+	Address         *Address                                       `protobuf:"bytes,11,opt,name=address,proto3" json:"address,omitempty"`
+	Contact         *ContactInfo                                   `protobuf:"bytes,12,opt,name=contact,proto3" json:"contact,omitempty"`
+	TimeZone        string                                         `protobuf:"bytes,13,opt,name=time_zone,json=timeZone,proto3" json:"time_zone,omitempty"`
+	Capabilities    *structpb.Struct                               `protobuf:"bytes,14,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	Notes           string                                         `protobuf:"bytes,15,opt,name=notes,proto3" json:"notes,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateInstitutionRequest) Reset() {
+	*x = CreateInstitutionRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateInstitutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateInstitutionRequest) ProtoMessage() {}
+
+func (x *CreateInstitutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateInstitutionRequest.ProtoReflect.Descriptor instead.
+func (*CreateInstitutionRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *CreateInstitutionRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetShortName() string {
+	if x != nil {
+		return x.ShortName
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetRoutingNumbers() []*CreateInstitutionRequest_RoutingNumberInput {
+	if x != nil {
+		return x.RoutingNumbers
+	}
+	return nil
+}
+
+func (x *CreateInstitutionRequest) GetSwiftCode() string {
+	if x != nil {
+		return x.SwiftCode
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetBankCode() string {
+	if x != nil {
+		return x.BankCode
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetBranchCode() string {
+	if x != nil {
+		return x.BranchCode
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetInstitutionType() InstitutionType {
+	if x != nil {
+		return x.InstitutionType
+	}
+	return InstitutionType_INSTITUTION_TYPE_UNSPECIFIED
+}
+
+func (x *CreateInstitutionRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetPrimaryCurrency() string {
+	if x != nil {
+		return x.PrimaryCurrency
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetAddress() *Address {
+	if x != nil {
+		return x.Address
+	}
+	return nil
+}
+
+func (x *CreateInstitutionRequest) GetContact() *ContactInfo {
+	if x != nil {
+		return x.Contact
+	}
+	return nil
+}
+
+func (x *CreateInstitutionRequest) GetTimeZone() string {
+	if x != nil {
+		return x.TimeZone
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest) GetCapabilities() *structpb.Struct {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *CreateInstitutionRequest) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+type CreateInstitutionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Institution   *FinancialInstitution  `protobuf:"bytes,1,opt,name=institution,proto3" json:"institution,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateInstitutionResponse) Reset() {
+	*x = CreateInstitutionResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateInstitutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateInstitutionResponse) ProtoMessage() {}
+
+func (x *CreateInstitutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateInstitutionResponse.ProtoReflect.Descriptor instead.
+func (*CreateInstitutionResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *CreateInstitutionResponse) GetInstitution() *FinancialInstitution {
+	if x != nil {
+		return x.Institution
+	}
+	return nil
+}
+
+type GetInstitutionRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Identifier:
+	//
+	//	*GetInstitutionRequest_Code
+	//	*GetInstitutionRequest_RoutingNumber
+	//	*GetInstitutionRequest_SwiftCode
+	//	*GetInstitutionRequest_Id
+	Identifier    isGetInstitutionRequest_Identifier `protobuf_oneof:"identifier"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInstitutionRequest) Reset() {
+	*x = GetInstitutionRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInstitutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInstitutionRequest) ProtoMessage() {}
+
+func (x *GetInstitutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInstitutionRequest.ProtoReflect.Descriptor instead.
+func (*GetInstitutionRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *GetInstitutionRequest) GetIdentifier() isGetInstitutionRequest_Identifier {
+	if x != nil {
+		return x.Identifier
+	}
+	return nil
+}
+
+func (x *GetInstitutionRequest) GetCode() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetInstitutionRequest_Code); ok {
+			return x.Code
+		}
+	}
+	return ""
+}
+
+func (x *GetInstitutionRequest) GetRoutingNumber() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetInstitutionRequest_RoutingNumber); ok {
+			return x.RoutingNumber
+		}
+	}
+	return ""
+}
+
+func (x *GetInstitutionRequest) GetSwiftCode() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetInstitutionRequest_SwiftCode); ok {
+			return x.SwiftCode
+		}
+	}
+	return ""
+}
+
+func (x *GetInstitutionRequest) GetId() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*GetInstitutionRequest_Id); ok {
+			return x.Id
+		}
+	}
+	return ""
+}
+
+type isGetInstitutionRequest_Identifier interface {
+	isGetInstitutionRequest_Identifier()
+}
+
+type GetInstitutionRequest_Code struct {
+	Code string `protobuf:"bytes,1,opt,name=code,proto3,oneof"` // Primary lookup
+}
+
+type GetInstitutionRequest_RoutingNumber struct {
+	RoutingNumber string `protobuf:"bytes,2,opt,name=routing_number,json=routingNumber,proto3,oneof"` // US routing lookup
+}
+
+type GetInstitutionRequest_SwiftCode struct {
+	SwiftCode string `protobuf:"bytes,3,opt,name=swift_code,json=swiftCode,proto3,oneof"` // International lookup
+}
+
+type GetInstitutionRequest_Id struct {
+	Id string `protobuf:"bytes,4,opt,name=id,proto3,oneof"` // UUID lookup
+}
+
+func (*GetInstitutionRequest_Code) isGetInstitutionRequest_Identifier() {}
+
+func (*GetInstitutionRequest_RoutingNumber) isGetInstitutionRequest_Identifier() {}
+
+func (*GetInstitutionRequest_SwiftCode) isGetInstitutionRequest_Identifier() {}
+
+func (*GetInstitutionRequest_Id) isGetInstitutionRequest_Identifier() {}
+
+type GetInstitutionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Institution   *FinancialInstitution  `protobuf:"bytes,1,opt,name=institution,proto3" json:"institution,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetInstitutionResponse) Reset() {
+	*x = GetInstitutionResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetInstitutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetInstitutionResponse) ProtoMessage() {}
+
+func (x *GetInstitutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetInstitutionResponse.ProtoReflect.Descriptor instead.
+func (*GetInstitutionResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *GetInstitutionResponse) GetInstitution() *FinancialInstitution {
+	if x != nil {
+		return x.Institution
+	}
+	return nil
+}
+
+type UpdateInstitutionRequest struct {
+	state          protoimpl.MessageState                          `protogen:"open.v1"`
+	Code           string                                          `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`                               // Required (identifies institution)
+	UpdateMask     *fieldmaskpb.FieldMask                          `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"` // Fields to update
+	Name           string                                          `protobuf:"bytes,3,opt,name=name,proto3" json:"name,omitempty"`
+	ShortName      string                                          `protobuf:"bytes,4,opt,name=short_name,json=shortName,proto3" json:"short_name,omitempty"`
+	RoutingNumbers []*UpdateInstitutionRequest_RoutingNumberUpdate `protobuf:"bytes,5,rep,name=routing_numbers,json=routingNumbers,proto3" json:"routing_numbers,omitempty"` // Replace all routing numbers
+	SwiftCode      string                                          `protobuf:"bytes,6,opt,name=swift_code,json=swiftCode,proto3" json:"swift_code,omitempty"`
+	Address        *Address                                        `protobuf:"bytes,7,opt,name=address,proto3" json:"address,omitempty"`
+	Contact        *ContactInfo                                    `protobuf:"bytes,8,opt,name=contact,proto3" json:"contact,omitempty"`
+	Status         InstitutionStatus                               `protobuf:"varint,9,opt,name=status,proto3,enum=treasury.InstitutionStatus" json:"status,omitempty"`
+	Capabilities   *structpb.Struct                                `protobuf:"bytes,10,opt,name=capabilities,proto3" json:"capabilities,omitempty"`
+	Notes          string                                          `protobuf:"bytes,11,opt,name=notes,proto3" json:"notes,omitempty"`
+	Version        int32                                           `protobuf:"varint,12,opt,name=version,proto3" json:"version,omitempty"` // For optimistic locking
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *UpdateInstitutionRequest) Reset() {
+	*x = UpdateInstitutionRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateInstitutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInstitutionRequest) ProtoMessage() {}
+
+func (x *UpdateInstitutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInstitutionRequest.ProtoReflect.Descriptor instead.
+func (*UpdateInstitutionRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *UpdateInstitutionRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateInstitutionRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest) GetShortName() string {
+	if x != nil {
+		return x.ShortName
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest) GetRoutingNumbers() []*UpdateInstitutionRequest_RoutingNumberUpdate {
+	if x != nil {
+		return x.RoutingNumbers
+	}
+	return nil
+}
+
+func (x *UpdateInstitutionRequest) GetSwiftCode() string {
+	if x != nil {
+		return x.SwiftCode
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest) GetAddress() *Address {
+	if x != nil {
+		return x.Address
+	}
+	return nil
+}
+
+func (x *UpdateInstitutionRequest) GetContact() *ContactInfo {
+	if x != nil {
+		return x.Contact
+	}
+	return nil
+}
+
+func (x *UpdateInstitutionRequest) GetStatus() InstitutionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return InstitutionStatus_INSTITUTION_STATUS_UNSPECIFIED
+}
+
+func (x *UpdateInstitutionRequest) GetCapabilities() *structpb.Struct {
+	if x != nil {
+		return x.Capabilities
+	}
+	return nil
+}
+
+func (x *UpdateInstitutionRequest) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest) GetVersion() int32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+type UpdateInstitutionResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Institution   *FinancialInstitution  `protobuf:"bytes,1,opt,name=institution,proto3" json:"institution,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateInstitutionResponse) Reset() {
+	*x = UpdateInstitutionResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateInstitutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInstitutionResponse) ProtoMessage() {}
+
+func (x *UpdateInstitutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInstitutionResponse.ProtoReflect.Descriptor instead.
+func (*UpdateInstitutionResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *UpdateInstitutionResponse) GetInstitution() *FinancialInstitution {
+	if x != nil {
+		return x.Institution
+	}
+	return nil
+}
+
+type DeleteInstitutionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"`                            // Required
+	Force         bool                   `protobuf:"varint,2,opt,name=force,proto3" json:"force,omitempty"`                         // Force deletion despite references
+	DeletedBy     string                 `protobuf:"bytes,3,opt,name=deleted_by,json=deletedBy,proto3" json:"deleted_by,omitempty"` // User making deletion
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteInstitutionRequest) Reset() {
+	*x = DeleteInstitutionRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteInstitutionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteInstitutionRequest) ProtoMessage() {}
+
+func (x *DeleteInstitutionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteInstitutionRequest.ProtoReflect.Descriptor instead.
+func (*DeleteInstitutionRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *DeleteInstitutionRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+func (x *DeleteInstitutionRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+func (x *DeleteInstitutionRequest) GetDeletedBy() string {
+	if x != nil {
+		return x.DeletedBy
+	}
+	return ""
+}
+
+type DeleteInstitutionResponse struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Success            bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	BlockingReferences []string               `protobuf:"bytes,2,rep,name=blocking_references,json=blockingReferences,proto3" json:"blocking_references,omitempty"` // What prevents deletion
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *DeleteInstitutionResponse) Reset() {
+	*x = DeleteInstitutionResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteInstitutionResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteInstitutionResponse) ProtoMessage() {}
+
+func (x *DeleteInstitutionResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteInstitutionResponse.ProtoReflect.Descriptor instead.
+func (*DeleteInstitutionResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *DeleteInstitutionResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DeleteInstitutionResponse) GetBlockingReferences() []string {
+	if x != nil {
+		return x.BlockingReferences
+	}
+	return nil
+}
+
+type ListInstitutionsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Status          InstitutionStatus      `protobuf:"varint,1,opt,name=status,proto3,enum=treasury.InstitutionStatus" json:"status,omitempty"`                                        // Filter by status
+	InstitutionType InstitutionType        `protobuf:"varint,2,opt,name=institution_type,json=institutionType,proto3,enum=treasury.InstitutionType" json:"institution_type,omitempty"` // Filter by type
+	CountryCode     string                 `protobuf:"bytes,3,opt,name=country_code,json=countryCode,proto3" json:"country_code,omitempty"`                                            // Filter by country
+	IsActive        bool                   `protobuf:"varint,4,opt,name=is_active,json=isActive,proto3" json:"is_active,omitempty"`                                                    // Filter by active flag
+	PageSize        int32                  `protobuf:"varint,5,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`                                                    // Pagination
+	PageToken       string                 `protobuf:"bytes,6,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`                                                  // Pagination token
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ListInstitutionsRequest) Reset() {
+	*x = ListInstitutionsRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListInstitutionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListInstitutionsRequest) ProtoMessage() {}
+
+func (x *ListInstitutionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListInstitutionsRequest.ProtoReflect.Descriptor instead.
+func (*ListInstitutionsRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *ListInstitutionsRequest) GetStatus() InstitutionStatus {
+	if x != nil {
+		return x.Status
+	}
+	return InstitutionStatus_INSTITUTION_STATUS_UNSPECIFIED
+}
+
+func (x *ListInstitutionsRequest) GetInstitutionType() InstitutionType {
+	if x != nil {
+		return x.InstitutionType
+	}
+	return InstitutionType_INSTITUTION_TYPE_UNSPECIFIED
+}
+
+func (x *ListInstitutionsRequest) GetCountryCode() string {
+	if x != nil {
+		return x.CountryCode
+	}
+	return ""
+}
+
+func (x *ListInstitutionsRequest) GetIsActive() bool {
+	if x != nil {
+		return x.IsActive
+	}
+	return false
+}
+
+func (x *ListInstitutionsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListInstitutionsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+type ListInstitutionsResponse struct {
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Institutions  []*FinancialInstitution `protobuf:"bytes,1,rep,name=institutions,proto3" json:"institutions,omitempty"`
+	NextPageToken string                  `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	TotalCount    int32                   `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListInstitutionsResponse) Reset() {
+	*x = ListInstitutionsResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListInstitutionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListInstitutionsResponse) ProtoMessage() {}
+
+func (x *ListInstitutionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListInstitutionsResponse.ProtoReflect.Descriptor instead.
+func (*ListInstitutionsResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *ListInstitutionsResponse) GetInstitutions() []*FinancialInstitution {
+	if x != nil {
+		return x.Institutions
+	}
+	return nil
+}
+
+func (x *ListInstitutionsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListInstitutionsResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
+type CheckInstitutionReferencesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"` // Institution to check
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckInstitutionReferencesRequest) Reset() {
+	*x = CheckInstitutionReferencesRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckInstitutionReferencesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckInstitutionReferencesRequest) ProtoMessage() {}
+
+func (x *CheckInstitutionReferencesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckInstitutionReferencesRequest.ProtoReflect.Descriptor instead.
+func (*CheckInstitutionReferencesRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *CheckInstitutionReferencesRequest) GetCode() string {
+	if x != nil {
+		return x.Code
+	}
+	return ""
+}
+
+type CheckInstitutionReferencesResponse struct {
+	state         protoimpl.MessageState                          `protogen:"open.v1"`
+	References    []*CheckInstitutionReferencesResponse_Reference `protobuf:"bytes,1,rep,name=references,proto3" json:"references,omitempty"`
+	CanDelete     bool                                            `protobuf:"varint,2,opt,name=can_delete,json=canDelete,proto3" json:"can_delete,omitempty"` // True if no references
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckInstitutionReferencesResponse) Reset() {
+	*x = CheckInstitutionReferencesResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckInstitutionReferencesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckInstitutionReferencesResponse) ProtoMessage() {}
+
+func (x *CheckInstitutionReferencesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckInstitutionReferencesResponse.ProtoReflect.Descriptor instead.
+func (*CheckInstitutionReferencesResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *CheckInstitutionReferencesResponse) GetReferences() []*CheckInstitutionReferencesResponse_Reference {
+	if x != nil {
+		return x.References
+	}
+	return nil
+}
+
+func (x *CheckInstitutionReferencesResponse) GetCanDelete() bool {
+	if x != nil {
+		return x.CanDelete
+	}
+	return false
+}
+
+type BulkCreateInstitutionsRequest struct {
+	state          protoimpl.MessageState      `protogen:"open.v1"`
+	Institutions   []*CreateInstitutionRequest `protobuf:"bytes,1,rep,name=institutions,proto3" json:"institutions,omitempty"`
+	SkipDuplicates bool                        `protobuf:"varint,2,opt,name=skip_duplicates,json=skipDuplicates,proto3" json:"skip_duplicates,omitempty"` // Skip existing institutions
+	UpdateExisting bool                        `protobuf:"varint,3,opt,name=update_existing,json=updateExisting,proto3" json:"update_existing,omitempty"` // Update if exists
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BulkCreateInstitutionsRequest) Reset() {
+	*x = BulkCreateInstitutionsRequest{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateInstitutionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateInstitutionsRequest) ProtoMessage() {}
+
+func (x *BulkCreateInstitutionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateInstitutionsRequest.ProtoReflect.Descriptor instead.
+func (*BulkCreateInstitutionsRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *BulkCreateInstitutionsRequest) GetInstitutions() []*CreateInstitutionRequest {
+	if x != nil {
+		return x.Institutions
+	}
+	return nil
+}
+
+func (x *BulkCreateInstitutionsRequest) GetSkipDuplicates() bool {
+	if x != nil {
+		return x.SkipDuplicates
+	}
+	return false
+}
+
+func (x *BulkCreateInstitutionsRequest) GetUpdateExisting() bool {
+	if x != nil {
+		return x.UpdateExisting
+	}
+	return false
+}
+
+type BulkCreateInstitutionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	CreatedCount  int32                  `protobuf:"varint,1,opt,name=created_count,json=createdCount,proto3" json:"created_count,omitempty"`
+	UpdatedCount  int32                  `protobuf:"varint,2,opt,name=updated_count,json=updatedCount,proto3" json:"updated_count,omitempty"`
+	SkippedCount  int32                  `protobuf:"varint,3,opt,name=skipped_count,json=skippedCount,proto3" json:"skipped_count,omitempty"`
+	Errors        []string               `protobuf:"bytes,4,rep,name=errors,proto3" json:"errors,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BulkCreateInstitutionsResponse) Reset() {
+	*x = BulkCreateInstitutionsResponse{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BulkCreateInstitutionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BulkCreateInstitutionsResponse) ProtoMessage() {}
+
+func (x *BulkCreateInstitutionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BulkCreateInstitutionsResponse.ProtoReflect.Descriptor instead.
+func (*BulkCreateInstitutionsResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *BulkCreateInstitutionsResponse) GetCreatedCount() int32 {
+	if x != nil {
+		return x.CreatedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateInstitutionsResponse) GetUpdatedCount() int32 {
+	if x != nil {
+		return x.UpdatedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateInstitutionsResponse) GetSkippedCount() int32 {
+	if x != nil {
+		return x.SkippedCount
+	}
+	return 0
+}
+
+func (x *BulkCreateInstitutionsResponse) GetErrors() []string {
+	if x != nil {
+		return x.Errors
+	}
+	return nil
+}
+
+// Support for multiple routing numbers
+type CreateInstitutionRequest_RoutingNumberInput struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RoutingNumber string                 `protobuf:"bytes,1,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
+	RoutingType   string                 `protobuf:"bytes,2,opt,name=routing_type,json=routingType,proto3" json:"routing_type,omitempty"` // standard, wire, ach, fedwire, other
+	IsPrimary     bool                   `protobuf:"varint,3,opt,name=is_primary,json=isPrimary,proto3" json:"is_primary,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) Reset() {
+	*x = CreateInstitutionRequest_RoutingNumberInput{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[50]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateInstitutionRequest_RoutingNumberInput) ProtoMessage() {}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[50]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateInstitutionRequest_RoutingNumberInput.ProtoReflect.Descriptor instead.
+func (*CreateInstitutionRequest_RoutingNumberInput) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{34, 0}
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) GetRoutingNumber() string {
+	if x != nil {
+		return x.RoutingNumber
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) GetRoutingType() string {
+	if x != nil {
+		return x.RoutingType
+	}
+	return ""
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) GetIsPrimary() bool {
+	if x != nil {
+		return x.IsPrimary
+	}
+	return false
+}
+
+func (x *CreateInstitutionRequest_RoutingNumberInput) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+// For updating routing numbers
+type UpdateInstitutionRequest_RoutingNumberUpdate struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	RoutingNumber string                 `protobuf:"bytes,1,opt,name=routing_number,json=routingNumber,proto3" json:"routing_number,omitempty"`
+	RoutingType   string                 `protobuf:"bytes,2,opt,name=routing_type,json=routingType,proto3" json:"routing_type,omitempty"`
+	IsPrimary     bool                   `protobuf:"varint,3,opt,name=is_primary,json=isPrimary,proto3" json:"is_primary,omitempty"`
+	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) Reset() {
+	*x = UpdateInstitutionRequest_RoutingNumberUpdate{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[51]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateInstitutionRequest_RoutingNumberUpdate) ProtoMessage() {}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[51]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateInstitutionRequest_RoutingNumberUpdate.ProtoReflect.Descriptor instead.
+func (*UpdateInstitutionRequest_RoutingNumberUpdate) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{38, 0}
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) GetRoutingNumber() string {
+	if x != nil {
+		return x.RoutingNumber
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) GetRoutingType() string {
+	if x != nil {
+		return x.RoutingType
+	}
+	return ""
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) GetIsPrimary() bool {
+	if x != nil {
+		return x.IsPrimary
+	}
+	return false
+}
+
+func (x *UpdateInstitutionRequest_RoutingNumberUpdate) GetDescription() string {
+	if x != nil {
+		return x.Description
+	}
+	return ""
+}
+
+type CheckInstitutionReferencesResponse_Reference struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TableName     string                 `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3" json:"table_name,omitempty"`
+	ColumnName    string                 `protobuf:"bytes,2,opt,name=column_name,json=columnName,proto3" json:"column_name,omitempty"`
+	Count         int32                  `protobuf:"varint,3,opt,name=count,proto3" json:"count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CheckInstitutionReferencesResponse_Reference) Reset() {
+	*x = CheckInstitutionReferencesResponse_Reference{}
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[52]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CheckInstitutionReferencesResponse_Reference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CheckInstitutionReferencesResponse_Reference) ProtoMessage() {}
+
+func (x *CheckInstitutionReferencesResponse_Reference) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[52]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CheckInstitutionReferencesResponse_Reference.ProtoReflect.Descriptor instead.
+func (*CheckInstitutionReferencesResponse_Reference) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescGZIP(), []int{45, 0}
+}
+
+func (x *CheckInstitutionReferencesResponse_Reference) GetTableName() string {
+	if x != nil {
+		return x.TableName
+	}
+	return ""
+}
+
+func (x *CheckInstitutionReferencesResponse_Reference) GetColumnName() string {
+	if x != nil {
+		return x.ColumnName
+	}
+	return ""
+}
+
+func (x *CheckInstitutionReferencesResponse_Reference) GetCount() int32 {
+	if x != nil {
+		return x.Count
+	}
+	return 0
+}
+
 var File_services_treasury_services_treasury_service_proto_treasury_service_proto protoreflect.FileDescriptor
 
 const file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc = "" +
 	"\n" +
-	"Hservices/treasury-services/treasury-service/proto/treasury_service.proto\x12\btreasury\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\x11\n" +
+	"Hservices/treasury-services/treasury-service/proto/treasury_service.proto\x12\btreasury\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x11\n" +
 	"\x0fManifestRequest\"\xb1\x02\n" +
 	"\x10ManifestResponse\x125\n" +
 	"\bidentity\x18\x01 \x01(\v2\x19.treasury.ServiceIdentityR\bidentity\x122\n" +
@@ -2658,6 +4547,182 @@ const file_services_treasury_services_treasury_service_proto_treasury_service_pr
 	"\rcreated_count\x18\x01 \x01(\x05R\fcreatedCount\x12#\n" +
 	"\rupdated_count\x18\x02 \x01(\x05R\fupdatedCount\x12#\n" +
 	"\rskipped_count\x18\x03 \x01(\x05R\fskippedCount\x12\x16\n" +
+	"\x06errors\x18\x04 \x03(\tR\x06errors\"\xa0\x02\n" +
+	"\rRoutingNumber\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12%\n" +
+	"\x0erouting_number\x18\x02 \x01(\tR\rroutingNumber\x12!\n" +
+	"\frouting_type\x18\x03 \x01(\tR\vroutingType\x12\x1d\n" +
+	"\n" +
+	"is_primary\x18\x04 \x01(\bR\tisPrimary\x12 \n" +
+	"\vdescription\x18\x05 \x01(\tR\vdescription\x129\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x84\v\n" +
+	"\x14FinancialInstitution\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04code\x18\x02 \x01(\tR\x04code\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"short_name\x18\x04 \x01(\tR\tshortName\x12@\n" +
+	"\x0frouting_numbers\x18\x05 \x03(\v2\x17.treasury.RoutingNumberR\x0eroutingNumbers\x12\x1d\n" +
+	"\n" +
+	"swift_code\x18\x06 \x01(\tR\tswiftCode\x12\x1f\n" +
+	"\viban_prefix\x18\a \x01(\tR\n" +
+	"ibanPrefix\x12\x1b\n" +
+	"\tbank_code\x18\b \x01(\tR\bbankCode\x12\x1f\n" +
+	"\vbranch_code\x18\t \x01(\tR\n" +
+	"branchCode\x12D\n" +
+	"\x10institution_type\x18\n" +
+	" \x01(\x0e2\x19.treasury.InstitutionTypeR\x0finstitutionType\x12!\n" +
+	"\fcountry_code\x18\v \x01(\tR\vcountryCode\x12)\n" +
+	"\x10primary_currency\x18\f \x01(\tR\x0fprimaryCurrency\x12+\n" +
+	"\aaddress\x18\r \x01(\v2\x11.treasury.AddressR\aaddress\x12/\n" +
+	"\acontact\x18\x0e \x01(\v2\x15.treasury.ContactInfoR\acontact\x12\x1b\n" +
+	"\ttime_zone\x18\x0f \x01(\tR\btimeZone\x12>\n" +
+	"\x0ebusiness_hours\x18\x10 \x01(\v2\x17.google.protobuf.StructR\rbusinessHours\x12)\n" +
+	"\x10holiday_calendar\x18\x11 \x01(\tR\x0fholidayCalendar\x12#\n" +
+	"\rregulatory_id\x18\x12 \x01(\tR\fregulatoryId\x12\x15\n" +
+	"\x06tax_id\x18\x13 \x01(\tR\x05taxId\x123\n" +
+	"\blicenses\x18\x14 \x01(\v2\x17.google.protobuf.StructR\blicenses\x123\n" +
+	"\x06status\x18\x15 \x01(\x0e2\x1b.treasury.InstitutionStatusR\x06status\x12\x1b\n" +
+	"\tis_active\x18\x16 \x01(\bR\bisActive\x12=\n" +
+	"\factivated_at\x18\x17 \x01(\v2\x1a.google.protobuf.TimestampR\vactivatedAt\x12A\n" +
+	"\x0edeactivated_at\x18\x18 \x01(\v2\x1a.google.protobuf.TimestampR\rdeactivatedAt\x12+\n" +
+	"\x11suspension_reason\x18\x19 \x01(\tR\x10suspensionReason\x12;\n" +
+	"\fcapabilities\x18\x1a \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x12\x14\n" +
+	"\x05notes\x18\x1b \x01(\tR\x05notes\x12H\n" +
+	"\x13external_references\x18\x1c \x01(\v2\x17.google.protobuf.StructR\x12externalReferences\x129\n" +
+	"\n" +
+	"created_at\x18\x1d \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\x1e \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x1d\n" +
+	"\n" +
+	"created_by\x18\x1f \x01(\tR\tcreatedBy\x12\x1d\n" +
+	"\n" +
+	"updated_by\x18  \x01(\tR\tupdatedBy\x12\x18\n" +
+	"\aversion\x18! \x01(\x05R\aversion\"\xdc\x01\n" +
+	"\aAddress\x12(\n" +
+	"\x10street_address_1\x18\x01 \x01(\tR\x0estreetAddress1\x12(\n" +
+	"\x10street_address_2\x18\x02 \x01(\tR\x0estreetAddress2\x12\x12\n" +
+	"\x04city\x18\x03 \x01(\tR\x04city\x12%\n" +
+	"\x0estate_province\x18\x04 \x01(\tR\rstateProvince\x12\x1f\n" +
+	"\vpostal_code\x18\x05 \x01(\tR\n" +
+	"postalCode\x12!\n" +
+	"\fcountry_code\x18\x06 \x01(\tR\vcountryCode\"\x95\x01\n" +
+	"\vContactInfo\x12!\n" +
+	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x1d\n" +
+	"\n" +
+	"fax_number\x18\x02 \x01(\tR\tfaxNumber\x12#\n" +
+	"\remail_address\x18\x03 \x01(\tR\femailAddress\x12\x1f\n" +
+	"\vwebsite_url\x18\x04 \x01(\tR\n" +
+	"websiteUrl\"\xa2\x06\n" +
+	"\x18CreateInstitutionRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"short_name\x18\x03 \x01(\tR\tshortName\x12^\n" +
+	"\x0frouting_numbers\x18\x04 \x03(\v25.treasury.CreateInstitutionRequest.RoutingNumberInputR\x0eroutingNumbers\x12\x1d\n" +
+	"\n" +
+	"swift_code\x18\x05 \x01(\tR\tswiftCode\x12\x1b\n" +
+	"\tbank_code\x18\x06 \x01(\tR\bbankCode\x12\x1f\n" +
+	"\vbranch_code\x18\a \x01(\tR\n" +
+	"branchCode\x12D\n" +
+	"\x10institution_type\x18\b \x01(\x0e2\x19.treasury.InstitutionTypeR\x0finstitutionType\x12!\n" +
+	"\fcountry_code\x18\t \x01(\tR\vcountryCode\x12)\n" +
+	"\x10primary_currency\x18\n" +
+	" \x01(\tR\x0fprimaryCurrency\x12+\n" +
+	"\aaddress\x18\v \x01(\v2\x11.treasury.AddressR\aaddress\x12/\n" +
+	"\acontact\x18\f \x01(\v2\x15.treasury.ContactInfoR\acontact\x12\x1b\n" +
+	"\ttime_zone\x18\r \x01(\tR\btimeZone\x12;\n" +
+	"\fcapabilities\x18\x0e \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x12\x14\n" +
+	"\x05notes\x18\x0f \x01(\tR\x05notes\x1a\x9f\x01\n" +
+	"\x12RoutingNumberInput\x12%\n" +
+	"\x0erouting_number\x18\x01 \x01(\tR\rroutingNumber\x12!\n" +
+	"\frouting_type\x18\x02 \x01(\tR\vroutingType\x12\x1d\n" +
+	"\n" +
+	"is_primary\x18\x03 \x01(\bR\tisPrimary\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\"]\n" +
+	"\x19CreateInstitutionResponse\x12@\n" +
+	"\vinstitution\x18\x01 \x01(\v2\x1e.treasury.FinancialInstitutionR\vinstitution\"\x97\x01\n" +
+	"\x15GetInstitutionRequest\x12\x14\n" +
+	"\x04code\x18\x01 \x01(\tH\x00R\x04code\x12'\n" +
+	"\x0erouting_number\x18\x02 \x01(\tH\x00R\rroutingNumber\x12\x1f\n" +
+	"\n" +
+	"swift_code\x18\x03 \x01(\tH\x00R\tswiftCode\x12\x10\n" +
+	"\x02id\x18\x04 \x01(\tH\x00R\x02idB\f\n" +
+	"\n" +
+	"identifier\"Z\n" +
+	"\x16GetInstitutionResponse\x12@\n" +
+	"\vinstitution\x18\x01 \x01(\v2\x1e.treasury.FinancialInstitutionR\vinstitution\"\xc1\x05\n" +
+	"\x18UpdateInstitutionRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12;\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\x12\x12\n" +
+	"\x04name\x18\x03 \x01(\tR\x04name\x12\x1d\n" +
+	"\n" +
+	"short_name\x18\x04 \x01(\tR\tshortName\x12_\n" +
+	"\x0frouting_numbers\x18\x05 \x03(\v26.treasury.UpdateInstitutionRequest.RoutingNumberUpdateR\x0eroutingNumbers\x12\x1d\n" +
+	"\n" +
+	"swift_code\x18\x06 \x01(\tR\tswiftCode\x12+\n" +
+	"\aaddress\x18\a \x01(\v2\x11.treasury.AddressR\aaddress\x12/\n" +
+	"\acontact\x18\b \x01(\v2\x15.treasury.ContactInfoR\acontact\x123\n" +
+	"\x06status\x18\t \x01(\x0e2\x1b.treasury.InstitutionStatusR\x06status\x12;\n" +
+	"\fcapabilities\x18\n" +
+	" \x01(\v2\x17.google.protobuf.StructR\fcapabilities\x12\x14\n" +
+	"\x05notes\x18\v \x01(\tR\x05notes\x12\x18\n" +
+	"\aversion\x18\f \x01(\x05R\aversion\x1a\xa0\x01\n" +
+	"\x13RoutingNumberUpdate\x12%\n" +
+	"\x0erouting_number\x18\x01 \x01(\tR\rroutingNumber\x12!\n" +
+	"\frouting_type\x18\x02 \x01(\tR\vroutingType\x12\x1d\n" +
+	"\n" +
+	"is_primary\x18\x03 \x01(\bR\tisPrimary\x12 \n" +
+	"\vdescription\x18\x04 \x01(\tR\vdescription\"]\n" +
+	"\x19UpdateInstitutionResponse\x12@\n" +
+	"\vinstitution\x18\x01 \x01(\v2\x1e.treasury.FinancialInstitutionR\vinstitution\"c\n" +
+	"\x18DeleteInstitutionRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\x12\x14\n" +
+	"\x05force\x18\x02 \x01(\bR\x05force\x12\x1d\n" +
+	"\n" +
+	"deleted_by\x18\x03 \x01(\tR\tdeletedBy\"f\n" +
+	"\x19DeleteInstitutionResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12/\n" +
+	"\x13blocking_references\x18\x02 \x03(\tR\x12blockingReferences\"\x90\x02\n" +
+	"\x17ListInstitutionsRequest\x123\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x1b.treasury.InstitutionStatusR\x06status\x12D\n" +
+	"\x10institution_type\x18\x02 \x01(\x0e2\x19.treasury.InstitutionTypeR\x0finstitutionType\x12!\n" +
+	"\fcountry_code\x18\x03 \x01(\tR\vcountryCode\x12\x1b\n" +
+	"\tis_active\x18\x04 \x01(\bR\bisActive\x12\x1b\n" +
+	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x06 \x01(\tR\tpageToken\"\xa7\x01\n" +
+	"\x18ListInstitutionsResponse\x12B\n" +
+	"\finstitutions\x18\x01 \x03(\v2\x1e.treasury.FinancialInstitutionR\finstitutions\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1f\n" +
+	"\vtotal_count\x18\x03 \x01(\x05R\n" +
+	"totalCount\"7\n" +
+	"!CheckInstitutionReferencesRequest\x12\x12\n" +
+	"\x04code\x18\x01 \x01(\tR\x04code\"\xfe\x01\n" +
+	"\"CheckInstitutionReferencesResponse\x12V\n" +
+	"\n" +
+	"references\x18\x01 \x03(\v26.treasury.CheckInstitutionReferencesResponse.ReferenceR\n" +
+	"references\x12\x1d\n" +
+	"\n" +
+	"can_delete\x18\x02 \x01(\bR\tcanDelete\x1aa\n" +
+	"\tReference\x12\x1d\n" +
+	"\n" +
+	"table_name\x18\x01 \x01(\tR\ttableName\x12\x1f\n" +
+	"\vcolumn_name\x18\x02 \x01(\tR\n" +
+	"columnName\x12\x14\n" +
+	"\x05count\x18\x03 \x01(\x05R\x05count\"\xb9\x01\n" +
+	"\x1dBulkCreateInstitutionsRequest\x12F\n" +
+	"\finstitutions\x18\x01 \x03(\v2\".treasury.CreateInstitutionRequestR\finstitutions\x12'\n" +
+	"\x0fskip_duplicates\x18\x02 \x01(\bR\x0eskipDuplicates\x12'\n" +
+	"\x0fupdate_existing\x18\x03 \x01(\bR\x0eupdateExisting\"\xa7\x01\n" +
+	"\x1eBulkCreateInstitutionsResponse\x12#\n" +
+	"\rcreated_count\x18\x01 \x01(\x05R\fcreatedCount\x12#\n" +
+	"\rupdated_count\x18\x02 \x01(\x05R\fupdatedCount\x12#\n" +
+	"\rskipped_count\x18\x03 \x01(\x05R\fskippedCount\x12\x16\n" +
 	"\x06errors\x18\x04 \x03(\tR\x06errors*9\n" +
 	"\rServiceStatus\x12\v\n" +
 	"\aHEALTHY\x10\x00\x12\f\n" +
@@ -2676,7 +4741,22 @@ const file_services_treasury_services_treasury_service_proto_treasury_service_pr
 	"\x16CURRENCY_STATUS_ACTIVE\x10\x01\x12\x1c\n" +
 	"\x18CURRENCY_STATUS_INACTIVE\x10\x02\x12\x1e\n" +
 	"\x1aCURRENCY_STATUS_DEPRECATED\x10\x03\x12\x1b\n" +
-	"\x17CURRENCY_STATUS_DELETED\x10\x042R\n" +
+	"\x17CURRENCY_STATUS_DELETED\x10\x04*\x9b\x02\n" +
+	"\x0fInstitutionType\x12 \n" +
+	"\x1cINSTITUTION_TYPE_UNSPECIFIED\x10\x00\x12\x19\n" +
+	"\x15INSTITUTION_TYPE_BANK\x10\x01\x12!\n" +
+	"\x1dINSTITUTION_TYPE_CREDIT_UNION\x10\x02\x12$\n" +
+	" INSTITUTION_TYPE_INVESTMENT_BANK\x10\x03\x12!\n" +
+	"\x1dINSTITUTION_TYPE_CENTRAL_BANK\x10\x04\x12!\n" +
+	"\x1dINSTITUTION_TYPE_SAVINGS_BANK\x10\x05\x12 \n" +
+	"\x1cINSTITUTION_TYPE_ONLINE_BANK\x10\x06\x12\x1a\n" +
+	"\x16INSTITUTION_TYPE_OTHER\x10\a*\xb9\x01\n" +
+	"\x11InstitutionStatus\x12\"\n" +
+	"\x1eINSTITUTION_STATUS_UNSPECIFIED\x10\x00\x12\x1d\n" +
+	"\x19INSTITUTION_STATUS_ACTIVE\x10\x01\x12\x1f\n" +
+	"\x1bINSTITUTION_STATUS_INACTIVE\x10\x02\x12 \n" +
+	"\x1cINSTITUTION_STATUS_SUSPENDED\x10\x03\x12\x1e\n" +
+	"\x1aINSTITUTION_STATUS_DELETED\x10\x042R\n" +
 	"\bManifest\x12F\n" +
 	"\vGetManifest\x12\x19.treasury.ManifestRequest\x1a\x1a.treasury.ManifestResponse\"\x002\x92\x01\n" +
 	"\x06Health\x12F\n" +
@@ -2688,7 +4768,15 @@ const file_services_treasury_services_treasury_service_proto_treasury_service_pr
 	"\x0eUpdateCurrency\x12\x1f.treasury.UpdateCurrencyRequest\x1a .treasury.UpdateCurrencyResponse\x12_\n" +
 	"\x12DeactivateCurrency\x12#.treasury.DeactivateCurrencyRequest\x1a$.treasury.DeactivateCurrencyResponse\x12S\n" +
 	"\x0eListCurrencies\x12\x1f.treasury.ListCurrenciesRequest\x1a .treasury.ListCurrenciesResponse\x12e\n" +
-	"\x14BulkCreateCurrencies\x12%.treasury.BulkCreateCurrenciesRequest\x1a&.treasury.BulkCreateCurrenciesResponseB)Z'example.com/go-mono-repo/proto/treasuryb\x06proto3"
+	"\x14BulkCreateCurrencies\x12%.treasury.BulkCreateCurrenciesRequest\x1a&.treasury.BulkCreateCurrenciesResponse2\xcd\x05\n" +
+	"\x1bFinancialInstitutionService\x12\\\n" +
+	"\x11CreateInstitution\x12\".treasury.CreateInstitutionRequest\x1a#.treasury.CreateInstitutionResponse\x12S\n" +
+	"\x0eGetInstitution\x12\x1f.treasury.GetInstitutionRequest\x1a .treasury.GetInstitutionResponse\x12\\\n" +
+	"\x11UpdateInstitution\x12\".treasury.UpdateInstitutionRequest\x1a#.treasury.UpdateInstitutionResponse\x12\\\n" +
+	"\x11DeleteInstitution\x12\".treasury.DeleteInstitutionRequest\x1a#.treasury.DeleteInstitutionResponse\x12Y\n" +
+	"\x10ListInstitutions\x12!.treasury.ListInstitutionsRequest\x1a\".treasury.ListInstitutionsResponse\x12w\n" +
+	"\x1aCheckInstitutionReferences\x12+.treasury.CheckInstitutionReferencesRequest\x1a,.treasury.CheckInstitutionReferencesResponse\x12k\n" +
+	"\x16BulkCreateInstitutions\x12'.treasury.BulkCreateInstitutionsRequest\x1a(.treasury.BulkCreateInstitutionsResponseB)Z'example.com/go-mono-repo/proto/treasuryb\x06proto3"
 
 var (
 	file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescOnce sync.Once
@@ -2702,104 +4790,176 @@ func file_services_treasury_services_treasury_service_proto_treasury_service_pro
 	return file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDescData
 }
 
-var file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes = make([]protoimpl.MessageInfo, 32)
+var file_services_treasury_services_treasury_service_proto_treasury_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes = make([]protoimpl.MessageInfo, 53)
 var file_services_treasury_services_treasury_service_proto_treasury_service_proto_goTypes = []any{
-	(ServiceStatus)(0),                   // 0: treasury.ServiceStatus
-	(DependencyType)(0),                  // 1: treasury.DependencyType
-	(CurrencyStatus)(0),                  // 2: treasury.CurrencyStatus
-	(*ManifestRequest)(nil),              // 3: treasury.ManifestRequest
-	(*ManifestResponse)(nil),             // 4: treasury.ManifestResponse
-	(*ServiceIdentity)(nil),              // 5: treasury.ServiceIdentity
-	(*BuildInfo)(nil),                    // 6: treasury.BuildInfo
-	(*RuntimeInfo)(nil),                  // 7: treasury.RuntimeInfo
-	(*ServiceMetadata)(nil),              // 8: treasury.ServiceMetadata
-	(*ServiceCapabilities)(nil),          // 9: treasury.ServiceCapabilities
-	(*ServiceDependency)(nil),            // 10: treasury.ServiceDependency
-	(*LivenessRequest)(nil),              // 11: treasury.LivenessRequest
-	(*LivenessResponse)(nil),             // 12: treasury.LivenessResponse
-	(*HealthRequest)(nil),                // 13: treasury.HealthRequest
-	(*HealthResponse)(nil),               // 14: treasury.HealthResponse
-	(*ComponentCheck)(nil),               // 15: treasury.ComponentCheck
-	(*LivenessInfo)(nil),                 // 16: treasury.LivenessInfo
-	(*DependencyHealth)(nil),             // 17: treasury.DependencyHealth
-	(*DependencyConfig)(nil),             // 18: treasury.DependencyConfig
-	(*ConnectionPoolInfo)(nil),           // 19: treasury.ConnectionPoolInfo
-	(*Currency)(nil),                     // 20: treasury.Currency
-	(*CreateCurrencyRequest)(nil),        // 21: treasury.CreateCurrencyRequest
-	(*CreateCurrencyResponse)(nil),       // 22: treasury.CreateCurrencyResponse
-	(*GetCurrencyRequest)(nil),           // 23: treasury.GetCurrencyRequest
-	(*GetCurrencyResponse)(nil),          // 24: treasury.GetCurrencyResponse
-	(*UpdateCurrencyRequest)(nil),        // 25: treasury.UpdateCurrencyRequest
-	(*UpdateCurrencyResponse)(nil),       // 26: treasury.UpdateCurrencyResponse
-	(*DeactivateCurrencyRequest)(nil),    // 27: treasury.DeactivateCurrencyRequest
-	(*DeactivateCurrencyResponse)(nil),   // 28: treasury.DeactivateCurrencyResponse
-	(*ListCurrenciesRequest)(nil),        // 29: treasury.ListCurrenciesRequest
-	(*ListCurrenciesResponse)(nil),       // 30: treasury.ListCurrenciesResponse
-	(*BulkCreateCurrenciesRequest)(nil),  // 31: treasury.BulkCreateCurrenciesRequest
-	(*BulkCreateCurrenciesResponse)(nil), // 32: treasury.BulkCreateCurrenciesResponse
-	nil,                                  // 33: treasury.ServiceMetadata.LabelsEntry
-	nil,                                  // 34: treasury.DependencyConfig.MetadataEntry
-	(*timestamppb.Timestamp)(nil),        // 35: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),        // 36: google.protobuf.FieldMask
+	(ServiceStatus)(0),                                   // 0: treasury.ServiceStatus
+	(DependencyType)(0),                                  // 1: treasury.DependencyType
+	(CurrencyStatus)(0),                                  // 2: treasury.CurrencyStatus
+	(InstitutionType)(0),                                 // 3: treasury.InstitutionType
+	(InstitutionStatus)(0),                               // 4: treasury.InstitutionStatus
+	(*ManifestRequest)(nil),                              // 5: treasury.ManifestRequest
+	(*ManifestResponse)(nil),                             // 6: treasury.ManifestResponse
+	(*ServiceIdentity)(nil),                              // 7: treasury.ServiceIdentity
+	(*BuildInfo)(nil),                                    // 8: treasury.BuildInfo
+	(*RuntimeInfo)(nil),                                  // 9: treasury.RuntimeInfo
+	(*ServiceMetadata)(nil),                              // 10: treasury.ServiceMetadata
+	(*ServiceCapabilities)(nil),                          // 11: treasury.ServiceCapabilities
+	(*ServiceDependency)(nil),                            // 12: treasury.ServiceDependency
+	(*LivenessRequest)(nil),                              // 13: treasury.LivenessRequest
+	(*LivenessResponse)(nil),                             // 14: treasury.LivenessResponse
+	(*HealthRequest)(nil),                                // 15: treasury.HealthRequest
+	(*HealthResponse)(nil),                               // 16: treasury.HealthResponse
+	(*ComponentCheck)(nil),                               // 17: treasury.ComponentCheck
+	(*LivenessInfo)(nil),                                 // 18: treasury.LivenessInfo
+	(*DependencyHealth)(nil),                             // 19: treasury.DependencyHealth
+	(*DependencyConfig)(nil),                             // 20: treasury.DependencyConfig
+	(*ConnectionPoolInfo)(nil),                           // 21: treasury.ConnectionPoolInfo
+	(*Currency)(nil),                                     // 22: treasury.Currency
+	(*CreateCurrencyRequest)(nil),                        // 23: treasury.CreateCurrencyRequest
+	(*CreateCurrencyResponse)(nil),                       // 24: treasury.CreateCurrencyResponse
+	(*GetCurrencyRequest)(nil),                           // 25: treasury.GetCurrencyRequest
+	(*GetCurrencyResponse)(nil),                          // 26: treasury.GetCurrencyResponse
+	(*UpdateCurrencyRequest)(nil),                        // 27: treasury.UpdateCurrencyRequest
+	(*UpdateCurrencyResponse)(nil),                       // 28: treasury.UpdateCurrencyResponse
+	(*DeactivateCurrencyRequest)(nil),                    // 29: treasury.DeactivateCurrencyRequest
+	(*DeactivateCurrencyResponse)(nil),                   // 30: treasury.DeactivateCurrencyResponse
+	(*ListCurrenciesRequest)(nil),                        // 31: treasury.ListCurrenciesRequest
+	(*ListCurrenciesResponse)(nil),                       // 32: treasury.ListCurrenciesResponse
+	(*BulkCreateCurrenciesRequest)(nil),                  // 33: treasury.BulkCreateCurrenciesRequest
+	(*BulkCreateCurrenciesResponse)(nil),                 // 34: treasury.BulkCreateCurrenciesResponse
+	(*RoutingNumber)(nil),                                // 35: treasury.RoutingNumber
+	(*FinancialInstitution)(nil),                         // 36: treasury.FinancialInstitution
+	(*Address)(nil),                                      // 37: treasury.Address
+	(*ContactInfo)(nil),                                  // 38: treasury.ContactInfo
+	(*CreateInstitutionRequest)(nil),                     // 39: treasury.CreateInstitutionRequest
+	(*CreateInstitutionResponse)(nil),                    // 40: treasury.CreateInstitutionResponse
+	(*GetInstitutionRequest)(nil),                        // 41: treasury.GetInstitutionRequest
+	(*GetInstitutionResponse)(nil),                       // 42: treasury.GetInstitutionResponse
+	(*UpdateInstitutionRequest)(nil),                     // 43: treasury.UpdateInstitutionRequest
+	(*UpdateInstitutionResponse)(nil),                    // 44: treasury.UpdateInstitutionResponse
+	(*DeleteInstitutionRequest)(nil),                     // 45: treasury.DeleteInstitutionRequest
+	(*DeleteInstitutionResponse)(nil),                    // 46: treasury.DeleteInstitutionResponse
+	(*ListInstitutionsRequest)(nil),                      // 47: treasury.ListInstitutionsRequest
+	(*ListInstitutionsResponse)(nil),                     // 48: treasury.ListInstitutionsResponse
+	(*CheckInstitutionReferencesRequest)(nil),            // 49: treasury.CheckInstitutionReferencesRequest
+	(*CheckInstitutionReferencesResponse)(nil),           // 50: treasury.CheckInstitutionReferencesResponse
+	(*BulkCreateInstitutionsRequest)(nil),                // 51: treasury.BulkCreateInstitutionsRequest
+	(*BulkCreateInstitutionsResponse)(nil),               // 52: treasury.BulkCreateInstitutionsResponse
+	nil,                                                  // 53: treasury.ServiceMetadata.LabelsEntry
+	nil,                                                  // 54: treasury.DependencyConfig.MetadataEntry
+	(*CreateInstitutionRequest_RoutingNumberInput)(nil),  // 55: treasury.CreateInstitutionRequest.RoutingNumberInput
+	(*UpdateInstitutionRequest_RoutingNumberUpdate)(nil), // 56: treasury.UpdateInstitutionRequest.RoutingNumberUpdate
+	(*CheckInstitutionReferencesResponse_Reference)(nil), // 57: treasury.CheckInstitutionReferencesResponse.Reference
+	(*timestamppb.Timestamp)(nil),                        // 58: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                        // 59: google.protobuf.FieldMask
+	(*structpb.Struct)(nil),                              // 60: google.protobuf.Struct
 }
 var file_services_treasury_services_treasury_service_proto_treasury_service_proto_depIdxs = []int32{
-	5,  // 0: treasury.ManifestResponse.identity:type_name -> treasury.ServiceIdentity
-	6,  // 1: treasury.ManifestResponse.build_info:type_name -> treasury.BuildInfo
-	7,  // 2: treasury.ManifestResponse.runtime_info:type_name -> treasury.RuntimeInfo
-	8,  // 3: treasury.ManifestResponse.metadata:type_name -> treasury.ServiceMetadata
-	9,  // 4: treasury.ManifestResponse.capabilities:type_name -> treasury.ServiceCapabilities
-	33, // 5: treasury.ServiceMetadata.labels:type_name -> treasury.ServiceMetadata.LabelsEntry
-	10, // 6: treasury.ServiceCapabilities.dependencies:type_name -> treasury.ServiceDependency
+	7,  // 0: treasury.ManifestResponse.identity:type_name -> treasury.ServiceIdentity
+	8,  // 1: treasury.ManifestResponse.build_info:type_name -> treasury.BuildInfo
+	9,  // 2: treasury.ManifestResponse.runtime_info:type_name -> treasury.RuntimeInfo
+	10, // 3: treasury.ManifestResponse.metadata:type_name -> treasury.ServiceMetadata
+	11, // 4: treasury.ManifestResponse.capabilities:type_name -> treasury.ServiceCapabilities
+	53, // 5: treasury.ServiceMetadata.labels:type_name -> treasury.ServiceMetadata.LabelsEntry
+	12, // 6: treasury.ServiceCapabilities.dependencies:type_name -> treasury.ServiceDependency
 	0,  // 7: treasury.LivenessResponse.status:type_name -> treasury.ServiceStatus
-	15, // 8: treasury.LivenessResponse.checks:type_name -> treasury.ComponentCheck
+	17, // 8: treasury.LivenessResponse.checks:type_name -> treasury.ComponentCheck
 	0,  // 9: treasury.HealthResponse.status:type_name -> treasury.ServiceStatus
-	16, // 10: treasury.HealthResponse.liveness:type_name -> treasury.LivenessInfo
-	17, // 11: treasury.HealthResponse.dependencies:type_name -> treasury.DependencyHealth
-	15, // 12: treasury.LivenessInfo.components:type_name -> treasury.ComponentCheck
+	18, // 10: treasury.HealthResponse.liveness:type_name -> treasury.LivenessInfo
+	19, // 11: treasury.HealthResponse.dependencies:type_name -> treasury.DependencyHealth
+	17, // 12: treasury.LivenessInfo.components:type_name -> treasury.ComponentCheck
 	1,  // 13: treasury.DependencyHealth.type:type_name -> treasury.DependencyType
 	0,  // 14: treasury.DependencyHealth.status:type_name -> treasury.ServiceStatus
-	18, // 15: treasury.DependencyHealth.config:type_name -> treasury.DependencyConfig
-	19, // 16: treasury.DependencyConfig.pool_info:type_name -> treasury.ConnectionPoolInfo
-	34, // 17: treasury.DependencyConfig.metadata:type_name -> treasury.DependencyConfig.MetadataEntry
+	20, // 15: treasury.DependencyHealth.config:type_name -> treasury.DependencyConfig
+	21, // 16: treasury.DependencyConfig.pool_info:type_name -> treasury.ConnectionPoolInfo
+	54, // 17: treasury.DependencyConfig.metadata:type_name -> treasury.DependencyConfig.MetadataEntry
 	2,  // 18: treasury.Currency.status:type_name -> treasury.CurrencyStatus
-	35, // 19: treasury.Currency.activated_at:type_name -> google.protobuf.Timestamp
-	35, // 20: treasury.Currency.deactivated_at:type_name -> google.protobuf.Timestamp
-	35, // 21: treasury.Currency.created_at:type_name -> google.protobuf.Timestamp
-	35, // 22: treasury.Currency.updated_at:type_name -> google.protobuf.Timestamp
-	20, // 23: treasury.CreateCurrencyResponse.currency:type_name -> treasury.Currency
-	20, // 24: treasury.GetCurrencyResponse.currency:type_name -> treasury.Currency
-	36, // 25: treasury.UpdateCurrencyRequest.update_mask:type_name -> google.protobuf.FieldMask
+	58, // 19: treasury.Currency.activated_at:type_name -> google.protobuf.Timestamp
+	58, // 20: treasury.Currency.deactivated_at:type_name -> google.protobuf.Timestamp
+	58, // 21: treasury.Currency.created_at:type_name -> google.protobuf.Timestamp
+	58, // 22: treasury.Currency.updated_at:type_name -> google.protobuf.Timestamp
+	22, // 23: treasury.CreateCurrencyResponse.currency:type_name -> treasury.Currency
+	22, // 24: treasury.GetCurrencyResponse.currency:type_name -> treasury.Currency
+	59, // 25: treasury.UpdateCurrencyRequest.update_mask:type_name -> google.protobuf.FieldMask
 	2,  // 26: treasury.UpdateCurrencyRequest.status:type_name -> treasury.CurrencyStatus
-	20, // 27: treasury.UpdateCurrencyResponse.currency:type_name -> treasury.Currency
+	22, // 27: treasury.UpdateCurrencyResponse.currency:type_name -> treasury.Currency
 	2,  // 28: treasury.DeactivateCurrencyRequest.status:type_name -> treasury.CurrencyStatus
-	20, // 29: treasury.DeactivateCurrencyResponse.currency:type_name -> treasury.Currency
+	22, // 29: treasury.DeactivateCurrencyResponse.currency:type_name -> treasury.Currency
 	2,  // 30: treasury.ListCurrenciesRequest.status:type_name -> treasury.CurrencyStatus
-	20, // 31: treasury.ListCurrenciesResponse.currencies:type_name -> treasury.Currency
-	21, // 32: treasury.BulkCreateCurrenciesRequest.currencies:type_name -> treasury.CreateCurrencyRequest
-	3,  // 33: treasury.Manifest.GetManifest:input_type -> treasury.ManifestRequest
-	11, // 34: treasury.Health.GetLiveness:input_type -> treasury.LivenessRequest
-	13, // 35: treasury.Health.GetHealth:input_type -> treasury.HealthRequest
-	21, // 36: treasury.CurrencyService.CreateCurrency:input_type -> treasury.CreateCurrencyRequest
-	23, // 37: treasury.CurrencyService.GetCurrency:input_type -> treasury.GetCurrencyRequest
-	25, // 38: treasury.CurrencyService.UpdateCurrency:input_type -> treasury.UpdateCurrencyRequest
-	27, // 39: treasury.CurrencyService.DeactivateCurrency:input_type -> treasury.DeactivateCurrencyRequest
-	29, // 40: treasury.CurrencyService.ListCurrencies:input_type -> treasury.ListCurrenciesRequest
-	31, // 41: treasury.CurrencyService.BulkCreateCurrencies:input_type -> treasury.BulkCreateCurrenciesRequest
-	4,  // 42: treasury.Manifest.GetManifest:output_type -> treasury.ManifestResponse
-	12, // 43: treasury.Health.GetLiveness:output_type -> treasury.LivenessResponse
-	14, // 44: treasury.Health.GetHealth:output_type -> treasury.HealthResponse
-	22, // 45: treasury.CurrencyService.CreateCurrency:output_type -> treasury.CreateCurrencyResponse
-	24, // 46: treasury.CurrencyService.GetCurrency:output_type -> treasury.GetCurrencyResponse
-	26, // 47: treasury.CurrencyService.UpdateCurrency:output_type -> treasury.UpdateCurrencyResponse
-	28, // 48: treasury.CurrencyService.DeactivateCurrency:output_type -> treasury.DeactivateCurrencyResponse
-	30, // 49: treasury.CurrencyService.ListCurrencies:output_type -> treasury.ListCurrenciesResponse
-	32, // 50: treasury.CurrencyService.BulkCreateCurrencies:output_type -> treasury.BulkCreateCurrenciesResponse
-	42, // [42:51] is the sub-list for method output_type
-	33, // [33:42] is the sub-list for method input_type
-	33, // [33:33] is the sub-list for extension type_name
-	33, // [33:33] is the sub-list for extension extendee
-	0,  // [0:33] is the sub-list for field type_name
+	22, // 31: treasury.ListCurrenciesResponse.currencies:type_name -> treasury.Currency
+	23, // 32: treasury.BulkCreateCurrenciesRequest.currencies:type_name -> treasury.CreateCurrencyRequest
+	58, // 33: treasury.RoutingNumber.created_at:type_name -> google.protobuf.Timestamp
+	58, // 34: treasury.RoutingNumber.updated_at:type_name -> google.protobuf.Timestamp
+	35, // 35: treasury.FinancialInstitution.routing_numbers:type_name -> treasury.RoutingNumber
+	3,  // 36: treasury.FinancialInstitution.institution_type:type_name -> treasury.InstitutionType
+	37, // 37: treasury.FinancialInstitution.address:type_name -> treasury.Address
+	38, // 38: treasury.FinancialInstitution.contact:type_name -> treasury.ContactInfo
+	60, // 39: treasury.FinancialInstitution.business_hours:type_name -> google.protobuf.Struct
+	60, // 40: treasury.FinancialInstitution.licenses:type_name -> google.protobuf.Struct
+	4,  // 41: treasury.FinancialInstitution.status:type_name -> treasury.InstitutionStatus
+	58, // 42: treasury.FinancialInstitution.activated_at:type_name -> google.protobuf.Timestamp
+	58, // 43: treasury.FinancialInstitution.deactivated_at:type_name -> google.protobuf.Timestamp
+	60, // 44: treasury.FinancialInstitution.capabilities:type_name -> google.protobuf.Struct
+	60, // 45: treasury.FinancialInstitution.external_references:type_name -> google.protobuf.Struct
+	58, // 46: treasury.FinancialInstitution.created_at:type_name -> google.protobuf.Timestamp
+	58, // 47: treasury.FinancialInstitution.updated_at:type_name -> google.protobuf.Timestamp
+	55, // 48: treasury.CreateInstitutionRequest.routing_numbers:type_name -> treasury.CreateInstitutionRequest.RoutingNumberInput
+	3,  // 49: treasury.CreateInstitutionRequest.institution_type:type_name -> treasury.InstitutionType
+	37, // 50: treasury.CreateInstitutionRequest.address:type_name -> treasury.Address
+	38, // 51: treasury.CreateInstitutionRequest.contact:type_name -> treasury.ContactInfo
+	60, // 52: treasury.CreateInstitutionRequest.capabilities:type_name -> google.protobuf.Struct
+	36, // 53: treasury.CreateInstitutionResponse.institution:type_name -> treasury.FinancialInstitution
+	36, // 54: treasury.GetInstitutionResponse.institution:type_name -> treasury.FinancialInstitution
+	59, // 55: treasury.UpdateInstitutionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	56, // 56: treasury.UpdateInstitutionRequest.routing_numbers:type_name -> treasury.UpdateInstitutionRequest.RoutingNumberUpdate
+	37, // 57: treasury.UpdateInstitutionRequest.address:type_name -> treasury.Address
+	38, // 58: treasury.UpdateInstitutionRequest.contact:type_name -> treasury.ContactInfo
+	4,  // 59: treasury.UpdateInstitutionRequest.status:type_name -> treasury.InstitutionStatus
+	60, // 60: treasury.UpdateInstitutionRequest.capabilities:type_name -> google.protobuf.Struct
+	36, // 61: treasury.UpdateInstitutionResponse.institution:type_name -> treasury.FinancialInstitution
+	4,  // 62: treasury.ListInstitutionsRequest.status:type_name -> treasury.InstitutionStatus
+	3,  // 63: treasury.ListInstitutionsRequest.institution_type:type_name -> treasury.InstitutionType
+	36, // 64: treasury.ListInstitutionsResponse.institutions:type_name -> treasury.FinancialInstitution
+	57, // 65: treasury.CheckInstitutionReferencesResponse.references:type_name -> treasury.CheckInstitutionReferencesResponse.Reference
+	39, // 66: treasury.BulkCreateInstitutionsRequest.institutions:type_name -> treasury.CreateInstitutionRequest
+	5,  // 67: treasury.Manifest.GetManifest:input_type -> treasury.ManifestRequest
+	13, // 68: treasury.Health.GetLiveness:input_type -> treasury.LivenessRequest
+	15, // 69: treasury.Health.GetHealth:input_type -> treasury.HealthRequest
+	23, // 70: treasury.CurrencyService.CreateCurrency:input_type -> treasury.CreateCurrencyRequest
+	25, // 71: treasury.CurrencyService.GetCurrency:input_type -> treasury.GetCurrencyRequest
+	27, // 72: treasury.CurrencyService.UpdateCurrency:input_type -> treasury.UpdateCurrencyRequest
+	29, // 73: treasury.CurrencyService.DeactivateCurrency:input_type -> treasury.DeactivateCurrencyRequest
+	31, // 74: treasury.CurrencyService.ListCurrencies:input_type -> treasury.ListCurrenciesRequest
+	33, // 75: treasury.CurrencyService.BulkCreateCurrencies:input_type -> treasury.BulkCreateCurrenciesRequest
+	39, // 76: treasury.FinancialInstitutionService.CreateInstitution:input_type -> treasury.CreateInstitutionRequest
+	41, // 77: treasury.FinancialInstitutionService.GetInstitution:input_type -> treasury.GetInstitutionRequest
+	43, // 78: treasury.FinancialInstitutionService.UpdateInstitution:input_type -> treasury.UpdateInstitutionRequest
+	45, // 79: treasury.FinancialInstitutionService.DeleteInstitution:input_type -> treasury.DeleteInstitutionRequest
+	47, // 80: treasury.FinancialInstitutionService.ListInstitutions:input_type -> treasury.ListInstitutionsRequest
+	49, // 81: treasury.FinancialInstitutionService.CheckInstitutionReferences:input_type -> treasury.CheckInstitutionReferencesRequest
+	51, // 82: treasury.FinancialInstitutionService.BulkCreateInstitutions:input_type -> treasury.BulkCreateInstitutionsRequest
+	6,  // 83: treasury.Manifest.GetManifest:output_type -> treasury.ManifestResponse
+	14, // 84: treasury.Health.GetLiveness:output_type -> treasury.LivenessResponse
+	16, // 85: treasury.Health.GetHealth:output_type -> treasury.HealthResponse
+	24, // 86: treasury.CurrencyService.CreateCurrency:output_type -> treasury.CreateCurrencyResponse
+	26, // 87: treasury.CurrencyService.GetCurrency:output_type -> treasury.GetCurrencyResponse
+	28, // 88: treasury.CurrencyService.UpdateCurrency:output_type -> treasury.UpdateCurrencyResponse
+	30, // 89: treasury.CurrencyService.DeactivateCurrency:output_type -> treasury.DeactivateCurrencyResponse
+	32, // 90: treasury.CurrencyService.ListCurrencies:output_type -> treasury.ListCurrenciesResponse
+	34, // 91: treasury.CurrencyService.BulkCreateCurrencies:output_type -> treasury.BulkCreateCurrenciesResponse
+	40, // 92: treasury.FinancialInstitutionService.CreateInstitution:output_type -> treasury.CreateInstitutionResponse
+	42, // 93: treasury.FinancialInstitutionService.GetInstitution:output_type -> treasury.GetInstitutionResponse
+	44, // 94: treasury.FinancialInstitutionService.UpdateInstitution:output_type -> treasury.UpdateInstitutionResponse
+	46, // 95: treasury.FinancialInstitutionService.DeleteInstitution:output_type -> treasury.DeleteInstitutionResponse
+	48, // 96: treasury.FinancialInstitutionService.ListInstitutions:output_type -> treasury.ListInstitutionsResponse
+	50, // 97: treasury.FinancialInstitutionService.CheckInstitutionReferences:output_type -> treasury.CheckInstitutionReferencesResponse
+	52, // 98: treasury.FinancialInstitutionService.BulkCreateInstitutions:output_type -> treasury.BulkCreateInstitutionsResponse
+	83, // [83:99] is the sub-list for method output_type
+	67, // [67:83] is the sub-list for method input_type
+	67, // [67:67] is the sub-list for extension type_name
+	67, // [67:67] is the sub-list for extension extendee
+	0,  // [0:67] is the sub-list for field type_name
 }
 
 func init() { file_services_treasury_services_treasury_service_proto_treasury_service_proto_init() }
@@ -2812,15 +4972,21 @@ func file_services_treasury_services_treasury_service_proto_treasury_service_pro
 		(*GetCurrencyRequest_NumericCode)(nil),
 		(*GetCurrencyRequest_Id)(nil),
 	}
+	file_services_treasury_services_treasury_service_proto_treasury_service_proto_msgTypes[36].OneofWrappers = []any{
+		(*GetInstitutionRequest_Code)(nil),
+		(*GetInstitutionRequest_RoutingNumber)(nil),
+		(*GetInstitutionRequest_SwiftCode)(nil),
+		(*GetInstitutionRequest_Id)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc), len(file_services_treasury_services_treasury_service_proto_treasury_service_proto_rawDesc)),
-			NumEnums:      3,
-			NumMessages:   32,
+			NumEnums:      5,
+			NumMessages:   53,
 			NumExtensions: 0,
-			NumServices:   3,
+			NumServices:   4,
 		},
 		GoTypes:           file_services_treasury_services_treasury_service_proto_treasury_service_proto_goTypes,
 		DependencyIndexes: file_services_treasury_services_treasury_service_proto_treasury_service_proto_depIdxs,

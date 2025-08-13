@@ -4,6 +4,7 @@ package treasury;
 
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/struct.proto";
 
 option go_package = "example.com/go-mono-repo/proto/treasury";
 
@@ -386,6 +387,271 @@ message BulkCreateCurrenciesRequest {
 }
 
 message BulkCreateCurrenciesResponse {
+  int32 created_count = 1;
+  int32 updated_count = 2;
+  int32 skipped_count = 3;
+  repeated string errors = 4;
+}
+
+// ============================================================================
+// Financial Institutions Management Service
+// Spec: docs/specs/004-financial-institutions.md
+// ============================================================================
+
+// Financial institutions management service
+service FinancialInstitutionService {
+  // Create a new financial institution
+  // Spec: docs/specs/004-financial-institutions.md#story-1-create-new-financial-institution
+  rpc CreateInstitution(CreateInstitutionRequest) returns (CreateInstitutionResponse);
+  
+  // Get institution information
+  // Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+  rpc GetInstitution(GetInstitutionRequest) returns (GetInstitutionResponse);
+  
+  // Update institution metadata
+  // Spec: docs/specs/004-financial-institutions.md#story-3-update-institution-information
+  rpc UpdateInstitution(UpdateInstitutionRequest) returns (UpdateInstitutionResponse);
+  
+  // Delete institution (with reference checking)
+  // Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+  rpc DeleteInstitution(DeleteInstitutionRequest) returns (DeleteInstitutionResponse);
+  
+  // List institutions with filters
+  // Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+  rpc ListInstitutions(ListInstitutionsRequest) returns (ListInstitutionsResponse);
+  
+  // Check for references before deletion
+  // Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+  rpc CheckInstitutionReferences(CheckInstitutionReferencesRequest) returns (CheckInstitutionReferencesResponse);
+  
+  // Bulk create institutions
+  // Spec: docs/specs/004-financial-institutions.md#story-5-bulk-institution-operations
+  rpc BulkCreateInstitutions(BulkCreateInstitutionsRequest) returns (BulkCreateInstitutionsResponse);
+}
+
+// RoutingNumber represents a routing number for an institution
+message RoutingNumber {
+  string id = 1;                              // UUID
+  string routing_number = 2;                  // 9-digit routing number
+  string routing_type = 3;                    // standard, wire, ach, fedwire, other
+  bool is_primary = 4;                        // Primary routing number flag
+  string description = 5;                     // Optional description
+  google.protobuf.Timestamp created_at = 6;
+  google.protobuf.Timestamp updated_at = 7;
+}
+
+// FinancialInstitution represents a banking institution
+message FinancialInstitution {
+  string id = 1;                              // UUID
+  string code = 2;                            // Unique institution code
+  string name = 3;                            // Official name
+  string short_name = 4;                      // Display name
+  
+  // US Banking identifiers (supports multiple routing numbers)
+  repeated RoutingNumber routing_numbers = 5;  // List of routing numbers
+  
+  // International identifiers
+  string swift_code = 6;                      // SWIFT/BIC code
+  string iban_prefix = 7;                     // IBAN prefix
+  string bank_code = 8;                       // National bank code
+  string branch_code = 9;                     // Branch code
+  
+  // Institution details
+  InstitutionType institution_type = 10;
+  string country_code = 11;                   // ISO 3166-1 alpha-2
+  string primary_currency = 12;               // ISO 4217 code
+  
+  // Address
+  Address address = 13;
+  
+  // Contact
+  ContactInfo contact = 14;
+  
+  // Operational
+  string time_zone = 15;
+  google.protobuf.Struct business_hours = 16;
+  string holiday_calendar = 17;
+  
+  // Regulatory
+  string regulatory_id = 18;
+  string tax_id = 19;
+  google.protobuf.Struct licenses = 20;
+  
+  // Status
+  InstitutionStatus status = 21;
+  bool is_active = 22;
+  google.protobuf.Timestamp activated_at = 23;
+  google.protobuf.Timestamp deactivated_at = 24;
+  string suspension_reason = 25;
+  
+  // Metadata
+  google.protobuf.Struct capabilities = 26;
+  string notes = 27;
+  google.protobuf.Struct external_references = 28;
+  
+  // Audit
+  google.protobuf.Timestamp created_at = 29;
+  google.protobuf.Timestamp updated_at = 30;
+  string created_by = 31;
+  string updated_by = 32;
+  int32 version = 33;
+}
+
+enum InstitutionType {
+  INSTITUTION_TYPE_UNSPECIFIED = 0;
+  INSTITUTION_TYPE_BANK = 1;
+  INSTITUTION_TYPE_CREDIT_UNION = 2;
+  INSTITUTION_TYPE_INVESTMENT_BANK = 3;
+  INSTITUTION_TYPE_CENTRAL_BANK = 4;
+  INSTITUTION_TYPE_SAVINGS_BANK = 5;
+  INSTITUTION_TYPE_ONLINE_BANK = 6;
+  INSTITUTION_TYPE_OTHER = 7;
+}
+
+enum InstitutionStatus {
+  INSTITUTION_STATUS_UNSPECIFIED = 0;
+  INSTITUTION_STATUS_ACTIVE = 1;
+  INSTITUTION_STATUS_INACTIVE = 2;
+  INSTITUTION_STATUS_SUSPENDED = 3;
+  INSTITUTION_STATUS_DELETED = 4;
+}
+
+message Address {
+  string street_address_1 = 1;
+  string street_address_2 = 2;
+  string city = 3;
+  string state_province = 4;
+  string postal_code = 5;
+  string country_code = 6;
+}
+
+message ContactInfo {
+  string phone_number = 1;
+  string fax_number = 2;
+  string email_address = 3;
+  string website_url = 4;
+}
+
+// Request/Response messages for FinancialInstitutionService
+message CreateInstitutionRequest {
+  string code = 1;                            // Required, unique
+  string name = 2;                            // Required
+  string short_name = 3;
+  
+  // Support for multiple routing numbers
+  message RoutingNumberInput {
+    string routing_number = 1;
+    string routing_type = 2;                // standard, wire, ach, fedwire, other
+    bool is_primary = 3;
+    string description = 4;
+  }
+  repeated RoutingNumberInput routing_numbers = 4; // US banks routing numbers
+  
+  string swift_code = 5;                      // Required for international
+  string bank_code = 6;
+  string branch_code = 7;
+  InstitutionType institution_type = 8;       // Required
+  string country_code = 9;                    // Required
+  string primary_currency = 10;
+  Address address = 11;
+  ContactInfo contact = 12;
+  string time_zone = 13;
+  google.protobuf.Struct capabilities = 14;
+  string notes = 15;
+}
+
+message CreateInstitutionResponse {
+  FinancialInstitution institution = 1;
+}
+
+message GetInstitutionRequest {
+  oneof identifier {
+    string code = 1;                        // Primary lookup
+    string routing_number = 2;              // US routing lookup
+    string swift_code = 3;                  // International lookup
+    string id = 4;                          // UUID lookup
+  }
+}
+
+message GetInstitutionResponse {
+  FinancialInstitution institution = 1;
+}
+
+message UpdateInstitutionRequest {
+  string code = 1;                            // Required (identifies institution)
+  google.protobuf.FieldMask update_mask = 2;  // Fields to update
+  string name = 3;
+  string short_name = 4;
+  
+  // For updating routing numbers
+  message RoutingNumberUpdate {
+    string routing_number = 1;
+    string routing_type = 2;
+    bool is_primary = 3;
+    string description = 4;
+  }
+  repeated RoutingNumberUpdate routing_numbers = 5; // Replace all routing numbers
+  
+  string swift_code = 6;
+  Address address = 7;
+  ContactInfo contact = 8;
+  InstitutionStatus status = 9;
+  google.protobuf.Struct capabilities = 10;
+  string notes = 11;
+  int32 version = 12;                         // For optimistic locking
+}
+
+message UpdateInstitutionResponse {
+  FinancialInstitution institution = 1;
+}
+
+message DeleteInstitutionRequest {
+  string code = 1;                            // Required
+  bool force = 2;                             // Force deletion despite references
+  string deleted_by = 3;                      // User making deletion
+}
+
+message DeleteInstitutionResponse {
+  bool success = 1;
+  repeated string blocking_references = 2;    // What prevents deletion
+}
+
+message ListInstitutionsRequest {
+  InstitutionStatus status = 1;               // Filter by status
+  InstitutionType institution_type = 2;       // Filter by type
+  string country_code = 3;                    // Filter by country
+  bool is_active = 4;                         // Filter by active flag
+  int32 page_size = 5;                        // Pagination
+  string page_token = 6;                      // Pagination token
+}
+
+message ListInstitutionsResponse {
+  repeated FinancialInstitution institutions = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
+}
+
+message CheckInstitutionReferencesRequest {
+  string code = 1;                            // Institution to check
+}
+
+message CheckInstitutionReferencesResponse {
+  message Reference {
+    string table_name = 1;
+    string column_name = 2;
+    int32 count = 3;
+  }
+  repeated Reference references = 1;
+  bool can_delete = 2;                        // True if no references
+}
+
+message BulkCreateInstitutionsRequest {
+  repeated CreateInstitutionRequest institutions = 1;
+  bool skip_duplicates = 2;                   // Skip existing institutions
+  bool update_existing = 3;                   // Update if exists
+}
+
+message BulkCreateInstitutionsResponse {
   int32 created_count = 1;
   int32 updated_count = 2;
   int32 skipped_count = 3;

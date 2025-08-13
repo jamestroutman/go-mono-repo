@@ -90,6 +90,15 @@ func main() {
 		log.Printf("Currency service initialized")
 	}
 	
+	// Initialize institution server if database is available
+	// Spec: docs/specs/004-financial-institutions.md
+	var institutionServer *InstitutionServer
+	if dbManager.GetDB() != nil {
+		institutionManager := NewInstitutionManager(dbManager.GetDB())
+		institutionServer = NewInstitutionServer(institutionManager)
+		log.Printf("Financial institution service initialized")
+	}
+	
 	// Create manifest server with cached data
 	// Spec: docs/specs/001-manifest.md
 	manifestServer := NewManifestServer(cfg, startTime)
@@ -129,6 +138,13 @@ func main() {
 	if currencyServer != nil {
 		pb.RegisterCurrencyServiceServer(grpcServer, currencyServer)
 		log.Printf("Currency service registered with gRPC server")
+	}
+	
+	// Register financial institution service if available
+	// Spec: docs/specs/004-financial-institutions.md
+	if institutionServer != nil {
+		pb.RegisterFinancialInstitutionServiceServer(grpcServer, institutionServer)
+		log.Printf("Financial institution service registered with gRPC server")
 	}
 	
 	// Mark gRPC as ready after registration

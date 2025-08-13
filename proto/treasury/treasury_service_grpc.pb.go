@@ -597,3 +597,366 @@ var CurrencyService_ServiceDesc = grpc.ServiceDesc{
 	Streams:  []grpc.StreamDesc{},
 	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
 }
+
+const (
+	FinancialInstitutionService_CreateInstitution_FullMethodName          = "/treasury.FinancialInstitutionService/CreateInstitution"
+	FinancialInstitutionService_GetInstitution_FullMethodName             = "/treasury.FinancialInstitutionService/GetInstitution"
+	FinancialInstitutionService_UpdateInstitution_FullMethodName          = "/treasury.FinancialInstitutionService/UpdateInstitution"
+	FinancialInstitutionService_DeleteInstitution_FullMethodName          = "/treasury.FinancialInstitutionService/DeleteInstitution"
+	FinancialInstitutionService_ListInstitutions_FullMethodName           = "/treasury.FinancialInstitutionService/ListInstitutions"
+	FinancialInstitutionService_CheckInstitutionReferences_FullMethodName = "/treasury.FinancialInstitutionService/CheckInstitutionReferences"
+	FinancialInstitutionService_BulkCreateInstitutions_FullMethodName     = "/treasury.FinancialInstitutionService/BulkCreateInstitutions"
+)
+
+// FinancialInstitutionServiceClient is the client API for FinancialInstitutionService service.
+//
+// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Financial institutions management service
+type FinancialInstitutionServiceClient interface {
+	// Create a new financial institution
+	// Spec: docs/specs/004-financial-institutions.md#story-1-create-new-financial-institution
+	CreateInstitution(ctx context.Context, in *CreateInstitutionRequest, opts ...grpc.CallOption) (*CreateInstitutionResponse, error)
+	// Get institution information
+	// Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+	GetInstitution(ctx context.Context, in *GetInstitutionRequest, opts ...grpc.CallOption) (*GetInstitutionResponse, error)
+	// Update institution metadata
+	// Spec: docs/specs/004-financial-institutions.md#story-3-update-institution-information
+	UpdateInstitution(ctx context.Context, in *UpdateInstitutionRequest, opts ...grpc.CallOption) (*UpdateInstitutionResponse, error)
+	// Delete institution (with reference checking)
+	// Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+	DeleteInstitution(ctx context.Context, in *DeleteInstitutionRequest, opts ...grpc.CallOption) (*DeleteInstitutionResponse, error)
+	// List institutions with filters
+	// Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+	ListInstitutions(ctx context.Context, in *ListInstitutionsRequest, opts ...grpc.CallOption) (*ListInstitutionsResponse, error)
+	// Check for references before deletion
+	// Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+	CheckInstitutionReferences(ctx context.Context, in *CheckInstitutionReferencesRequest, opts ...grpc.CallOption) (*CheckInstitutionReferencesResponse, error)
+	// Bulk create institutions
+	// Spec: docs/specs/004-financial-institutions.md#story-5-bulk-institution-operations
+	BulkCreateInstitutions(ctx context.Context, in *BulkCreateInstitutionsRequest, opts ...grpc.CallOption) (*BulkCreateInstitutionsResponse, error)
+}
+
+type financialInstitutionServiceClient struct {
+	cc grpc.ClientConnInterface
+}
+
+func NewFinancialInstitutionServiceClient(cc grpc.ClientConnInterface) FinancialInstitutionServiceClient {
+	return &financialInstitutionServiceClient{cc}
+}
+
+func (c *financialInstitutionServiceClient) CreateInstitution(ctx context.Context, in *CreateInstitutionRequest, opts ...grpc.CallOption) (*CreateInstitutionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CreateInstitutionResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_CreateInstitution_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) GetInstitution(ctx context.Context, in *GetInstitutionRequest, opts ...grpc.CallOption) (*GetInstitutionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetInstitutionResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_GetInstitution_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) UpdateInstitution(ctx context.Context, in *UpdateInstitutionRequest, opts ...grpc.CallOption) (*UpdateInstitutionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(UpdateInstitutionResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_UpdateInstitution_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) DeleteInstitution(ctx context.Context, in *DeleteInstitutionRequest, opts ...grpc.CallOption) (*DeleteInstitutionResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteInstitutionResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_DeleteInstitution_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) ListInstitutions(ctx context.Context, in *ListInstitutionsRequest, opts ...grpc.CallOption) (*ListInstitutionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListInstitutionsResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_ListInstitutions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) CheckInstitutionReferences(ctx context.Context, in *CheckInstitutionReferencesRequest, opts ...grpc.CallOption) (*CheckInstitutionReferencesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckInstitutionReferencesResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_CheckInstitutionReferences_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *financialInstitutionServiceClient) BulkCreateInstitutions(ctx context.Context, in *BulkCreateInstitutionsRequest, opts ...grpc.CallOption) (*BulkCreateInstitutionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(BulkCreateInstitutionsResponse)
+	err := c.cc.Invoke(ctx, FinancialInstitutionService_BulkCreateInstitutions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// FinancialInstitutionServiceServer is the server API for FinancialInstitutionService service.
+// All implementations must embed UnimplementedFinancialInstitutionServiceServer
+// for forward compatibility.
+//
+// Financial institutions management service
+type FinancialInstitutionServiceServer interface {
+	// Create a new financial institution
+	// Spec: docs/specs/004-financial-institutions.md#story-1-create-new-financial-institution
+	CreateInstitution(context.Context, *CreateInstitutionRequest) (*CreateInstitutionResponse, error)
+	// Get institution information
+	// Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+	GetInstitution(context.Context, *GetInstitutionRequest) (*GetInstitutionResponse, error)
+	// Update institution metadata
+	// Spec: docs/specs/004-financial-institutions.md#story-3-update-institution-information
+	UpdateInstitution(context.Context, *UpdateInstitutionRequest) (*UpdateInstitutionResponse, error)
+	// Delete institution (with reference checking)
+	// Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+	DeleteInstitution(context.Context, *DeleteInstitutionRequest) (*DeleteInstitutionResponse, error)
+	// List institutions with filters
+	// Spec: docs/specs/004-financial-institutions.md#story-2-query-financial-institution-information
+	ListInstitutions(context.Context, *ListInstitutionsRequest) (*ListInstitutionsResponse, error)
+	// Check for references before deletion
+	// Spec: docs/specs/004-financial-institutions.md#story-4-deactivate-financial-institution
+	CheckInstitutionReferences(context.Context, *CheckInstitutionReferencesRequest) (*CheckInstitutionReferencesResponse, error)
+	// Bulk create institutions
+	// Spec: docs/specs/004-financial-institutions.md#story-5-bulk-institution-operations
+	BulkCreateInstitutions(context.Context, *BulkCreateInstitutionsRequest) (*BulkCreateInstitutionsResponse, error)
+	mustEmbedUnimplementedFinancialInstitutionServiceServer()
+}
+
+// UnimplementedFinancialInstitutionServiceServer must be embedded to have
+// forward compatible implementations.
+//
+// NOTE: this should be embedded by value instead of pointer to avoid a nil
+// pointer dereference when methods are called.
+type UnimplementedFinancialInstitutionServiceServer struct{}
+
+func (UnimplementedFinancialInstitutionServiceServer) CreateInstitution(context.Context, *CreateInstitutionRequest) (*CreateInstitutionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateInstitution not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) GetInstitution(context.Context, *GetInstitutionRequest) (*GetInstitutionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetInstitution not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) UpdateInstitution(context.Context, *UpdateInstitutionRequest) (*UpdateInstitutionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateInstitution not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) DeleteInstitution(context.Context, *DeleteInstitutionRequest) (*DeleteInstitutionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteInstitution not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) ListInstitutions(context.Context, *ListInstitutionsRequest) (*ListInstitutionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListInstitutions not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) CheckInstitutionReferences(context.Context, *CheckInstitutionReferencesRequest) (*CheckInstitutionReferencesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckInstitutionReferences not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) BulkCreateInstitutions(context.Context, *BulkCreateInstitutionsRequest) (*BulkCreateInstitutionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method BulkCreateInstitutions not implemented")
+}
+func (UnimplementedFinancialInstitutionServiceServer) mustEmbedUnimplementedFinancialInstitutionServiceServer() {
+}
+func (UnimplementedFinancialInstitutionServiceServer) testEmbeddedByValue() {}
+
+// UnsafeFinancialInstitutionServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to FinancialInstitutionServiceServer will
+// result in compilation errors.
+type UnsafeFinancialInstitutionServiceServer interface {
+	mustEmbedUnimplementedFinancialInstitutionServiceServer()
+}
+
+func RegisterFinancialInstitutionServiceServer(s grpc.ServiceRegistrar, srv FinancialInstitutionServiceServer) {
+	// If the following call pancis, it indicates UnimplementedFinancialInstitutionServiceServer was
+	// embedded by pointer and is nil.  This will cause panics if an
+	// unimplemented method is ever invoked, so we test this at initialization
+	// time to prevent it from happening at runtime later due to I/O.
+	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
+		t.testEmbeddedByValue()
+	}
+	s.RegisterService(&FinancialInstitutionService_ServiceDesc, srv)
+}
+
+func _FinancialInstitutionService_CreateInstitution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateInstitutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).CreateInstitution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_CreateInstitution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).CreateInstitution(ctx, req.(*CreateInstitutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_GetInstitution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetInstitutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).GetInstitution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_GetInstitution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).GetInstitution(ctx, req.(*GetInstitutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_UpdateInstitution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateInstitutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).UpdateInstitution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_UpdateInstitution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).UpdateInstitution(ctx, req.(*UpdateInstitutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_DeleteInstitution_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteInstitutionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).DeleteInstitution(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_DeleteInstitution_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).DeleteInstitution(ctx, req.(*DeleteInstitutionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_ListInstitutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListInstitutionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).ListInstitutions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_ListInstitutions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).ListInstitutions(ctx, req.(*ListInstitutionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_CheckInstitutionReferences_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckInstitutionReferencesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).CheckInstitutionReferences(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_CheckInstitutionReferences_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).CheckInstitutionReferences(ctx, req.(*CheckInstitutionReferencesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FinancialInstitutionService_BulkCreateInstitutions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(BulkCreateInstitutionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FinancialInstitutionServiceServer).BulkCreateInstitutions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FinancialInstitutionService_BulkCreateInstitutions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FinancialInstitutionServiceServer).BulkCreateInstitutions(ctx, req.(*BulkCreateInstitutionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+// FinancialInstitutionService_ServiceDesc is the grpc.ServiceDesc for FinancialInstitutionService service.
+// It's only intended for direct use with grpc.RegisterService,
+// and not to be introspected or modified (even as a copy)
+var FinancialInstitutionService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "treasury.FinancialInstitutionService",
+	HandlerType: (*FinancialInstitutionServiceServer)(nil),
+	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateInstitution",
+			Handler:    _FinancialInstitutionService_CreateInstitution_Handler,
+		},
+		{
+			MethodName: "GetInstitution",
+			Handler:    _FinancialInstitutionService_GetInstitution_Handler,
+		},
+		{
+			MethodName: "UpdateInstitution",
+			Handler:    _FinancialInstitutionService_UpdateInstitution_Handler,
+		},
+		{
+			MethodName: "DeleteInstitution",
+			Handler:    _FinancialInstitutionService_DeleteInstitution_Handler,
+		},
+		{
+			MethodName: "ListInstitutions",
+			Handler:    _FinancialInstitutionService_ListInstitutions_Handler,
+		},
+		{
+			MethodName: "CheckInstitutionReferences",
+			Handler:    _FinancialInstitutionService_CheckInstitutionReferences_Handler,
+		},
+		{
+			MethodName: "BulkCreateInstitutions",
+			Handler:    _FinancialInstitutionService_BulkCreateInstitutions_Handler,
+		},
+	},
+	Streams:  []grpc.StreamDesc{},
+	Metadata: "services/treasury-services/treasury-service/proto/treasury_service.proto",
+}
