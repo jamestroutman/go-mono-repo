@@ -11,6 +11,7 @@ import (
 	"time"
 
 	pb "example.com/go-mono-repo/proto/ledger"
+	"clarity/treasury-services/ledger-service/account"
 	"clarity/treasury-services/ledger-service/pkg/migration"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -133,6 +134,16 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterManifestServer(grpcServer, manifestServer)
 	pb.RegisterHealthServer(grpcServer, healthServer)
+	
+	// Register Account Service if ImmuDB is connected
+	// Spec: docs/specs/003-account-management.md
+	if immuDBManager != nil && immuDBManager.GetClient() != nil {
+		accountServer := account.NewServer(immuDBManager.GetClient())
+		pb.RegisterAccountServiceServer(grpcServer, accountServer)
+		log.Println("Account management service registered")
+	} else {
+		log.Println("Account management service not available (ImmuDB not connected)")
+	}
 	
 	// Mark gRPC as ready after registration
 	// Spec: docs/specs/003-health-check-liveness.md

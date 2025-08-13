@@ -9,6 +9,8 @@ package ledger
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -132,6 +134,66 @@ func (x DependencyType) Number() protoreflect.EnumNumber {
 // Deprecated: Use DependencyType.Descriptor instead.
 func (DependencyType) EnumDescriptor() ([]byte, []int) {
 	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{1}
+}
+
+// Standard accounting types
+// Spec: docs/specs/003-account-management.md#data-models
+type AccountType int32
+
+const (
+	AccountType_ACCOUNT_TYPE_UNSPECIFIED AccountType = 0 // Unknown or unspecified
+	AccountType_ACCOUNT_TYPE_ASSET       AccountType = 1 // Asset accounts
+	AccountType_ACCOUNT_TYPE_LIABILITY   AccountType = 2 // Liability accounts
+	AccountType_ACCOUNT_TYPE_REVENUE     AccountType = 3 // Revenue accounts
+	AccountType_ACCOUNT_TYPE_EXPENSE     AccountType = 4 // Expense accounts
+	AccountType_ACCOUNT_TYPE_EQUITY      AccountType = 5 // Equity accounts
+)
+
+// Enum value maps for AccountType.
+var (
+	AccountType_name = map[int32]string{
+		0: "ACCOUNT_TYPE_UNSPECIFIED",
+		1: "ACCOUNT_TYPE_ASSET",
+		2: "ACCOUNT_TYPE_LIABILITY",
+		3: "ACCOUNT_TYPE_REVENUE",
+		4: "ACCOUNT_TYPE_EXPENSE",
+		5: "ACCOUNT_TYPE_EQUITY",
+	}
+	AccountType_value = map[string]int32{
+		"ACCOUNT_TYPE_UNSPECIFIED": 0,
+		"ACCOUNT_TYPE_ASSET":       1,
+		"ACCOUNT_TYPE_LIABILITY":   2,
+		"ACCOUNT_TYPE_REVENUE":     3,
+		"ACCOUNT_TYPE_EXPENSE":     4,
+		"ACCOUNT_TYPE_EQUITY":      5,
+	}
+)
+
+func (x AccountType) Enum() *AccountType {
+	p := new(AccountType)
+	*p = x
+	return p
+}
+
+func (x AccountType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AccountType) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_enumTypes[2].Descriptor()
+}
+
+func (AccountType) Type() protoreflect.EnumType {
+	return &file_services_treasury_services_ledger_service_proto_ledger_service_proto_enumTypes[2]
+}
+
+func (x AccountType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AccountType.Descriptor instead.
+func (AccountType) EnumDescriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{2}
 }
 
 // The empty request
@@ -1395,11 +1457,675 @@ func (x *ConnectionPoolInfo) GetWaitDurationMs() int64 {
 	return 0
 }
 
+// Account represents a financial account in the ledger
+// Spec: docs/specs/003-account-management.md#data-models
+type Account struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Id              string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`                                                               // System-generated UUID
+	Name            string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`                                                           // Human-readable account name
+	ExternalId      string                 `protobuf:"bytes,3,opt,name=external_id,json=externalId,proto3" json:"external_id,omitempty"`                             // External system identifier (unique)
+	ExternalGroupId string                 `protobuf:"bytes,4,opt,name=external_group_id,json=externalGroupId,proto3" json:"external_group_id,omitempty"`            // External group identifier (optional)
+	CurrencyCode    string                 `protobuf:"bytes,5,opt,name=currency_code,json=currencyCode,proto3" json:"currency_code,omitempty"`                       // ISO 4217 currency code
+	AccountType     AccountType            `protobuf:"varint,6,opt,name=account_type,json=accountType,proto3,enum=ledger.AccountType" json:"account_type,omitempty"` // Standard accounting type
+	CreatedAt       *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`                                // Creation timestamp
+	UpdatedAt       *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`                                // Last update timestamp
+	Version         int64                  `protobuf:"varint,9,opt,name=version,proto3" json:"version,omitempty"`                                                    // Version for optimistic locking
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *Account) Reset() {
+	*x = Account{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Account) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Account) ProtoMessage() {}
+
+func (x *Account) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Account.ProtoReflect.Descriptor instead.
+func (*Account) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *Account) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *Account) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Account) GetExternalId() string {
+	if x != nil {
+		return x.ExternalId
+	}
+	return ""
+}
+
+func (x *Account) GetExternalGroupId() string {
+	if x != nil {
+		return x.ExternalGroupId
+	}
+	return ""
+}
+
+func (x *Account) GetCurrencyCode() string {
+	if x != nil {
+		return x.CurrencyCode
+	}
+	return ""
+}
+
+func (x *Account) GetAccountType() AccountType {
+	if x != nil {
+		return x.AccountType
+	}
+	return AccountType_ACCOUNT_TYPE_UNSPECIFIED
+}
+
+func (x *Account) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Account) GetUpdatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Account) GetVersion() int64 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+// Create account request
+// Spec: docs/specs/003-account-management.md#story-1-create-account
+type CreateAccountRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Name            string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`                                                           // Required: Account name
+	ExternalId      string                 `protobuf:"bytes,2,opt,name=external_id,json=externalId,proto3" json:"external_id,omitempty"`                             // Required: External identifier
+	ExternalGroupId string                 `protobuf:"bytes,3,opt,name=external_group_id,json=externalGroupId,proto3" json:"external_group_id,omitempty"`            // Optional: External group
+	CurrencyCode    string                 `protobuf:"bytes,4,opt,name=currency_code,json=currencyCode,proto3" json:"currency_code,omitempty"`                       // Required: ISO 4217 code
+	AccountType     AccountType            `protobuf:"varint,5,opt,name=account_type,json=accountType,proto3,enum=ledger.AccountType" json:"account_type,omitempty"` // Required: Account type
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *CreateAccountRequest) Reset() {
+	*x = CreateAccountRequest{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAccountRequest) ProtoMessage() {}
+
+func (x *CreateAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAccountRequest.ProtoReflect.Descriptor instead.
+func (*CreateAccountRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *CreateAccountRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *CreateAccountRequest) GetExternalId() string {
+	if x != nil {
+		return x.ExternalId
+	}
+	return ""
+}
+
+func (x *CreateAccountRequest) GetExternalGroupId() string {
+	if x != nil {
+		return x.ExternalGroupId
+	}
+	return ""
+}
+
+func (x *CreateAccountRequest) GetCurrencyCode() string {
+	if x != nil {
+		return x.CurrencyCode
+	}
+	return ""
+}
+
+func (x *CreateAccountRequest) GetAccountType() AccountType {
+	if x != nil {
+		return x.AccountType
+	}
+	return AccountType_ACCOUNT_TYPE_UNSPECIFIED
+}
+
+type CreateAccountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateAccountResponse) Reset() {
+	*x = CreateAccountResponse{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateAccountResponse) ProtoMessage() {}
+
+func (x *CreateAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateAccountResponse.ProtoReflect.Descriptor instead.
+func (*CreateAccountResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *CreateAccountResponse) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+// Get account request
+// Spec: docs/specs/003-account-management.md#story-2-retrieve-account
+type GetAccountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"` // System account ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountRequest) Reset() {
+	*x = GetAccountRequest{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountRequest) ProtoMessage() {}
+
+func (x *GetAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountRequest.ProtoReflect.Descriptor instead.
+func (*GetAccountRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *GetAccountRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+type GetAccountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountResponse) Reset() {
+	*x = GetAccountResponse{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountResponse) ProtoMessage() {}
+
+func (x *GetAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountResponse.ProtoReflect.Descriptor instead.
+func (*GetAccountResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *GetAccountResponse) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+// Get by external ID request
+// Spec: docs/specs/003-account-management.md#story-5-retrieve-account-by-external-id
+type GetAccountByExternalIdRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ExternalId    string                 `protobuf:"bytes,1,opt,name=external_id,json=externalId,proto3" json:"external_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountByExternalIdRequest) Reset() {
+	*x = GetAccountByExternalIdRequest{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountByExternalIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountByExternalIdRequest) ProtoMessage() {}
+
+func (x *GetAccountByExternalIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountByExternalIdRequest.ProtoReflect.Descriptor instead.
+func (*GetAccountByExternalIdRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *GetAccountByExternalIdRequest) GetExternalId() string {
+	if x != nil {
+		return x.ExternalId
+	}
+	return ""
+}
+
+type GetAccountByExternalIdResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAccountByExternalIdResponse) Reset() {
+	*x = GetAccountByExternalIdResponse{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[23]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAccountByExternalIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAccountByExternalIdResponse) ProtoMessage() {}
+
+func (x *GetAccountByExternalIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[23]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAccountByExternalIdResponse.ProtoReflect.Descriptor instead.
+func (*GetAccountByExternalIdResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{23}
+}
+
+func (x *GetAccountByExternalIdResponse) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+// Update account request
+// Spec: docs/specs/003-account-management.md#story-3-update-account
+type UpdateAccountRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AccountId     string                 `protobuf:"bytes,1,opt,name=account_id,json=accountId,proto3" json:"account_id,omitempty"`    // Required: Account to update
+	Account       *Account               `protobuf:"bytes,2,opt,name=account,proto3" json:"account,omitempty"`                         // Updated account data
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"` // Fields to update
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAccountRequest) Reset() {
+	*x = UpdateAccountRequest{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAccountRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAccountRequest) ProtoMessage() {}
+
+func (x *UpdateAccountRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAccountRequest.ProtoReflect.Descriptor instead.
+func (*UpdateAccountRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *UpdateAccountRequest) GetAccountId() string {
+	if x != nil {
+		return x.AccountId
+	}
+	return ""
+}
+
+func (x *UpdateAccountRequest) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+func (x *UpdateAccountRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+type UpdateAccountResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Account       *Account               `protobuf:"bytes,1,opt,name=account,proto3" json:"account,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateAccountResponse) Reset() {
+	*x = UpdateAccountResponse{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateAccountResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateAccountResponse) ProtoMessage() {}
+
+func (x *UpdateAccountResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateAccountResponse.ProtoReflect.Descriptor instead.
+func (*UpdateAccountResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *UpdateAccountResponse) GetAccount() *Account {
+	if x != nil {
+		return x.Account
+	}
+	return nil
+}
+
+// List accounts request
+// Spec: docs/specs/003-account-management.md#story-4-list-accounts
+type ListAccountsRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	PageSize        int32                  `protobuf:"varint,1,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`                                  // Number of results (max 200)
+	PageToken       string                 `protobuf:"bytes,2,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`                                // Pagination token
+	AccountType     AccountType            `protobuf:"varint,3,opt,name=account_type,json=accountType,proto3,enum=ledger.AccountType" json:"account_type,omitempty"` // Filter by type
+	CurrencyCode    string                 `protobuf:"bytes,4,opt,name=currency_code,json=currencyCode,proto3" json:"currency_code,omitempty"`                       // Filter by currency
+	ExternalGroupId string                 `protobuf:"bytes,5,opt,name=external_group_id,json=externalGroupId,proto3" json:"external_group_id,omitempty"`            // Filter by group
+	NameSearch      string                 `protobuf:"bytes,6,opt,name=name_search,json=nameSearch,proto3" json:"name_search,omitempty"`                             // Search in name (partial match)
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *ListAccountsRequest) Reset() {
+	*x = ListAccountsRequest{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAccountsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAccountsRequest) ProtoMessage() {}
+
+func (x *ListAccountsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAccountsRequest.ProtoReflect.Descriptor instead.
+func (*ListAccountsRequest) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{26}
+}
+
+func (x *ListAccountsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAccountsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListAccountsRequest) GetAccountType() AccountType {
+	if x != nil {
+		return x.AccountType
+	}
+	return AccountType_ACCOUNT_TYPE_UNSPECIFIED
+}
+
+func (x *ListAccountsRequest) GetCurrencyCode() string {
+	if x != nil {
+		return x.CurrencyCode
+	}
+	return ""
+}
+
+func (x *ListAccountsRequest) GetExternalGroupId() string {
+	if x != nil {
+		return x.ExternalGroupId
+	}
+	return ""
+}
+
+func (x *ListAccountsRequest) GetNameSearch() string {
+	if x != nil {
+		return x.NameSearch
+	}
+	return ""
+}
+
+type ListAccountsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Accounts      []*Account             `protobuf:"bytes,1,rep,name=accounts,proto3" json:"accounts,omitempty"`
+	NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	TotalCount    int32                  `protobuf:"varint,3,opt,name=total_count,json=totalCount,proto3" json:"total_count,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAccountsResponse) Reset() {
+	*x = ListAccountsResponse{}
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[27]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAccountsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAccountsResponse) ProtoMessage() {}
+
+func (x *ListAccountsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes[27]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAccountsResponse.ProtoReflect.Descriptor instead.
+func (*ListAccountsResponse) Descriptor() ([]byte, []int) {
+	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescGZIP(), []int{27}
+}
+
+func (x *ListAccountsResponse) GetAccounts() []*Account {
+	if x != nil {
+		return x.Accounts
+	}
+	return nil
+}
+
+func (x *ListAccountsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAccountsResponse) GetTotalCount() int32 {
+	if x != nil {
+		return x.TotalCount
+	}
+	return 0
+}
+
 var File_services_treasury_services_ledger_service_proto_ledger_service_proto protoreflect.FileDescriptor
 
 const file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc = "" +
 	"\n" +
-	"Dservices/treasury-services/ledger-service/proto/ledger_service.proto\x12\x06ledger\"\x11\n" +
+	"Dservices/treasury-services/ledger-service/proto/ledger_service.proto\x12\x06ledger\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\"\x11\n" +
 	"\x0fManifestRequest\"\xa7\x02\n" +
 	"\x10ManifestResponse\x123\n" +
 	"\bidentity\x18\x01 \x01(\v2\x17.ledger.ServiceIdentityR\bidentity\x120\n" +
@@ -1516,7 +2242,61 @@ const file_services_treasury_services_ledger_service_proto_ledger_service_proto_
 	"\x10idle_connections\x18\x03 \x01(\x05R\x0fidleConnections\x12\x1d\n" +
 	"\n" +
 	"wait_count\x18\x04 \x01(\x05R\twaitCount\x12(\n" +
-	"\x10wait_duration_ms\x18\x05 \x01(\x03R\x0ewaitDurationMs*9\n" +
+	"\x10wait_duration_ms\x18\x05 \x01(\x03R\x0ewaitDurationMs\"\xe7\x02\n" +
+	"\aAccount\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\x12\x1f\n" +
+	"\vexternal_id\x18\x03 \x01(\tR\n" +
+	"externalId\x12*\n" +
+	"\x11external_group_id\x18\x04 \x01(\tR\x0fexternalGroupId\x12#\n" +
+	"\rcurrency_code\x18\x05 \x01(\tR\fcurrencyCode\x126\n" +
+	"\faccount_type\x18\x06 \x01(\x0e2\x13.ledger.AccountTypeR\vaccountType\x129\n" +
+	"\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x12\x18\n" +
+	"\aversion\x18\t \x01(\x03R\aversion\"\xd4\x01\n" +
+	"\x14CreateAccountRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n" +
+	"\vexternal_id\x18\x02 \x01(\tR\n" +
+	"externalId\x12*\n" +
+	"\x11external_group_id\x18\x03 \x01(\tR\x0fexternalGroupId\x12#\n" +
+	"\rcurrency_code\x18\x04 \x01(\tR\fcurrencyCode\x126\n" +
+	"\faccount_type\x18\x05 \x01(\x0e2\x13.ledger.AccountTypeR\vaccountType\"B\n" +
+	"\x15CreateAccountResponse\x12)\n" +
+	"\aaccount\x18\x01 \x01(\v2\x0f.ledger.AccountR\aaccount\"2\n" +
+	"\x11GetAccountRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\"?\n" +
+	"\x12GetAccountResponse\x12)\n" +
+	"\aaccount\x18\x01 \x01(\v2\x0f.ledger.AccountR\aaccount\"@\n" +
+	"\x1dGetAccountByExternalIdRequest\x12\x1f\n" +
+	"\vexternal_id\x18\x01 \x01(\tR\n" +
+	"externalId\"K\n" +
+	"\x1eGetAccountByExternalIdResponse\x12)\n" +
+	"\aaccount\x18\x01 \x01(\v2\x0f.ledger.AccountR\aaccount\"\x9d\x01\n" +
+	"\x14UpdateAccountRequest\x12\x1d\n" +
+	"\n" +
+	"account_id\x18\x01 \x01(\tR\taccountId\x12)\n" +
+	"\aaccount\x18\x02 \x01(\v2\x0f.ledger.AccountR\aaccount\x12;\n" +
+	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
+	"updateMask\"B\n" +
+	"\x15UpdateAccountResponse\x12)\n" +
+	"\aaccount\x18\x01 \x01(\v2\x0f.ledger.AccountR\aaccount\"\xfb\x01\n" +
+	"\x13ListAccountsRequest\x12\x1b\n" +
+	"\tpage_size\x18\x01 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x02 \x01(\tR\tpageToken\x126\n" +
+	"\faccount_type\x18\x03 \x01(\x0e2\x13.ledger.AccountTypeR\vaccountType\x12#\n" +
+	"\rcurrency_code\x18\x04 \x01(\tR\fcurrencyCode\x12*\n" +
+	"\x11external_group_id\x18\x05 \x01(\tR\x0fexternalGroupId\x12\x1f\n" +
+	"\vname_search\x18\x06 \x01(\tR\n" +
+	"nameSearch\"\x8c\x01\n" +
+	"\x14ListAccountsResponse\x12+\n" +
+	"\baccounts\x18\x01 \x03(\v2\x0f.ledger.AccountR\baccounts\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1f\n" +
+	"\vtotal_count\x18\x03 \x01(\x05R\n" +
+	"totalCount*9\n" +
 	"\rServiceStatus\x12\v\n" +
 	"\aHEALTHY\x10\x00\x12\f\n" +
 	"\bDEGRADED\x10\x01\x12\r\n" +
@@ -1528,12 +2308,26 @@ const file_services_treasury_services_ledger_service_proto_ledger_service_proto_
 	"\fGRPC_SERVICE\x10\x03\x12\x10\n" +
 	"\fHTTP_SERVICE\x10\x04\x12\v\n" +
 	"\aSTORAGE\x10\x05\x12\t\n" +
-	"\x05OTHER\x10\x062N\n" +
+	"\x05OTHER\x10\x06*\xac\x01\n" +
+	"\vAccountType\x12\x1c\n" +
+	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x16\n" +
+	"\x12ACCOUNT_TYPE_ASSET\x10\x01\x12\x1a\n" +
+	"\x16ACCOUNT_TYPE_LIABILITY\x10\x02\x12\x18\n" +
+	"\x14ACCOUNT_TYPE_REVENUE\x10\x03\x12\x18\n" +
+	"\x14ACCOUNT_TYPE_EXPENSE\x10\x04\x12\x17\n" +
+	"\x13ACCOUNT_TYPE_EQUITY\x10\x052N\n" +
 	"\bManifest\x12B\n" +
 	"\vGetManifest\x12\x17.ledger.ManifestRequest\x1a\x18.ledger.ManifestResponse\"\x002\x8a\x01\n" +
 	"\x06Health\x12B\n" +
 	"\vGetLiveness\x12\x17.ledger.LivenessRequest\x1a\x18.ledger.LivenessResponse\"\x00\x12<\n" +
-	"\tGetHealth\x12\x15.ledger.HealthRequest\x1a\x16.ledger.HealthResponse\"\x00B'Z%example.com/go-mono-repo/proto/ledgerb\x06proto3"
+	"\tGetHealth\x12\x15.ledger.HealthRequest\x1a\x16.ledger.HealthResponse\"\x002\xaf\x03\n" +
+	"\x0eAccountService\x12N\n" +
+	"\rCreateAccount\x12\x1c.ledger.CreateAccountRequest\x1a\x1d.ledger.CreateAccountResponse\"\x00\x12E\n" +
+	"\n" +
+	"GetAccount\x12\x19.ledger.GetAccountRequest\x1a\x1a.ledger.GetAccountResponse\"\x00\x12i\n" +
+	"\x16GetAccountByExternalId\x12%.ledger.GetAccountByExternalIdRequest\x1a&.ledger.GetAccountByExternalIdResponse\"\x00\x12N\n" +
+	"\rUpdateAccount\x12\x1c.ledger.UpdateAccountRequest\x1a\x1d.ledger.UpdateAccountResponse\"\x00\x12K\n" +
+	"\fListAccounts\x12\x1b.ledger.ListAccountsRequest\x1a\x1c.ledger.ListAccountsResponse\"\x00B'Z%example.com/go-mono-repo/proto/ledgerb\x06proto3"
 
 var (
 	file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescOnce sync.Once
@@ -1547,61 +2341,97 @@ func file_services_treasury_services_ledger_service_proto_ledger_service_proto_r
 	return file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDescData
 }
 
-var file_services_treasury_services_ledger_service_proto_ledger_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
+var file_services_treasury_services_ledger_service_proto_ledger_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_services_treasury_services_ledger_service_proto_ledger_service_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_services_treasury_services_ledger_service_proto_ledger_service_proto_goTypes = []any{
-	(ServiceStatus)(0),          // 0: ledger.ServiceStatus
-	(DependencyType)(0),         // 1: ledger.DependencyType
-	(*ManifestRequest)(nil),     // 2: ledger.ManifestRequest
-	(*ManifestResponse)(nil),    // 3: ledger.ManifestResponse
-	(*ServiceIdentity)(nil),     // 4: ledger.ServiceIdentity
-	(*BuildInfo)(nil),           // 5: ledger.BuildInfo
-	(*RuntimeInfo)(nil),         // 6: ledger.RuntimeInfo
-	(*ServiceMetadata)(nil),     // 7: ledger.ServiceMetadata
-	(*ServiceCapabilities)(nil), // 8: ledger.ServiceCapabilities
-	(*ServiceDependency)(nil),   // 9: ledger.ServiceDependency
-	(*LivenessRequest)(nil),     // 10: ledger.LivenessRequest
-	(*LivenessResponse)(nil),    // 11: ledger.LivenessResponse
-	(*HealthRequest)(nil),       // 12: ledger.HealthRequest
-	(*HealthResponse)(nil),      // 13: ledger.HealthResponse
-	(*ComponentCheck)(nil),      // 14: ledger.ComponentCheck
-	(*LivenessInfo)(nil),        // 15: ledger.LivenessInfo
-	(*DependencyHealth)(nil),    // 16: ledger.DependencyHealth
-	(*DependencyConfig)(nil),    // 17: ledger.DependencyConfig
-	(*ConnectionPoolInfo)(nil),  // 18: ledger.ConnectionPoolInfo
-	nil,                         // 19: ledger.ServiceMetadata.LabelsEntry
-	nil,                         // 20: ledger.DependencyConfig.MetadataEntry
+	(ServiceStatus)(0),                     // 0: ledger.ServiceStatus
+	(DependencyType)(0),                    // 1: ledger.DependencyType
+	(AccountType)(0),                       // 2: ledger.AccountType
+	(*ManifestRequest)(nil),                // 3: ledger.ManifestRequest
+	(*ManifestResponse)(nil),               // 4: ledger.ManifestResponse
+	(*ServiceIdentity)(nil),                // 5: ledger.ServiceIdentity
+	(*BuildInfo)(nil),                      // 6: ledger.BuildInfo
+	(*RuntimeInfo)(nil),                    // 7: ledger.RuntimeInfo
+	(*ServiceMetadata)(nil),                // 8: ledger.ServiceMetadata
+	(*ServiceCapabilities)(nil),            // 9: ledger.ServiceCapabilities
+	(*ServiceDependency)(nil),              // 10: ledger.ServiceDependency
+	(*LivenessRequest)(nil),                // 11: ledger.LivenessRequest
+	(*LivenessResponse)(nil),               // 12: ledger.LivenessResponse
+	(*HealthRequest)(nil),                  // 13: ledger.HealthRequest
+	(*HealthResponse)(nil),                 // 14: ledger.HealthResponse
+	(*ComponentCheck)(nil),                 // 15: ledger.ComponentCheck
+	(*LivenessInfo)(nil),                   // 16: ledger.LivenessInfo
+	(*DependencyHealth)(nil),               // 17: ledger.DependencyHealth
+	(*DependencyConfig)(nil),               // 18: ledger.DependencyConfig
+	(*ConnectionPoolInfo)(nil),             // 19: ledger.ConnectionPoolInfo
+	(*Account)(nil),                        // 20: ledger.Account
+	(*CreateAccountRequest)(nil),           // 21: ledger.CreateAccountRequest
+	(*CreateAccountResponse)(nil),          // 22: ledger.CreateAccountResponse
+	(*GetAccountRequest)(nil),              // 23: ledger.GetAccountRequest
+	(*GetAccountResponse)(nil),             // 24: ledger.GetAccountResponse
+	(*GetAccountByExternalIdRequest)(nil),  // 25: ledger.GetAccountByExternalIdRequest
+	(*GetAccountByExternalIdResponse)(nil), // 26: ledger.GetAccountByExternalIdResponse
+	(*UpdateAccountRequest)(nil),           // 27: ledger.UpdateAccountRequest
+	(*UpdateAccountResponse)(nil),          // 28: ledger.UpdateAccountResponse
+	(*ListAccountsRequest)(nil),            // 29: ledger.ListAccountsRequest
+	(*ListAccountsResponse)(nil),           // 30: ledger.ListAccountsResponse
+	nil,                                    // 31: ledger.ServiceMetadata.LabelsEntry
+	nil,                                    // 32: ledger.DependencyConfig.MetadataEntry
+	(*timestamppb.Timestamp)(nil),          // 33: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),          // 34: google.protobuf.FieldMask
 }
 var file_services_treasury_services_ledger_service_proto_ledger_service_proto_depIdxs = []int32{
-	4,  // 0: ledger.ManifestResponse.identity:type_name -> ledger.ServiceIdentity
-	5,  // 1: ledger.ManifestResponse.build_info:type_name -> ledger.BuildInfo
-	6,  // 2: ledger.ManifestResponse.runtime_info:type_name -> ledger.RuntimeInfo
-	7,  // 3: ledger.ManifestResponse.metadata:type_name -> ledger.ServiceMetadata
-	8,  // 4: ledger.ManifestResponse.capabilities:type_name -> ledger.ServiceCapabilities
-	19, // 5: ledger.ServiceMetadata.labels:type_name -> ledger.ServiceMetadata.LabelsEntry
-	9,  // 6: ledger.ServiceCapabilities.dependencies:type_name -> ledger.ServiceDependency
+	5,  // 0: ledger.ManifestResponse.identity:type_name -> ledger.ServiceIdentity
+	6,  // 1: ledger.ManifestResponse.build_info:type_name -> ledger.BuildInfo
+	7,  // 2: ledger.ManifestResponse.runtime_info:type_name -> ledger.RuntimeInfo
+	8,  // 3: ledger.ManifestResponse.metadata:type_name -> ledger.ServiceMetadata
+	9,  // 4: ledger.ManifestResponse.capabilities:type_name -> ledger.ServiceCapabilities
+	31, // 5: ledger.ServiceMetadata.labels:type_name -> ledger.ServiceMetadata.LabelsEntry
+	10, // 6: ledger.ServiceCapabilities.dependencies:type_name -> ledger.ServiceDependency
 	0,  // 7: ledger.LivenessResponse.status:type_name -> ledger.ServiceStatus
-	14, // 8: ledger.LivenessResponse.checks:type_name -> ledger.ComponentCheck
+	15, // 8: ledger.LivenessResponse.checks:type_name -> ledger.ComponentCheck
 	0,  // 9: ledger.HealthResponse.status:type_name -> ledger.ServiceStatus
-	15, // 10: ledger.HealthResponse.liveness:type_name -> ledger.LivenessInfo
-	16, // 11: ledger.HealthResponse.dependencies:type_name -> ledger.DependencyHealth
-	14, // 12: ledger.LivenessInfo.components:type_name -> ledger.ComponentCheck
+	16, // 10: ledger.HealthResponse.liveness:type_name -> ledger.LivenessInfo
+	17, // 11: ledger.HealthResponse.dependencies:type_name -> ledger.DependencyHealth
+	15, // 12: ledger.LivenessInfo.components:type_name -> ledger.ComponentCheck
 	1,  // 13: ledger.DependencyHealth.type:type_name -> ledger.DependencyType
 	0,  // 14: ledger.DependencyHealth.status:type_name -> ledger.ServiceStatus
-	17, // 15: ledger.DependencyHealth.config:type_name -> ledger.DependencyConfig
-	18, // 16: ledger.DependencyConfig.pool_info:type_name -> ledger.ConnectionPoolInfo
-	20, // 17: ledger.DependencyConfig.metadata:type_name -> ledger.DependencyConfig.MetadataEntry
-	2,  // 18: ledger.Manifest.GetManifest:input_type -> ledger.ManifestRequest
-	10, // 19: ledger.Health.GetLiveness:input_type -> ledger.LivenessRequest
-	12, // 20: ledger.Health.GetHealth:input_type -> ledger.HealthRequest
-	3,  // 21: ledger.Manifest.GetManifest:output_type -> ledger.ManifestResponse
-	11, // 22: ledger.Health.GetLiveness:output_type -> ledger.LivenessResponse
-	13, // 23: ledger.Health.GetHealth:output_type -> ledger.HealthResponse
-	21, // [21:24] is the sub-list for method output_type
-	18, // [18:21] is the sub-list for method input_type
-	18, // [18:18] is the sub-list for extension type_name
-	18, // [18:18] is the sub-list for extension extendee
-	0,  // [0:18] is the sub-list for field type_name
+	18, // 15: ledger.DependencyHealth.config:type_name -> ledger.DependencyConfig
+	19, // 16: ledger.DependencyConfig.pool_info:type_name -> ledger.ConnectionPoolInfo
+	32, // 17: ledger.DependencyConfig.metadata:type_name -> ledger.DependencyConfig.MetadataEntry
+	2,  // 18: ledger.Account.account_type:type_name -> ledger.AccountType
+	33, // 19: ledger.Account.created_at:type_name -> google.protobuf.Timestamp
+	33, // 20: ledger.Account.updated_at:type_name -> google.protobuf.Timestamp
+	2,  // 21: ledger.CreateAccountRequest.account_type:type_name -> ledger.AccountType
+	20, // 22: ledger.CreateAccountResponse.account:type_name -> ledger.Account
+	20, // 23: ledger.GetAccountResponse.account:type_name -> ledger.Account
+	20, // 24: ledger.GetAccountByExternalIdResponse.account:type_name -> ledger.Account
+	20, // 25: ledger.UpdateAccountRequest.account:type_name -> ledger.Account
+	34, // 26: ledger.UpdateAccountRequest.update_mask:type_name -> google.protobuf.FieldMask
+	20, // 27: ledger.UpdateAccountResponse.account:type_name -> ledger.Account
+	2,  // 28: ledger.ListAccountsRequest.account_type:type_name -> ledger.AccountType
+	20, // 29: ledger.ListAccountsResponse.accounts:type_name -> ledger.Account
+	3,  // 30: ledger.Manifest.GetManifest:input_type -> ledger.ManifestRequest
+	11, // 31: ledger.Health.GetLiveness:input_type -> ledger.LivenessRequest
+	13, // 32: ledger.Health.GetHealth:input_type -> ledger.HealthRequest
+	21, // 33: ledger.AccountService.CreateAccount:input_type -> ledger.CreateAccountRequest
+	23, // 34: ledger.AccountService.GetAccount:input_type -> ledger.GetAccountRequest
+	25, // 35: ledger.AccountService.GetAccountByExternalId:input_type -> ledger.GetAccountByExternalIdRequest
+	27, // 36: ledger.AccountService.UpdateAccount:input_type -> ledger.UpdateAccountRequest
+	29, // 37: ledger.AccountService.ListAccounts:input_type -> ledger.ListAccountsRequest
+	4,  // 38: ledger.Manifest.GetManifest:output_type -> ledger.ManifestResponse
+	12, // 39: ledger.Health.GetLiveness:output_type -> ledger.LivenessResponse
+	14, // 40: ledger.Health.GetHealth:output_type -> ledger.HealthResponse
+	22, // 41: ledger.AccountService.CreateAccount:output_type -> ledger.CreateAccountResponse
+	24, // 42: ledger.AccountService.GetAccount:output_type -> ledger.GetAccountResponse
+	26, // 43: ledger.AccountService.GetAccountByExternalId:output_type -> ledger.GetAccountByExternalIdResponse
+	28, // 44: ledger.AccountService.UpdateAccount:output_type -> ledger.UpdateAccountResponse
+	30, // 45: ledger.AccountService.ListAccounts:output_type -> ledger.ListAccountsResponse
+	38, // [38:46] is the sub-list for method output_type
+	30, // [30:38] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_services_treasury_services_ledger_service_proto_ledger_service_proto_init() }
@@ -1614,10 +2444,10 @@ func file_services_treasury_services_ledger_service_proto_ledger_service_proto_i
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc), len(file_services_treasury_services_ledger_service_proto_ledger_service_proto_rawDesc)),
-			NumEnums:      2,
-			NumMessages:   19,
+			NumEnums:      3,
+			NumMessages:   30,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   3,
 		},
 		GoTypes:           file_services_treasury_services_ledger_service_proto_ledger_service_proto_goTypes,
 		DependencyIndexes: file_services_treasury_services_ledger_service_proto_ledger_service_proto_depIdxs,

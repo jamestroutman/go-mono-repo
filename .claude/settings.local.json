@@ -32,7 +32,8 @@
       "Bash(pkill:*)",
       "Bash(docker compose:*)",
       "Bash(nslookup:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(go run:*)"
     ],
     "deny": [],
     "ask": []

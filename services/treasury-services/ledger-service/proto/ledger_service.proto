@@ -3,6 +3,9 @@ syntax = "proto3";
 package ledger;
 option go_package = "example.com/go-mono-repo/proto/ledger";
 
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
 // Spec: docs/specs/001-manifest.md
 service Manifest {
   // GetManifest returns comprehensive service metadata
@@ -244,4 +247,121 @@ message ConnectionPoolInfo {
   int32 idle_connections = 3;
   int32 wait_count = 4;
   int64 wait_duration_ms = 5;
+}
+
+// ============================================================================
+// Account Management Service
+// Spec: docs/specs/003-account-management.md
+// ============================================================================
+
+// Account management service
+// Spec: docs/specs/003-account-management.md
+service AccountService {
+  // Create a new account
+  // Spec: docs/specs/003-account-management.md#story-1-create-account
+  rpc CreateAccount (CreateAccountRequest) returns (CreateAccountResponse) {}
+  
+  // Get account by ID
+  // Spec: docs/specs/003-account-management.md#story-2-retrieve-account
+  rpc GetAccount (GetAccountRequest) returns (GetAccountResponse) {}
+  
+  // Get account by external ID
+  // Spec: docs/specs/003-account-management.md#story-5-retrieve-account-by-external-id
+  rpc GetAccountByExternalId (GetAccountByExternalIdRequest) returns (GetAccountByExternalIdResponse) {}
+  
+  // Update account fields
+  // Spec: docs/specs/003-account-management.md#story-3-update-account
+  rpc UpdateAccount (UpdateAccountRequest) returns (UpdateAccountResponse) {}
+  
+  // List accounts with filtering
+  // Spec: docs/specs/003-account-management.md#story-4-list-accounts
+  rpc ListAccounts (ListAccountsRequest) returns (ListAccountsResponse) {}
+}
+
+// Account represents a financial account in the ledger
+// Spec: docs/specs/003-account-management.md#data-models
+message Account {
+  string id = 1;                                  // System-generated UUID
+  string name = 2;                                // Human-readable account name
+  string external_id = 3;                         // External system identifier (unique)
+  string external_group_id = 4;                   // External group identifier (optional)
+  string currency_code = 5;                       // ISO 4217 currency code
+  AccountType account_type = 6;                   // Standard accounting type
+  google.protobuf.Timestamp created_at = 7;       // Creation timestamp
+  google.protobuf.Timestamp updated_at = 8;       // Last update timestamp
+  int64 version = 9;                              // Version for optimistic locking
+}
+
+// Standard accounting types
+// Spec: docs/specs/003-account-management.md#data-models
+enum AccountType {
+  ACCOUNT_TYPE_UNSPECIFIED = 0;  // Unknown or unspecified
+  ACCOUNT_TYPE_ASSET = 1;        // Asset accounts
+  ACCOUNT_TYPE_LIABILITY = 2;    // Liability accounts
+  ACCOUNT_TYPE_REVENUE = 3;      // Revenue accounts
+  ACCOUNT_TYPE_EXPENSE = 4;      // Expense accounts
+  ACCOUNT_TYPE_EQUITY = 5;       // Equity accounts
+}
+
+// Create account request
+// Spec: docs/specs/003-account-management.md#story-1-create-account
+message CreateAccountRequest {
+  string name = 1;                // Required: Account name
+  string external_id = 2;         // Required: External identifier
+  string external_group_id = 3;   // Optional: External group
+  string currency_code = 4;       // Required: ISO 4217 code
+  AccountType account_type = 5;   // Required: Account type
+}
+
+message CreateAccountResponse {
+  Account account = 1;
+}
+
+// Get account request
+// Spec: docs/specs/003-account-management.md#story-2-retrieve-account
+message GetAccountRequest {
+  string account_id = 1;  // System account ID
+}
+
+message GetAccountResponse {
+  Account account = 1;
+}
+
+// Get by external ID request
+// Spec: docs/specs/003-account-management.md#story-5-retrieve-account-by-external-id
+message GetAccountByExternalIdRequest {
+  string external_id = 1;
+}
+
+message GetAccountByExternalIdResponse {
+  Account account = 1;
+}
+
+// Update account request
+// Spec: docs/specs/003-account-management.md#story-3-update-account
+message UpdateAccountRequest {
+  string account_id = 1;                         // Required: Account to update
+  Account account = 2;                           // Updated account data
+  google.protobuf.FieldMask update_mask = 3;     // Fields to update
+}
+
+message UpdateAccountResponse {
+  Account account = 1;
+}
+
+// List accounts request
+// Spec: docs/specs/003-account-management.md#story-4-list-accounts
+message ListAccountsRequest {
+  int32 page_size = 1;            // Number of results (max 200)
+  string page_token = 2;           // Pagination token
+  AccountType account_type = 3;    // Filter by type
+  string currency_code = 4;        // Filter by currency
+  string external_group_id = 5;    // Filter by group
+  string name_search = 6;          // Search in name (partial match)
+}
+
+message ListAccountsResponse {
+  repeated Account accounts = 1;
+  string next_page_token = 2;
+  int32 total_count = 3;
 }
