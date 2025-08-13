@@ -14,7 +14,3 @@ Think deeply about the best approach for implementing this feature in our codeba
 Always follow best practices when available.
 
 Then begin writting the specificaiton, ask questions as necessary.
-
-# Usage
-
-> /write-feature-spec @services/treasury-services/ledger-service - The general requirements...
