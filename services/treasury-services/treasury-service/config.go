@@ -57,6 +57,9 @@ type Config struct {
 	// When running as separate containers, use service name (ledger-service)
 	LedgerServiceHost string `envconfig:"LEDGER_SERVICE_HOST" default:"localhost"`
 	LedgerServicePort int    `envconfig:"LEDGER_SERVICE_PORT" default:"50051"`
+	
+	// Internal - not from env
+	EnvFilePath string `envconfig:"-"`
 }
 
 // DatabaseConfig holds database connection parameters
@@ -90,18 +93,20 @@ func LoadConfig() (*Config, error) {
 	}
 	
 	var loaded bool
+	var loadedPath string
 	for _, path := range envPaths {
 		if err := godotenv.Load(path); err == nil {
-			log.Printf("Loaded environment from: %s", path)
+			loadedPath = path
 			loaded = true
 			break
 		} else if !os.IsNotExist(err) {
+			// Only log actual errors, not missing files
 			log.Printf("Warning: Error loading %s: %v", path, err)
 		}
 	}
 	
 	if !loaded {
-		log.Printf("No .env file found, using environment variables and defaults")
+		// This is expected in production, so don't log unless debugging
 	}
 
 	var cfg Config
@@ -133,8 +138,10 @@ func LoadConfig() (*Config, error) {
 	cfg.Migration.MaxRetries = parseIntFromEnv("MIGRATION_MAX_RETRIES", 3)
 	cfg.Migration.RetryDelay = parseDurationFromEnv("MIGRATION_RETRY_DELAY", 5*time.Second)
 
-	// Log loaded configuration for debugging
-	log.Printf("Loaded configuration: %s", cfg.String())
+	// Store the loaded path for later logging if needed
+	if loadedPath != "" {
+		cfg.EnvFilePath = loadedPath
+	}
 
 	return &cfg, nil
 }
@@ -175,7 +182,7 @@ func parseDurationFromEnv(key string, defaultValue time.Duration) time.Duration 
 		return duration
 	}
 
-	log.Printf("Warning: Invalid duration value for %s: %s, using default: %v", key, value, defaultValue)
+	// Silently use default for invalid duration
 	return defaultValue
 }
 
@@ -189,7 +196,7 @@ func parseBoolFromEnv(key string, defaultValue bool) bool {
 
 	b, err := strconv.ParseBool(value)
 	if err != nil {
-		log.Printf("Warning: Invalid boolean value for %s: %s, using default: %v", key, value, defaultValue)
+		// Silently use default for invalid boolean
 		return defaultValue
 	}
 	return b
@@ -205,7 +212,7 @@ func parseIntFromEnv(key string, defaultValue int) int {
 
 	i, err := strconv.Atoi(value)
 	if err != nil {
-		log.Printf("Warning: Invalid integer value for %s: %s, using default: %d", key, value, defaultValue)
+		// Silently use default for invalid integer
 		return defaultValue
 	}
 	return i

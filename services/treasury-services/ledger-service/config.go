@@ -52,6 +52,9 @@ type Config struct {
 	// Migration Configuration
 	// Spec: docs/specs/002-database-migrations.md
 	Migration *migration.MigrationConfig `envconfig:"-"`
+	
+	// Internal - not from env
+	EnvFilePath string `envconfig:"-"`
 }
 
 // ImmuDBConfig holds ImmuDB connection parameters
@@ -87,18 +90,20 @@ func LoadConfig() (*Config, error) {
 	}
 	
 	var loaded bool
+	var loadedPath string
 	for _, path := range envPaths {
 		if err := godotenv.Load(path); err == nil {
-			log.Printf("Loaded environment from: %s", path)
+			loadedPath = path
 			loaded = true
 			break
 		} else if !os.IsNotExist(err) {
+			// Only log actual errors, not missing files
 			log.Printf("Warning: Error loading %s: %v", path, err)
 		}
 	}
 	
 	if !loaded {
-		log.Printf("No .env file found, using environment variables and defaults")
+		// This is expected in production, so don't log unless debugging
 	}
 
 	var cfg Config
@@ -122,8 +127,10 @@ func LoadConfig() (*Config, error) {
 	migrationConfig := LoadMigrationConfig()
 	cfg.Migration = migrationConfig
 
-	// Log loaded configuration for debugging
-	log.Printf("Loaded configuration: %s", cfg.String())
+	// Store the loaded path for later logging if needed
+	if loadedPath != "" {
+		cfg.EnvFilePath = loadedPath
+	}
 
 	return &cfg, nil
 }
@@ -250,8 +257,7 @@ func LoadImmuDBConfig() (*ImmuDBConfig, error) {
 	}
 	// Don't validate password as it could be empty in some environments
 
-	// Log configuration (without sensitive data)
-	log.Printf("ImmuDB configuration loaded: %s:%d/%s", cfg.Host, cfg.Port, cfg.Database)
+	// Configuration loaded successfully - will be logged in startup banner
 
 	return cfg, nil
 }

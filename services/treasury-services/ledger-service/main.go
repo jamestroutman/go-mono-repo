@@ -124,6 +124,12 @@ func main() {
 	fmt.Printf("Git Branch: %s\n", manifestCache.BuildInfo.Branch)
 	fmt.Printf("Log Level: %s\n", cfg.LogLevel)
 	fmt.Printf("Features: %v\n", cfg.EnabledFeatures)
+	if cfg.EnvFilePath != "" {
+		fmt.Printf("Config File: %s\n", cfg.EnvFilePath)
+	}
+	if cfg.ImmuDB != nil {
+		fmt.Printf("ImmuDB: %s:%d/%s\n", cfg.ImmuDB.Host, cfg.ImmuDB.Port, cfg.ImmuDB.Database)
+	}
 	fmt.Println("=================================")
 	
 	lis, err := net.Listen("tcp", port)

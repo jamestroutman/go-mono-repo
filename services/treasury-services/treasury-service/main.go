@@ -54,7 +54,6 @@ func main() {
 	// Connect to database synchronously with timeout
 	// Spec: docs/specs/001-database-connection.md#story-4-graceful-degradation
 	ctx := context.Background()
-	log.Printf("Attempting to connect to database...")
 	if err := dbManager.ConnectWithRetry(ctx, 5); err != nil {
 		log.Printf("Warning: Failed to connect to database: %v", err)
 		log.Printf("Service will continue without database connection (degraded mode)")
@@ -62,7 +61,7 @@ func main() {
 		// Database connected successfully, handle migrations
 		// Spec: docs/specs/002-database-migrations.md#story-1-automated-migration-on-startup
 		if cfg.Migration.AutoMigrate {
-			log.Printf("Running database migrations...")
+			log.Println("Running database migrations...")
 			migrationManager, err := NewMigrationManager(dbManager.GetDB(), &cfg.Migration)
 			if err != nil {
 				log.Printf("Warning: Failed to create migration manager: %v", err)
@@ -72,13 +71,11 @@ func main() {
 					// In production, you might want to fail the service here
 					// For now, continue in degraded mode
 				} else {
-					log.Printf("Database migrations completed successfully")
+					log.Println("Database migrations completed successfully")
 				}
 				// Store migration manager for health checks
 				dbManager.SetMigrationManager(migrationManager)
 			}
-		} else {
-			log.Printf("Auto-migration disabled, skipping migrations")
 		}
 	}
 	
@@ -88,7 +85,6 @@ func main() {
 	if dbManager.GetDB() != nil {
 		currencyManager := currency.NewManager(dbManager.GetDB())
 		currencyServer = currency.NewServer(currencyManager)
-		log.Printf("Currency service initialized")
 	}
 	
 	// Initialize institution server if database is available
@@ -97,7 +93,6 @@ func main() {
 	if dbManager.GetDB() != nil {
 		institutionManager := NewInstitutionManager(dbManager.GetDB())
 		institutionServer = NewInstitutionServer(institutionManager)
-		log.Printf("Financial institution service initialized")
 	}
 	
 	// Create manifest server with cached data
@@ -123,6 +118,18 @@ func main() {
 	fmt.Printf("Git Branch: %s\n", manifestCache.BuildInfo.Branch)
 	fmt.Printf("Log Level: %s\n", cfg.LogLevel)
 	fmt.Printf("Features: %v\n", cfg.EnabledFeatures)
+	if cfg.EnvFilePath != "" {
+		fmt.Printf("Config File: %s\n", cfg.EnvFilePath)
+	}
+	if dbManager.GetDB() != nil {
+		fmt.Printf("Database: %s:%d/%s\n", cfg.Database.Host, cfg.Database.Port, cfg.Database.Database)
+		if currencyServer != nil {
+			fmt.Printf("Services: Currency Management\n")
+		}
+		if institutionServer != nil {
+			fmt.Printf("Services: Financial Institutions\n")
+		}
+	}
 	fmt.Println("=================================")
 	
 	lis, err := net.Listen("tcp", port)
@@ -138,14 +145,12 @@ func main() {
 	// Spec: docs/specs/003-currency-management.md
 	if currencyServer != nil {
 		pb.RegisterCurrencyServiceServer(grpcServer, currencyServer)
-		log.Printf("Currency service registered with gRPC server")
 	}
 	
 	// Register financial institution service if available
 	// Spec: docs/specs/004-financial-institutions.md
 	if institutionServer != nil {
 		pb.RegisterFinancialInstitutionServiceServer(grpcServer, institutionServer)
-		log.Printf("Financial institution service registered with gRPC server")
 	}
 	
 	// Mark gRPC as ready after registration

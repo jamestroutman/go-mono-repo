@@ -21,6 +21,119 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type ServiceStatus int32
+
+const (
+	// Service is fully operational
+	ServiceStatus_HEALTHY ServiceStatus = 0
+	// Service is operational but with non-critical issues
+	ServiceStatus_DEGRADED ServiceStatus = 1
+	// Service is not operational
+	ServiceStatus_UNHEALTHY ServiceStatus = 2
+)
+
+// Enum value maps for ServiceStatus.
+var (
+	ServiceStatus_name = map[int32]string{
+		0: "HEALTHY",
+		1: "DEGRADED",
+		2: "UNHEALTHY",
+	}
+	ServiceStatus_value = map[string]int32{
+		"HEALTHY":   0,
+		"DEGRADED":  1,
+		"UNHEALTHY": 2,
+	}
+)
+
+func (x ServiceStatus) Enum() *ServiceStatus {
+	p := new(ServiceStatus)
+	*p = x
+	return p
+}
+
+func (x ServiceStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ServiceStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes[0].Descriptor()
+}
+
+func (ServiceStatus) Type() protoreflect.EnumType {
+	return &file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes[0]
+}
+
+func (x ServiceStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ServiceStatus.Descriptor instead.
+func (ServiceStatus) EnumDescriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{0}
+}
+
+type DependencyType int32
+
+const (
+	DependencyType_DATABASE      DependencyType = 0
+	DependencyType_CACHE         DependencyType = 1
+	DependencyType_MESSAGE_QUEUE DependencyType = 2
+	DependencyType_GRPC_SERVICE  DependencyType = 3
+	DependencyType_HTTP_SERVICE  DependencyType = 4
+	DependencyType_STORAGE       DependencyType = 5
+	DependencyType_OTHER         DependencyType = 6
+)
+
+// Enum value maps for DependencyType.
+var (
+	DependencyType_name = map[int32]string{
+		0: "DATABASE",
+		1: "CACHE",
+		2: "MESSAGE_QUEUE",
+		3: "GRPC_SERVICE",
+		4: "HTTP_SERVICE",
+		5: "STORAGE",
+		6: "OTHER",
+	}
+	DependencyType_value = map[string]int32{
+		"DATABASE":      0,
+		"CACHE":         1,
+		"MESSAGE_QUEUE": 2,
+		"GRPC_SERVICE":  3,
+		"HTTP_SERVICE":  4,
+		"STORAGE":       5,
+		"OTHER":         6,
+	}
+)
+
+func (x DependencyType) Enum() *DependencyType {
+	p := new(DependencyType)
+	*p = x
+	return p
+}
+
+func (x DependencyType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DependencyType) Descriptor() protoreflect.EnumDescriptor {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes[1].Descriptor()
+}
+
+func (DependencyType) Type() protoreflect.EnumType {
+	return &file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes[1]
+}
+
+func (x DependencyType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DependencyType.Descriptor instead.
+func (DependencyType) EnumDescriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{1}
+}
+
 type ManifestRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -570,102 +683,6 @@ func (x *ServiceDependency) GetIsOptional() bool {
 	return false
 }
 
-type HealthRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *HealthRequest) Reset() {
-	*x = HealthRequest{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[8]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HealthRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HealthRequest) ProtoMessage() {}
-
-func (x *HealthRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[8]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
-func (*HealthRequest) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{8}
-}
-
-type HealthResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Healthy       bool                   `protobuf:"varint,1,opt,name=healthy,proto3" json:"healthy,omitempty"`
-	Status        string                 `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	Details       map[string]string      `protobuf:"bytes,3,rep,name=details,proto3" json:"details,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *HealthResponse) Reset() {
-	*x = HealthResponse{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[9]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HealthResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HealthResponse) ProtoMessage() {}
-
-func (x *HealthResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[9]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
-func (*HealthResponse) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *HealthResponse) GetHealthy() bool {
-	if x != nil {
-		return x.Healthy
-	}
-	return false
-}
-
-func (x *HealthResponse) GetStatus() string {
-	if x != nil {
-		return x.Status
-	}
-	return ""
-}
-
-func (x *HealthResponse) GetDetails() map[string]string {
-	if x != nil {
-		return x.Details
-	}
-	return nil
-}
-
 type LivenessRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -674,7 +691,7 @@ type LivenessRequest struct {
 
 func (x *LivenessRequest) Reset() {
 	*x = LivenessRequest{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[10]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -686,7 +703,7 @@ func (x *LivenessRequest) String() string {
 func (*LivenessRequest) ProtoMessage() {}
 
 func (x *LivenessRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[10]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -699,20 +716,26 @@ func (x *LivenessRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LivenessRequest.ProtoReflect.Descriptor instead.
 func (*LivenessRequest) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{10}
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{8}
 }
 
 type LivenessResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Alive         bool                   `protobuf:"varint,1,opt,name=alive,proto3" json:"alive,omitempty"`
-	UptimeSeconds int64                  `protobuf:"varint,2,opt,name=uptime_seconds,json=uptimeSeconds,proto3" json:"uptime_seconds,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Overall liveness status
+	Status ServiceStatus `protobuf:"varint,1,opt,name=status,proto3,enum=payroll.ServiceStatus" json:"status,omitempty"`
+	// Human-readable message
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Component readiness checks
+	Checks []*ComponentCheck `protobuf:"bytes,3,rep,name=checks,proto3" json:"checks,omitempty"`
+	// Timestamp of the check
+	CheckedAt     string `protobuf:"bytes,4,opt,name=checked_at,json=checkedAt,proto3" json:"checked_at,omitempty"` // RFC3339 format
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *LivenessResponse) Reset() {
 	*x = LivenessResponse{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[11]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -724,7 +747,7 @@ func (x *LivenessResponse) String() string {
 func (*LivenessResponse) ProtoMessage() {}
 
 func (x *LivenessResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[11]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -737,19 +760,634 @@ func (x *LivenessResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LivenessResponse.ProtoReflect.Descriptor instead.
 func (*LivenessResponse) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{11}
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{9}
 }
 
-func (x *LivenessResponse) GetAlive() bool {
+func (x *LivenessResponse) GetStatus() ServiceStatus {
 	if x != nil {
-		return x.Alive
+		return x.Status
+	}
+	return ServiceStatus_HEALTHY
+}
+
+func (x *LivenessResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *LivenessResponse) GetChecks() []*ComponentCheck {
+	if x != nil {
+		return x.Checks
+	}
+	return nil
+}
+
+func (x *LivenessResponse) GetCheckedAt() string {
+	if x != nil {
+		return x.CheckedAt
+	}
+	return ""
+}
+
+type HealthRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Include detailed dependency info
+	IncludeDetails bool `protobuf:"varint,1,opt,name=include_details,json=includeDetails,proto3" json:"include_details,omitempty"`
+	// Check specific dependencies only
+	DependencyFilter []string `protobuf:"bytes,2,rep,name=dependency_filter,json=dependencyFilter,proto3" json:"dependency_filter,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *HealthRequest) Reset() {
+	*x = HealthRequest{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthRequest) ProtoMessage() {}
+
+func (x *HealthRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthRequest.ProtoReflect.Descriptor instead.
+func (*HealthRequest) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *HealthRequest) GetIncludeDetails() bool {
+	if x != nil {
+		return x.IncludeDetails
 	}
 	return false
 }
 
-func (x *LivenessResponse) GetUptimeSeconds() int64 {
+func (x *HealthRequest) GetDependencyFilter() []string {
 	if x != nil {
-		return x.UptimeSeconds
+		return x.DependencyFilter
+	}
+	return nil
+}
+
+type HealthResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Overall health status
+	Status ServiceStatus `protobuf:"varint,1,opt,name=status,proto3,enum=payroll.ServiceStatus" json:"status,omitempty"`
+	// Human-readable message
+	Message string `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	// Service liveness (internal readiness)
+	Liveness *LivenessInfo `protobuf:"bytes,3,opt,name=liveness,proto3" json:"liveness,omitempty"`
+	// Dependency health checks
+	Dependencies []*DependencyHealth `protobuf:"bytes,4,rep,name=dependencies,proto3" json:"dependencies,omitempty"`
+	// Timestamp of the check
+	CheckedAt string `protobuf:"bytes,5,opt,name=checked_at,json=checkedAt,proto3" json:"checked_at,omitempty"` // RFC3339 format
+	// Time taken to perform all checks (milliseconds)
+	CheckDurationMs int64 `protobuf:"varint,6,opt,name=check_duration_ms,json=checkDurationMs,proto3" json:"check_duration_ms,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *HealthResponse) Reset() {
+	*x = HealthResponse{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthResponse) ProtoMessage() {}
+
+func (x *HealthResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthResponse.ProtoReflect.Descriptor instead.
+func (*HealthResponse) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *HealthResponse) GetStatus() ServiceStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ServiceStatus_HEALTHY
+}
+
+func (x *HealthResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *HealthResponse) GetLiveness() *LivenessInfo {
+	if x != nil {
+		return x.Liveness
+	}
+	return nil
+}
+
+func (x *HealthResponse) GetDependencies() []*DependencyHealth {
+	if x != nil {
+		return x.Dependencies
+	}
+	return nil
+}
+
+func (x *HealthResponse) GetCheckedAt() string {
+	if x != nil {
+		return x.CheckedAt
+	}
+	return ""
+}
+
+func (x *HealthResponse) GetCheckDurationMs() int64 {
+	if x != nil {
+		return x.CheckDurationMs
+	}
+	return 0
+}
+
+type ComponentCheck struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Component name (e.g., "config", "database_pool", "cache")
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Component status
+	Ready bool `protobuf:"varint,2,opt,name=ready,proto3" json:"ready,omitempty"`
+	// Optional message
+	Message       string `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ComponentCheck) Reset() {
+	*x = ComponentCheck{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ComponentCheck) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ComponentCheck) ProtoMessage() {}
+
+func (x *ComponentCheck) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ComponentCheck.ProtoReflect.Descriptor instead.
+func (*ComponentCheck) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ComponentCheck) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *ComponentCheck) GetReady() bool {
+	if x != nil {
+		return x.Ready
+	}
+	return false
+}
+
+func (x *ComponentCheck) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type LivenessInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Is service ready to accept traffic
+	IsAlive bool `protobuf:"varint,1,opt,name=is_alive,json=isAlive,proto3" json:"is_alive,omitempty"`
+	// Service initialization status
+	ConfigLoaded bool `protobuf:"varint,2,opt,name=config_loaded,json=configLoaded,proto3" json:"config_loaded,omitempty"`
+	PoolsReady   bool `protobuf:"varint,3,opt,name=pools_ready,json=poolsReady,proto3" json:"pools_ready,omitempty"`
+	CacheWarmed  bool `protobuf:"varint,4,opt,name=cache_warmed,json=cacheWarmed,proto3" json:"cache_warmed,omitempty"`
+	// Custom readiness checks
+	Components    []*ComponentCheck `protobuf:"bytes,5,rep,name=components,proto3" json:"components,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LivenessInfo) Reset() {
+	*x = LivenessInfo{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LivenessInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LivenessInfo) ProtoMessage() {}
+
+func (x *LivenessInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LivenessInfo.ProtoReflect.Descriptor instead.
+func (*LivenessInfo) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *LivenessInfo) GetIsAlive() bool {
+	if x != nil {
+		return x.IsAlive
+	}
+	return false
+}
+
+func (x *LivenessInfo) GetConfigLoaded() bool {
+	if x != nil {
+		return x.ConfigLoaded
+	}
+	return false
+}
+
+func (x *LivenessInfo) GetPoolsReady() bool {
+	if x != nil {
+		return x.PoolsReady
+	}
+	return false
+}
+
+func (x *LivenessInfo) GetCacheWarmed() bool {
+	if x != nil {
+		return x.CacheWarmed
+	}
+	return false
+}
+
+func (x *LivenessInfo) GetComponents() []*ComponentCheck {
+	if x != nil {
+		return x.Components
+	}
+	return nil
+}
+
+type DependencyHealth struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Dependency name (e.g., "postgres", "redis", "user-service")
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Dependency type
+	Type DependencyType `protobuf:"varint,2,opt,name=type,proto3,enum=payroll.DependencyType" json:"type,omitempty"`
+	// Health status
+	Status ServiceStatus `protobuf:"varint,3,opt,name=status,proto3,enum=payroll.ServiceStatus" json:"status,omitempty"`
+	// Is this dependency critical for service operation
+	IsCritical bool `protobuf:"varint,4,opt,name=is_critical,json=isCritical,proto3" json:"is_critical,omitempty"`
+	// Human-readable status message
+	Message string `protobuf:"bytes,5,opt,name=message,proto3" json:"message,omitempty"`
+	// Configuration details (non-sensitive)
+	Config *DependencyConfig `protobuf:"bytes,6,opt,name=config,proto3" json:"config,omitempty"`
+	// Last successful check timestamp
+	LastSuccess string `protobuf:"bytes,7,opt,name=last_success,json=lastSuccess,proto3" json:"last_success,omitempty"` // RFC3339 format
+	// Last check timestamp
+	LastCheck string `protobuf:"bytes,8,opt,name=last_check,json=lastCheck,proto3" json:"last_check,omitempty"` // RFC3339 format
+	// Response time of health check (milliseconds)
+	ResponseTimeMs int64 `protobuf:"varint,9,opt,name=response_time_ms,json=responseTimeMs,proto3" json:"response_time_ms,omitempty"`
+	// Error details if unhealthy
+	Error         string `protobuf:"bytes,10,opt,name=error,proto3" json:"error,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DependencyHealth) Reset() {
+	*x = DependencyHealth{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DependencyHealth) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DependencyHealth) ProtoMessage() {}
+
+func (x *DependencyHealth) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DependencyHealth.ProtoReflect.Descriptor instead.
+func (*DependencyHealth) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *DependencyHealth) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DependencyHealth) GetType() DependencyType {
+	if x != nil {
+		return x.Type
+	}
+	return DependencyType_DATABASE
+}
+
+func (x *DependencyHealth) GetStatus() ServiceStatus {
+	if x != nil {
+		return x.Status
+	}
+	return ServiceStatus_HEALTHY
+}
+
+func (x *DependencyHealth) GetIsCritical() bool {
+	if x != nil {
+		return x.IsCritical
+	}
+	return false
+}
+
+func (x *DependencyHealth) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+func (x *DependencyHealth) GetConfig() *DependencyConfig {
+	if x != nil {
+		return x.Config
+	}
+	return nil
+}
+
+func (x *DependencyHealth) GetLastSuccess() string {
+	if x != nil {
+		return x.LastSuccess
+	}
+	return ""
+}
+
+func (x *DependencyHealth) GetLastCheck() string {
+	if x != nil {
+		return x.LastCheck
+	}
+	return ""
+}
+
+func (x *DependencyHealth) GetResponseTimeMs() int64 {
+	if x != nil {
+		return x.ResponseTimeMs
+	}
+	return 0
+}
+
+func (x *DependencyHealth) GetError() string {
+	if x != nil {
+		return x.Error
+	}
+	return ""
+}
+
+type DependencyConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Connection information (non-sensitive)
+	Hostname string `protobuf:"bytes,1,opt,name=hostname,proto3" json:"hostname,omitempty"`
+	Port     int32  `protobuf:"varint,2,opt,name=port,proto3" json:"port,omitempty"`
+	Protocol string `protobuf:"bytes,3,opt,name=protocol,proto3" json:"protocol,omitempty"` // e.g., "grpc", "http", "postgres"
+	// Database/schema/topic information
+	DatabaseName string `protobuf:"bytes,4,opt,name=database_name,json=databaseName,proto3" json:"database_name,omitempty"`
+	SchemaName   string `protobuf:"bytes,5,opt,name=schema_name,json=schemaName,proto3" json:"schema_name,omitempty"`
+	TopicName    string `protobuf:"bytes,6,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
+	// Connection pool information
+	PoolInfo *ConnectionPoolInfo `protobuf:"bytes,7,opt,name=pool_info,json=poolInfo,proto3" json:"pool_info,omitempty"`
+	// Service version if applicable
+	Version string `protobuf:"bytes,8,opt,name=version,proto3" json:"version,omitempty"`
+	// Additional metadata
+	Metadata      map[string]string `protobuf:"bytes,9,rep,name=metadata,proto3" json:"metadata,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DependencyConfig) Reset() {
+	*x = DependencyConfig{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DependencyConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DependencyConfig) ProtoMessage() {}
+
+func (x *DependencyConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DependencyConfig.ProtoReflect.Descriptor instead.
+func (*DependencyConfig) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *DependencyConfig) GetHostname() string {
+	if x != nil {
+		return x.Hostname
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetPort() int32 {
+	if x != nil {
+		return x.Port
+	}
+	return 0
+}
+
+func (x *DependencyConfig) GetProtocol() string {
+	if x != nil {
+		return x.Protocol
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetDatabaseName() string {
+	if x != nil {
+		return x.DatabaseName
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetSchemaName() string {
+	if x != nil {
+		return x.SchemaName
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetTopicName() string {
+	if x != nil {
+		return x.TopicName
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetPoolInfo() *ConnectionPoolInfo {
+	if x != nil {
+		return x.PoolInfo
+	}
+	return nil
+}
+
+func (x *DependencyConfig) GetVersion() string {
+	if x != nil {
+		return x.Version
+	}
+	return ""
+}
+
+func (x *DependencyConfig) GetMetadata() map[string]string {
+	if x != nil {
+		return x.Metadata
+	}
+	return nil
+}
+
+type ConnectionPoolInfo struct {
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	MaxConnections    int32                  `protobuf:"varint,1,opt,name=max_connections,json=maxConnections,proto3" json:"max_connections,omitempty"`
+	ActiveConnections int32                  `protobuf:"varint,2,opt,name=active_connections,json=activeConnections,proto3" json:"active_connections,omitempty"`
+	IdleConnections   int32                  `protobuf:"varint,3,opt,name=idle_connections,json=idleConnections,proto3" json:"idle_connections,omitempty"`
+	WaitCount         int32                  `protobuf:"varint,4,opt,name=wait_count,json=waitCount,proto3" json:"wait_count,omitempty"`
+	WaitDurationMs    int64                  `protobuf:"varint,5,opt,name=wait_duration_ms,json=waitDurationMs,proto3" json:"wait_duration_ms,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ConnectionPoolInfo) Reset() {
+	*x = ConnectionPoolInfo{}
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ConnectionPoolInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ConnectionPoolInfo) ProtoMessage() {}
+
+func (x *ConnectionPoolInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ConnectionPoolInfo.ProtoReflect.Descriptor instead.
+func (*ConnectionPoolInfo) Descriptor() ([]byte, []int) {
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *ConnectionPoolInfo) GetMaxConnections() int32 {
+	if x != nil {
+		return x.MaxConnections
+	}
+	return 0
+}
+
+func (x *ConnectionPoolInfo) GetActiveConnections() int32 {
+	if x != nil {
+		return x.ActiveConnections
+	}
+	return 0
+}
+
+func (x *ConnectionPoolInfo) GetIdleConnections() int32 {
+	if x != nil {
+		return x.IdleConnections
+	}
+	return 0
+}
+
+func (x *ConnectionPoolInfo) GetWaitCount() int32 {
+	if x != nil {
+		return x.WaitCount
+	}
+	return 0
+}
+
+func (x *ConnectionPoolInfo) GetWaitDurationMs() int64 {
+	if x != nil {
+		return x.WaitDurationMs
 	}
 	return 0
 }
@@ -763,7 +1401,7 @@ type HelloWorldRequest struct {
 
 func (x *HelloWorldRequest) Reset() {
 	*x = HelloWorldRequest{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[12]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -775,7 +1413,7 @@ func (x *HelloWorldRequest) String() string {
 func (*HelloWorldRequest) ProtoMessage() {}
 
 func (x *HelloWorldRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[12]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -788,7 +1426,7 @@ func (x *HelloWorldRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloWorldRequest.ProtoReflect.Descriptor instead.
 func (*HelloWorldRequest) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{12}
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *HelloWorldRequest) GetName() string {
@@ -807,7 +1445,7 @@ type HelloWorldResponse struct {
 
 func (x *HelloWorldResponse) Reset() {
 	*x = HelloWorldResponse{}
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[13]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -819,7 +1457,7 @@ func (x *HelloWorldResponse) String() string {
 func (*HelloWorldResponse) ProtoMessage() {}
 
 func (x *HelloWorldResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[13]
+	mi := &file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -832,7 +1470,7 @@ func (x *HelloWorldResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HelloWorldResponse.ProtoReflect.Descriptor instead.
 func (*HelloWorldResponse) Descriptor() ([]byte, []int) {
-	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{13}
+	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *HelloWorldResponse) GetMessage() string {
@@ -896,28 +1534,95 @@ const file_services_payroll_services_payroll_service_proto_payroll_service_proto
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x18\n" +
 	"\aversion\x18\x02 \x01(\tR\aversion\x12\x1f\n" +
 	"\vis_optional\x18\x03 \x01(\bR\n" +
-	"isOptional\"\x0f\n" +
-	"\rHealthRequest\"\xbe\x01\n" +
-	"\x0eHealthResponse\x12\x18\n" +
-	"\ahealthy\x18\x01 \x01(\bR\ahealthy\x12\x16\n" +
-	"\x06status\x18\x02 \x01(\tR\x06status\x12>\n" +
-	"\adetails\x18\x03 \x03(\v2$.payroll.HealthResponse.DetailsEntryR\adetails\x1a:\n" +
-	"\fDetailsEntry\x12\x10\n" +
+	"isOptional\"\x11\n" +
+	"\x0fLivenessRequest\"\xac\x01\n" +
+	"\x10LivenessResponse\x12.\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x16.payroll.ServiceStatusR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x12/\n" +
+	"\x06checks\x18\x03 \x03(\v2\x17.payroll.ComponentCheckR\x06checks\x12\x1d\n" +
+	"\n" +
+	"checked_at\x18\x04 \x01(\tR\tcheckedAt\"e\n" +
+	"\rHealthRequest\x12'\n" +
+	"\x0finclude_details\x18\x01 \x01(\bR\x0eincludeDetails\x12+\n" +
+	"\x11dependency_filter\x18\x02 \x03(\tR\x10dependencyFilter\"\x97\x02\n" +
+	"\x0eHealthResponse\x12.\n" +
+	"\x06status\x18\x01 \x01(\x0e2\x16.payroll.ServiceStatusR\x06status\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\x121\n" +
+	"\bliveness\x18\x03 \x01(\v2\x15.payroll.LivenessInfoR\bliveness\x12=\n" +
+	"\fdependencies\x18\x04 \x03(\v2\x19.payroll.DependencyHealthR\fdependencies\x12\x1d\n" +
+	"\n" +
+	"checked_at\x18\x05 \x01(\tR\tcheckedAt\x12*\n" +
+	"\x11check_duration_ms\x18\x06 \x01(\x03R\x0fcheckDurationMs\"T\n" +
+	"\x0eComponentCheck\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
+	"\x05ready\x18\x02 \x01(\bR\x05ready\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xcb\x01\n" +
+	"\fLivenessInfo\x12\x19\n" +
+	"\bis_alive\x18\x01 \x01(\bR\aisAlive\x12#\n" +
+	"\rconfig_loaded\x18\x02 \x01(\bR\fconfigLoaded\x12\x1f\n" +
+	"\vpools_ready\x18\x03 \x01(\bR\n" +
+	"poolsReady\x12!\n" +
+	"\fcache_warmed\x18\x04 \x01(\bR\vcacheWarmed\x127\n" +
+	"\n" +
+	"components\x18\x05 \x03(\v2\x17.payroll.ComponentCheckR\n" +
+	"components\"\xf3\x02\n" +
+	"\x10DependencyHealth\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x17.payroll.DependencyTypeR\x04type\x12.\n" +
+	"\x06status\x18\x03 \x01(\x0e2\x16.payroll.ServiceStatusR\x06status\x12\x1f\n" +
+	"\vis_critical\x18\x04 \x01(\bR\n" +
+	"isCritical\x12\x18\n" +
+	"\amessage\x18\x05 \x01(\tR\amessage\x121\n" +
+	"\x06config\x18\x06 \x01(\v2\x19.payroll.DependencyConfigR\x06config\x12!\n" +
+	"\flast_success\x18\a \x01(\tR\vlastSuccess\x12\x1d\n" +
+	"\n" +
+	"last_check\x18\b \x01(\tR\tlastCheck\x12(\n" +
+	"\x10response_time_ms\x18\t \x01(\x03R\x0eresponseTimeMs\x12\x14\n" +
+	"\x05error\x18\n" +
+	" \x01(\tR\x05error\"\x99\x03\n" +
+	"\x10DependencyConfig\x12\x1a\n" +
+	"\bhostname\x18\x01 \x01(\tR\bhostname\x12\x12\n" +
+	"\x04port\x18\x02 \x01(\x05R\x04port\x12\x1a\n" +
+	"\bprotocol\x18\x03 \x01(\tR\bprotocol\x12#\n" +
+	"\rdatabase_name\x18\x04 \x01(\tR\fdatabaseName\x12\x1f\n" +
+	"\vschema_name\x18\x05 \x01(\tR\n" +
+	"schemaName\x12\x1d\n" +
+	"\n" +
+	"topic_name\x18\x06 \x01(\tR\ttopicName\x128\n" +
+	"\tpool_info\x18\a \x01(\v2\x1b.payroll.ConnectionPoolInfoR\bpoolInfo\x12\x18\n" +
+	"\aversion\x18\b \x01(\tR\aversion\x12C\n" +
+	"\bmetadata\x18\t \x03(\v2'.payroll.DependencyConfig.MetadataEntryR\bmetadata\x1a;\n" +
+	"\rMetadataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x11\n" +
-	"\x0fLivenessRequest\"O\n" +
-	"\x10LivenessResponse\x12\x14\n" +
-	"\x05alive\x18\x01 \x01(\bR\x05alive\x12%\n" +
-	"\x0euptime_seconds\x18\x02 \x01(\x03R\ruptimeSeconds\"'\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xe0\x01\n" +
+	"\x12ConnectionPoolInfo\x12'\n" +
+	"\x0fmax_connections\x18\x01 \x01(\x05R\x0emaxConnections\x12-\n" +
+	"\x12active_connections\x18\x02 \x01(\x05R\x11activeConnections\x12)\n" +
+	"\x10idle_connections\x18\x03 \x01(\x05R\x0fidleConnections\x12\x1d\n" +
+	"\n" +
+	"wait_count\x18\x04 \x01(\x05R\twaitCount\x12(\n" +
+	"\x10wait_duration_ms\x18\x05 \x01(\x03R\x0ewaitDurationMs\"'\n" +
 	"\x11HelloWorldRequest\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\".\n" +
 	"\x12HelloWorldResponse\x12\x18\n" +
-	"\amessage\x18\x01 \x01(\tR\amessage2P\n" +
+	"\amessage\x18\x01 \x01(\tR\amessage*9\n" +
+	"\rServiceStatus\x12\v\n" +
+	"\aHEALTHY\x10\x00\x12\f\n" +
+	"\bDEGRADED\x10\x01\x12\r\n" +
+	"\tUNHEALTHY\x10\x02*x\n" +
+	"\x0eDependencyType\x12\f\n" +
+	"\bDATABASE\x10\x00\x12\t\n" +
+	"\x05CACHE\x10\x01\x12\x11\n" +
+	"\rMESSAGE_QUEUE\x10\x02\x12\x10\n" +
+	"\fGRPC_SERVICE\x10\x03\x12\x10\n" +
+	"\fHTTP_SERVICE\x10\x04\x12\v\n" +
+	"\aSTORAGE\x10\x05\x12\t\n" +
+	"\x05OTHER\x10\x062P\n" +
 	"\bManifest\x12D\n" +
 	"\vGetManifest\x12\x18.payroll.ManifestRequest\x1a\x19.payroll.ManifestResponse\"\x002\x8e\x01\n" +
-	"\x06Health\x12>\n" +
-	"\tGetHealth\x12\x16.payroll.HealthRequest\x1a\x17.payroll.HealthResponse\"\x00\x12D\n" +
-	"\vGetLiveness\x12\x18.payroll.LivenessRequest\x1a\x19.payroll.LivenessResponse\"\x002Y\n" +
+	"\x06Health\x12D\n" +
+	"\vGetLiveness\x12\x18.payroll.LivenessRequest\x1a\x19.payroll.LivenessResponse\"\x00\x12>\n" +
+	"\tGetHealth\x12\x16.payroll.HealthRequest\x1a\x17.payroll.HealthResponse\"\x002Y\n" +
 	"\x0ePayrollService\x12G\n" +
 	"\n" +
 	"HelloWorld\x12\x1a.payroll.HelloWorldRequest\x1a\x1b.payroll.HelloWorldResponse\"\x00B(Z&example.com/go-mono-repo/proto/payrollb\x06proto3"
@@ -934,47 +1639,65 @@ func file_services_payroll_services_payroll_service_proto_payroll_service_proto_
 	return file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDescData
 }
 
-var file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes = make([]protoimpl.MessageInfo, 21)
 var file_services_payroll_services_payroll_service_proto_payroll_service_proto_goTypes = []any{
-	(*ManifestRequest)(nil),     // 0: payroll.ManifestRequest
-	(*ManifestResponse)(nil),    // 1: payroll.ManifestResponse
-	(*ServiceIdentity)(nil),     // 2: payroll.ServiceIdentity
-	(*BuildInfo)(nil),           // 3: payroll.BuildInfo
-	(*RuntimeInfo)(nil),         // 4: payroll.RuntimeInfo
-	(*ServiceMetadata)(nil),     // 5: payroll.ServiceMetadata
-	(*ServiceCapabilities)(nil), // 6: payroll.ServiceCapabilities
-	(*ServiceDependency)(nil),   // 7: payroll.ServiceDependency
-	(*HealthRequest)(nil),       // 8: payroll.HealthRequest
-	(*HealthResponse)(nil),      // 9: payroll.HealthResponse
+	(ServiceStatus)(0),          // 0: payroll.ServiceStatus
+	(DependencyType)(0),         // 1: payroll.DependencyType
+	(*ManifestRequest)(nil),     // 2: payroll.ManifestRequest
+	(*ManifestResponse)(nil),    // 3: payroll.ManifestResponse
+	(*ServiceIdentity)(nil),     // 4: payroll.ServiceIdentity
+	(*BuildInfo)(nil),           // 5: payroll.BuildInfo
+	(*RuntimeInfo)(nil),         // 6: payroll.RuntimeInfo
+	(*ServiceMetadata)(nil),     // 7: payroll.ServiceMetadata
+	(*ServiceCapabilities)(nil), // 8: payroll.ServiceCapabilities
+	(*ServiceDependency)(nil),   // 9: payroll.ServiceDependency
 	(*LivenessRequest)(nil),     // 10: payroll.LivenessRequest
 	(*LivenessResponse)(nil),    // 11: payroll.LivenessResponse
-	(*HelloWorldRequest)(nil),   // 12: payroll.HelloWorldRequest
-	(*HelloWorldResponse)(nil),  // 13: payroll.HelloWorldResponse
-	nil,                         // 14: payroll.ServiceMetadata.LabelsEntry
-	nil,                         // 15: payroll.HealthResponse.DetailsEntry
+	(*HealthRequest)(nil),       // 12: payroll.HealthRequest
+	(*HealthResponse)(nil),      // 13: payroll.HealthResponse
+	(*ComponentCheck)(nil),      // 14: payroll.ComponentCheck
+	(*LivenessInfo)(nil),        // 15: payroll.LivenessInfo
+	(*DependencyHealth)(nil),    // 16: payroll.DependencyHealth
+	(*DependencyConfig)(nil),    // 17: payroll.DependencyConfig
+	(*ConnectionPoolInfo)(nil),  // 18: payroll.ConnectionPoolInfo
+	(*HelloWorldRequest)(nil),   // 19: payroll.HelloWorldRequest
+	(*HelloWorldResponse)(nil),  // 20: payroll.HelloWorldResponse
+	nil,                         // 21: payroll.ServiceMetadata.LabelsEntry
+	nil,                         // 22: payroll.DependencyConfig.MetadataEntry
 }
 var file_services_payroll_services_payroll_service_proto_payroll_service_proto_depIdxs = []int32{
-	2,  // 0: payroll.ManifestResponse.identity:type_name -> payroll.ServiceIdentity
-	3,  // 1: payroll.ManifestResponse.build_info:type_name -> payroll.BuildInfo
-	4,  // 2: payroll.ManifestResponse.runtime_info:type_name -> payroll.RuntimeInfo
-	5,  // 3: payroll.ManifestResponse.metadata:type_name -> payroll.ServiceMetadata
-	6,  // 4: payroll.ManifestResponse.capabilities:type_name -> payroll.ServiceCapabilities
-	14, // 5: payroll.ServiceMetadata.labels:type_name -> payroll.ServiceMetadata.LabelsEntry
-	7,  // 6: payroll.ServiceCapabilities.dependencies:type_name -> payroll.ServiceDependency
-	15, // 7: payroll.HealthResponse.details:type_name -> payroll.HealthResponse.DetailsEntry
-	0,  // 8: payroll.Manifest.GetManifest:input_type -> payroll.ManifestRequest
-	8,  // 9: payroll.Health.GetHealth:input_type -> payroll.HealthRequest
-	10, // 10: payroll.Health.GetLiveness:input_type -> payroll.LivenessRequest
-	12, // 11: payroll.PayrollService.HelloWorld:input_type -> payroll.HelloWorldRequest
-	1,  // 12: payroll.Manifest.GetManifest:output_type -> payroll.ManifestResponse
-	9,  // 13: payroll.Health.GetHealth:output_type -> payroll.HealthResponse
-	11, // 14: payroll.Health.GetLiveness:output_type -> payroll.LivenessResponse
-	13, // 15: payroll.PayrollService.HelloWorld:output_type -> payroll.HelloWorldResponse
-	12, // [12:16] is the sub-list for method output_type
-	8,  // [8:12] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	4,  // 0: payroll.ManifestResponse.identity:type_name -> payroll.ServiceIdentity
+	5,  // 1: payroll.ManifestResponse.build_info:type_name -> payroll.BuildInfo
+	6,  // 2: payroll.ManifestResponse.runtime_info:type_name -> payroll.RuntimeInfo
+	7,  // 3: payroll.ManifestResponse.metadata:type_name -> payroll.ServiceMetadata
+	8,  // 4: payroll.ManifestResponse.capabilities:type_name -> payroll.ServiceCapabilities
+	21, // 5: payroll.ServiceMetadata.labels:type_name -> payroll.ServiceMetadata.LabelsEntry
+	9,  // 6: payroll.ServiceCapabilities.dependencies:type_name -> payroll.ServiceDependency
+	0,  // 7: payroll.LivenessResponse.status:type_name -> payroll.ServiceStatus
+	14, // 8: payroll.LivenessResponse.checks:type_name -> payroll.ComponentCheck
+	0,  // 9: payroll.HealthResponse.status:type_name -> payroll.ServiceStatus
+	15, // 10: payroll.HealthResponse.liveness:type_name -> payroll.LivenessInfo
+	16, // 11: payroll.HealthResponse.dependencies:type_name -> payroll.DependencyHealth
+	14, // 12: payroll.LivenessInfo.components:type_name -> payroll.ComponentCheck
+	1,  // 13: payroll.DependencyHealth.type:type_name -> payroll.DependencyType
+	0,  // 14: payroll.DependencyHealth.status:type_name -> payroll.ServiceStatus
+	17, // 15: payroll.DependencyHealth.config:type_name -> payroll.DependencyConfig
+	18, // 16: payroll.DependencyConfig.pool_info:type_name -> payroll.ConnectionPoolInfo
+	22, // 17: payroll.DependencyConfig.metadata:type_name -> payroll.DependencyConfig.MetadataEntry
+	2,  // 18: payroll.Manifest.GetManifest:input_type -> payroll.ManifestRequest
+	10, // 19: payroll.Health.GetLiveness:input_type -> payroll.LivenessRequest
+	12, // 20: payroll.Health.GetHealth:input_type -> payroll.HealthRequest
+	19, // 21: payroll.PayrollService.HelloWorld:input_type -> payroll.HelloWorldRequest
+	3,  // 22: payroll.Manifest.GetManifest:output_type -> payroll.ManifestResponse
+	11, // 23: payroll.Health.GetLiveness:output_type -> payroll.LivenessResponse
+	13, // 24: payroll.Health.GetHealth:output_type -> payroll.HealthResponse
+	20, // 25: payroll.PayrollService.HelloWorld:output_type -> payroll.HelloWorldResponse
+	22, // [22:26] is the sub-list for method output_type
+	18, // [18:22] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_services_payroll_services_payroll_service_proto_payroll_service_proto_init() }
@@ -987,13 +1710,14 @@ func file_services_payroll_services_payroll_service_proto_payroll_service_proto_
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDesc), len(file_services_payroll_services_payroll_service_proto_payroll_service_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   16,
+			NumEnums:      2,
+			NumMessages:   21,
 			NumExtensions: 0,
 			NumServices:   3,
 		},
 		GoTypes:           file_services_payroll_services_payroll_service_proto_payroll_service_proto_goTypes,
 		DependencyIndexes: file_services_payroll_services_payroll_service_proto_payroll_service_proto_depIdxs,
+		EnumInfos:         file_services_payroll_services_payroll_service_proto_payroll_service_proto_enumTypes,
 		MessageInfos:      file_services_payroll_services_payroll_service_proto_payroll_service_proto_msgTypes,
 	}.Build()
 	File_services_payroll_services_payroll_service_proto_payroll_service_proto = out.File

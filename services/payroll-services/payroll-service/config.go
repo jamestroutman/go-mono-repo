@@ -41,6 +41,9 @@ type Config struct {
 	// Labels - will be parsed from SERVICE_LABELS env var
 	ServiceLabels map[string]string `envconfig:"-"`
 	RawLabels     string            `envconfig:"SERVICE_LABELS" default:"team:payroll,domain:payroll"`
+	
+	// Internal - not from env
+	EnvFilePath string `envconfig:"-"`
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -54,18 +57,20 @@ func LoadConfig() (*Config, error) {
 	}
 	
 	var loaded bool
+	var loadedPath string
 	for _, path := range envPaths {
 		if err := godotenv.Load(path); err == nil {
-			log.Printf("Loaded environment from: %s", path)
+			loadedPath = path
 			loaded = true
 			break
 		} else if !os.IsNotExist(err) {
+			// Only log actual errors, not missing files
 			log.Printf("Warning: Error loading %s: %v", path, err)
 		}
 	}
 	
 	if !loaded {
-		log.Printf("No .env file found, using environment variables and defaults")
+		// This is expected in production, so don't log unless debugging
 	}
 
 	var cfg Config
@@ -76,8 +81,10 @@ func LoadConfig() (*Config, error) {
 	// Parse labels from comma-separated key:value pairs
 	cfg.ServiceLabels = parseLabels(cfg.RawLabels)
 
-	// Log loaded configuration for debugging
-	log.Printf("Loaded configuration: %s", cfg.String())
+	// Store the loaded path for later logging if needed
+	if loadedPath != "" {
+		cfg.EnvFilePath = loadedPath
+	}
 
 	return &cfg, nil
 }

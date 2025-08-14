@@ -129,8 +129,8 @@ var Manifest_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	Health_GetHealth_FullMethodName   = "/payroll.Health/GetHealth"
 	Health_GetLiveness_FullMethodName = "/payroll.Health/GetLiveness"
+	Health_GetHealth_FullMethodName   = "/payroll.Health/GetHealth"
 )
 
 // HealthClient is the client API for Health service.
@@ -140,8 +140,12 @@ const (
 // Health service (Required)
 // Spec: docs/specs/003-health-check-liveness.md
 type HealthClient interface {
-	GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
+	// GetLiveness checks if the service is alive and ready to accept traffic
+	// Should be used by load balancers and orchestrators
 	GetLiveness(ctx context.Context, in *LivenessRequest, opts ...grpc.CallOption) (*LivenessResponse, error)
+	// GetHealth performs comprehensive health check including dependencies
+	// Should be used for monitoring and debugging
+	GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error)
 }
 
 type healthClient struct {
@@ -152,20 +156,20 @@ func NewHealthClient(cc grpc.ClientConnInterface) HealthClient {
 	return &healthClient{cc}
 }
 
-func (c *healthClient) GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
+func (c *healthClient) GetLiveness(ctx context.Context, in *LivenessRequest, opts ...grpc.CallOption) (*LivenessResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(HealthResponse)
-	err := c.cc.Invoke(ctx, Health_GetHealth_FullMethodName, in, out, cOpts...)
+	out := new(LivenessResponse)
+	err := c.cc.Invoke(ctx, Health_GetLiveness_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *healthClient) GetLiveness(ctx context.Context, in *LivenessRequest, opts ...grpc.CallOption) (*LivenessResponse, error) {
+func (c *healthClient) GetHealth(ctx context.Context, in *HealthRequest, opts ...grpc.CallOption) (*HealthResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LivenessResponse)
-	err := c.cc.Invoke(ctx, Health_GetLiveness_FullMethodName, in, out, cOpts...)
+	out := new(HealthResponse)
+	err := c.cc.Invoke(ctx, Health_GetHealth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -179,8 +183,12 @@ func (c *healthClient) GetLiveness(ctx context.Context, in *LivenessRequest, opt
 // Health service (Required)
 // Spec: docs/specs/003-health-check-liveness.md
 type HealthServer interface {
-	GetHealth(context.Context, *HealthRequest) (*HealthResponse, error)
+	// GetLiveness checks if the service is alive and ready to accept traffic
+	// Should be used by load balancers and orchestrators
 	GetLiveness(context.Context, *LivenessRequest) (*LivenessResponse, error)
+	// GetHealth performs comprehensive health check including dependencies
+	// Should be used for monitoring and debugging
+	GetHealth(context.Context, *HealthRequest) (*HealthResponse, error)
 	mustEmbedUnimplementedHealthServer()
 }
 
@@ -191,11 +199,11 @@ type HealthServer interface {
 // pointer dereference when methods are called.
 type UnimplementedHealthServer struct{}
 
-func (UnimplementedHealthServer) GetHealth(context.Context, *HealthRequest) (*HealthResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
-}
 func (UnimplementedHealthServer) GetLiveness(context.Context, *LivenessRequest) (*LivenessResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetLiveness not implemented")
+}
+func (UnimplementedHealthServer) GetHealth(context.Context, *HealthRequest) (*HealthResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetHealth not implemented")
 }
 func (UnimplementedHealthServer) mustEmbedUnimplementedHealthServer() {}
 func (UnimplementedHealthServer) testEmbeddedByValue()                {}
@@ -218,24 +226,6 @@ func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
 	s.RegisterService(&Health_ServiceDesc, srv)
 }
 
-func _Health_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(HealthRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(HealthServer).GetHealth(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Health_GetHealth_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthServer).GetHealth(ctx, req.(*HealthRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _Health_GetLiveness_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(LivenessRequest)
 	if err := dec(in); err != nil {
@@ -254,6 +244,24 @@ func _Health_GetLiveness_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Health_GetHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(HealthRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HealthServer).GetHealth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Health_GetHealth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HealthServer).GetHealth(ctx, req.(*HealthRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Health_ServiceDesc is the grpc.ServiceDesc for Health service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -262,12 +270,12 @@ var Health_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*HealthServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "GetHealth",
-			Handler:    _Health_GetHealth_Handler,
-		},
-		{
 			MethodName: "GetLiveness",
 			Handler:    _Health_GetLiveness_Handler,
+		},
+		{
+			MethodName: "GetHealth",
+			Handler:    _Health_GetHealth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -28,32 +28,10 @@ func setupLogging(cfg *Config) {
 
 type server struct {
 	pb.UnimplementedPayrollServiceServer
-	pb.UnimplementedHealthServer
 	startTime time.Time
 	config    *Config
 }
 
-// GetHealth implements health check
-// Spec: docs/specs/003-health-check-liveness.md
-func (s *server) GetHealth(ctx context.Context, req *pb.HealthRequest) (*pb.HealthResponse, error) {
-	return &pb.HealthResponse{
-		Healthy: true,
-		Status:  "serving",
-		Details: map[string]string{
-			"service": s.config.ServiceName,
-			"version": s.config.ServiceVersion,
-		},
-	}, nil
-}
-
-// GetLiveness implements liveness check
-// Spec: docs/specs/003-health-check-liveness.md
-func (s *server) GetLiveness(ctx context.Context, req *pb.LivenessRequest) (*pb.LivenessResponse, error) {
-	return &pb.LivenessResponse{
-		Alive:         true,
-		UptimeSeconds: int64(time.Since(s.startTime).Seconds()),
-	}, nil
-}
 
 // HelloWorld implements the hello world endpoint
 // Spec: services/payroll-services/payroll-service/docs/specs/001-service-initialization.md
@@ -69,14 +47,12 @@ func (s *server) HelloWorld(ctx context.Context, req *pb.HelloWorldRequest) (*pb
 
 func main() {
 	// Load configuration
-	log.Printf("Loading configuration...")
 	cfg, err := LoadConfig()
 	if err != nil {
 		log.Fatalf("Failed to load configuration: %v", err)
 	}
 	
 	// Validate configuration
-	log.Printf("Validating configuration...")
 	if err := cfg.Validate(); err != nil {
 		log.Fatalf("Invalid configuration: %v", err)
 	}
@@ -97,6 +73,11 @@ func main() {
 	// Spec: docs/specs/002-manifest-implementation.md
 	manifestServer := NewManifestServer(cfg, startTime)
 	
+	// Create health server
+	// Spec: docs/specs/003-health-check-liveness.md
+	healthServer := NewHealthServer(cfg, startTime)
+	healthServer.SetConfigLoaded(true) // Mark config as loaded after successful validation
+	
 	// Log configuration and manifest info at startup
 	fmt.Println("=================================")
 	fmt.Println("   PAYROLL SERVICE STARTING     ")
@@ -111,6 +92,9 @@ func main() {
 	fmt.Printf("Git Branch: %s\n", manifestCache.BuildInfo.Branch)
 	fmt.Printf("Log Level: %s\n", cfg.LogLevel)
 	fmt.Printf("Features: %v\n", cfg.EnabledFeatures)
+	if cfg.EnvFilePath != "" {
+		fmt.Printf("Config File: %s\n", cfg.EnvFilePath)
+	}
 	fmt.Println("=================================")
 	
 	lis, err := net.Listen("tcp", port)
@@ -119,20 +103,16 @@ func main() {
 	}
 
 	grpcServer := grpc.NewServer()
-	
-	// Register services
 	pb.RegisterManifestServer(grpcServer, manifestServer)
-	log.Printf("Manifest service registered")
-	
-	pb.RegisterHealthServer(grpcServer, srv)
-	log.Printf("Health check service registered")
-	
+	pb.RegisterHealthServer(grpcServer, healthServer)
 	pb.RegisterPayrollServiceServer(grpcServer, srv)
-	log.Printf("Payroll service registered with gRPC server")
+	
+	// Mark gRPC as ready after registration
+	// Spec: docs/specs/003-health-check-liveness.md
+	healthServer.SetGRPCReady(true)
 	
 	// Register reflection service for debugging
 	reflection.Register(grpcServer)
-	log.Printf("gRPC reflection enabled")
 	
 	// Graceful shutdown
 	go func() {

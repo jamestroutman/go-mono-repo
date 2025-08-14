@@ -35,9 +35,12 @@
       "Bash(mv:*)",
       "Bash(go run:*)",
       "Bash(go mod init:*)",
-      "Bash(go work:*)"
+      "Bash(go work:*)",
+      "Bash(find:*)",
+      "Bash(go vet:*)"
     ],
     "deny": [],
-    "ask": []
+    "ask": [],
+    "defaultMode": "acceptEdits"
   }
 }

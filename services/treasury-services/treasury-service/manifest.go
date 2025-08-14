@@ -30,11 +30,23 @@ func NewManifestServer(cfg *Config, startTime time.Time) *ManifestServer {
 // GetManifest returns service metadata
 // Spec: docs/specs/001-manifest.md
 func (s *ManifestServer) GetManifest(ctx context.Context, req *pb.ManifestRequest) (*pb.ManifestResponse, error) {
-	// Update dynamic fields
-	response := *s.manifestCache
-	response.RuntimeInfo.UptimeSeconds = int64(time.Since(s.startTime).Seconds())
+	// Create a new response with updated uptime
+	response := &pb.ManifestResponse{
+		Identity: s.manifestCache.Identity,
+		BuildInfo: s.manifestCache.BuildInfo,
+		RuntimeInfo: &pb.RuntimeInfo{
+			InstanceId:    s.manifestCache.RuntimeInfo.InstanceId,
+			Hostname:      s.manifestCache.RuntimeInfo.Hostname,
+			StartedAt:     s.manifestCache.RuntimeInfo.StartedAt,
+			UptimeSeconds: int64(time.Since(s.startTime).Seconds()),
+			Region:        s.manifestCache.RuntimeInfo.Region,
+			Environment:   s.manifestCache.RuntimeInfo.Environment,
+		},
+		Metadata: s.manifestCache.Metadata,
+		Capabilities: s.manifestCache.Capabilities,
+	}
 	
-	return &response, nil
+	return response, nil
 }
 
 // GetManifestCache returns the cached manifest for use in startup logs
