@@ -33,7 +33,8 @@
       "Bash(docker compose:*)",
       "Bash(nslookup:*)",
       "Bash(mv:*)",
-      "Bash(go run:*)"
+      "Bash(go run:*)",
+      "Bash(go mod init:*)"
     ],
     "deny": [],
     "ask": []

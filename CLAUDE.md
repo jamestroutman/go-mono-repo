@@ -49,7 +49,9 @@ make dev
 
 # Service Commands
 make run-ledger          # Start ledger service (includes migrations + proto generation)
-make run-treasury        # Start treasury service (includes migrations + proto generation) 
+make run-treasury        # Start treasury service (includes migrations + proto generation)
+make run-payroll         # Start payroll service (proto generation)
+make payroll-service     # Alias for run-payroll
 make run-all             # Start all services (no migrations)
 
 # Migration Commands
@@ -64,9 +66,11 @@ make migrate-new-treasury                   # Create new treasury migration (int
 make health              # Check all services health
 make health-ledger       # Check ledger service health
 make health-treasury     # Check treasury service health
+make health-payroll      # Check payroll service health
 make liveness            # Check all services liveness
 make liveness-ledger     # Check ledger service liveness
 make liveness-treasury   # Check treasury service liveness
+make liveness-payroll    # Check payroll service liveness
 
 # Infrastructure services (postgres, immudb, redis) are automatically started with devcontainer
 
@@ -76,19 +80,28 @@ go work sync
 # Test gRPC endpoints directly (from devcontainer)
 grpcurl -plaintext localhost:50051 ledger.Manifest/GetManifest
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
+grpcurl -plaintext localhost:50053 payroll.Manifest/GetManifest
 grpcurl -plaintext localhost:50051 ledger.Health/GetLiveness
 grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
+grpcurl -plaintext localhost:50053 payroll.Health/GetHealth
+grpcurl -plaintext localhost:50053 payroll.Health/GetLiveness
+grpcurl -plaintext -d '{"name": "Developer"}' localhost:50053 payroll.PayrollService/HelloWorld
 ```
 
 ### Working with Individual Services
 ```bash
 # Run a specific service directly (from devcontainer)
 go run ./services/treasury-services/ledger-service/main.go
+go run ./services/payroll-services/payroll-service/main.go
 
 # Generate protobuf code manually (from devcontainer)
 protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
        --go-grpc_out=. --go-grpc_opt=module=example.com/go-mono-repo \
        services/treasury-services/ledger-service/proto/ledger_service.proto
+
+protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
+       --go-grpc_out=. --go-grpc_opt=module=example.com/go-mono-repo \
+       services/payroll-services/payroll-service/proto/payroll_service.proto
 ```
 
 ### Infrastructure Services

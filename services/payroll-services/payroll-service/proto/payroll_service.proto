@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package payroll;
+
+option go_package = "example.com/go-mono-repo/proto/payroll";
+
+// Standard Manifest service (Required)
+// Spec: docs/specs/001-manifest.md
+service Manifest {
+    rpc GetManifest (ManifestRequest) returns (ManifestResponse) {}
+}
+
+message ManifestRequest {}
+
+message ManifestResponse {
+    string message = 1;
+    string version = 2;
+}
+
+// Health service (Required)
+// Spec: docs/specs/003-health-check-liveness.md
+service Health {
+    rpc GetHealth (HealthRequest) returns (HealthResponse) {}
+    rpc GetLiveness (LivenessRequest) returns (LivenessResponse) {}
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+    bool healthy = 1;
+    string status = 2;
+    map<string, string> details = 3;
+}
+
+message LivenessRequest {}
+
+message LivenessResponse {
+    bool alive = 1;
+    int64 uptime_seconds = 2;
+}
+
+// Payroll service definition
+// Spec: services/payroll-services/payroll-service/docs/specs/001-service-initialization.md
+service PayrollService {
+    // Hello world endpoint for testing
+    rpc HelloWorld (HelloWorldRequest) returns (HelloWorldResponse) {}
+}
+
+message HelloWorldRequest {
+    string name = 1;
+}
+
+message HelloWorldResponse {
+    string message = 1;
+}

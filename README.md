@@ -133,6 +133,7 @@ For detailed setup instructions, see [docs/DEVCONTAINER.md](docs/DEVCONTAINER.md
 |---------|-------------|
 | `make ledger-service` | Generate protos and start ledger service |
 | `make treasury-service` | Generate protos and start treasury service |
+| `make payroll-service` | Generate protos and start payroll service |
 
 ## Services
 
@@ -168,6 +169,29 @@ make treasury-service
 # Test with grpcurl (in another devcontainer terminal)
 grpcurl -plaintext localhost:50052 treasury.Manifest/GetManifest
 grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
+```
+
+### Payroll Service
+- **Port**: `:50053`
+- **Protocol**: gRPC
+- **Endpoints**: 
+  - `payroll.Manifest/GetManifest` - Service identification
+  - `payroll.Health/GetHealth` - Health check
+  - `payroll.Health/GetLiveness` - Liveness check
+  - `payroll.PayrollService/HelloWorld` - Hello world endpoint
+- **Response**: Returns `{"message": "payroll-service"}` for Manifest
+
+#### Testing the Service
+```bash
+# From devcontainer terminal
+# Start the service
+make payroll-service
+
+# Test with grpcurl (in another devcontainer terminal)
+grpcurl -plaintext localhost:50053 payroll.Manifest/GetManifest
+grpcurl -plaintext localhost:50053 payroll.Health/GetHealth
+grpcurl -plaintext localhost:50053 payroll.Health/GetLiveness
+grpcurl -plaintext -d '{"name": "Developer"}' localhost:50053 payroll.PayrollService/HelloWorld
 ```
 
 ## Infrastructure Services

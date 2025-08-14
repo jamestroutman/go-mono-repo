@@ -38,11 +38,14 @@ go-mono-repo/
 │   └── Dockerfile            # Development image definition
 ├── proto/                     # Generated protobuf code
 │   ├── ledger/               # Ledger service types
-│   └── treasury/             # Treasury service types
+│   ├── treasury/             # Treasury service types
+│   └── payroll/              # Payroll service types
 ├── services/                  # Microservices
-│   └── treasury-services/    # Domain grouping
-│       ├── ledger-service/   # Individual service
-│       └── treasury-service/
+│   ├── treasury-services/    # Treasury domain
+│   │   ├── ledger-service/   # Ledger management
+│   │   └── treasury-service/ # Treasury operations
+│   └── payroll-services/     # Payroll domain
+│       └── payroll-service/  # Payroll processing
 └── docs/                      # Documentation
     ├── ARCHITECTURE.md       # This file
     ├── DEVCONTAINER.md      # Container environment docs
@@ -80,6 +83,7 @@ go 1.24
 
 use (
     .                                          # Root module
+    ./services/payroll-services/payroll-service
     ./services/treasury-services/ledger-service
     ./services/treasury-services/treasury-service
 )
@@ -122,11 +126,12 @@ This provides:
 4. Import: Services import from root module
 
 ### Makefile Targets
-- `make install-reqs`: One-time setup of build tools
-- `make infrastructure-up`: Start Docker infrastructure services
-- `make {service-name}`: Build and run individual service
-- `make all-services`: Run all services concurrently
-- `make dev`: Start infrastructure and all services
+- `make install-reqs`: Verify development environment
+- `make run-ledger`: Start ledger service with migrations
+- `make run-treasury`: Start treasury service with migrations
+- `make run-payroll`: Start payroll service
+- `make run-all`: Run all services concurrently
+- `make dev`: Run migrations and start all services
 
 ## Infrastructure Layer
 

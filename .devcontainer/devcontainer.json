@@ -62,7 +62,8 @@
     8081,  // Redis Commander
     9497,  // ImmuDB Metrics
     50051, // Ledger Service
-    50052  // Treasury Service
+    50052, // Treasury Service
+    50053  // Payroll Service
   ],
   "portsAttributes": {
     "5050": {
@@ -103,6 +104,10 @@
     },
     "50052": {
       "label": "Treasury Service",
+      "onAutoForward": "silent"
+    },
+    "50053": {
+      "label": "Payroll Service",
       "onAutoForward": "silent"
     }
   }

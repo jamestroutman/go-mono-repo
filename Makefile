@@ -62,10 +62,26 @@ run-treasury: migrate-treasury
 	@echo "Running treasury service..."
 	@go run ./services/treasury-services/treasury-service/
 
+run-payroll:
+	@echo "Starting payroll service..."
+	@echo "Checking for existing service on port 50053..."
+	@lsof -ti:50053 | xargs -r kill -9 2>/dev/null || true
+	@echo "Generating protobuf code for payroll service..."
+	@protoc --go_out=. --go_opt=module=example.com/go-mono-repo \
+		--go-grpc_out=. --go-grpc_opt=module=example.com/go-mono-repo \
+		services/payroll-services/payroll-service/proto/payroll_service.proto
+	@echo "✓ Protobuf code generated"
+	@echo "Running payroll service..."
+	@go run ./services/payroll-services/payroll-service/
+
+# Alias for consistency
+payroll-service: run-payroll
+
 run-all: 
 	@echo "Starting all services..."
 	@make run-ledger &
 	@make run-treasury &
+	@make run-payroll &
 	@wait
 
 dev:
@@ -93,6 +109,14 @@ liveness-treasury:
 	@echo "Checking treasury service liveness..."
 	@grpcurl -plaintext localhost:50052 treasury.Health/GetLiveness
 
+health-payroll:
+	@echo "Checking payroll service health..."
+	@grpcurl -plaintext localhost:50053 payroll.Health/GetHealth
+
+liveness-payroll:
+	@echo "Checking payroll service liveness..."
+	@grpcurl -plaintext localhost:50053 payroll.Health/GetLiveness
+
 # Combined health checks
 health:
 	@echo "==================================="
@@ -101,6 +125,8 @@ health:
 	@make health-ledger || true
 	@echo ""
 	@make health-treasury || true
+	@echo ""
+	@make health-payroll || true
 
 liveness:
 	@echo "==================================="
@@ -109,6 +135,8 @@ liveness:
 	@make liveness-ledger || true
 	@echo ""
 	@make liveness-treasury || true
+	@echo ""
+	@make liveness-payroll || true
 
 # Migration commands for monorepo
 # Spec: services/treasury-services/ledger-service/docs/specs/002-database-migrations.md
