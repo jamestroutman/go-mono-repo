@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"example.com/go-mono-repo/common/tracing"
 	pb "example.com/go-mono-repo/proto/payroll"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -60,6 +61,23 @@ func main() {
 	// Setup logging
 	setupLogging(cfg)
 	
+	// Initialize tracing
+	// Spec: docs/specs/004-opentelemetry-tracing.md#3-service-integration-pattern
+	tracingCfg := tracing.TracingConfig{
+		Enabled:        cfg.Tracing.Enabled,
+		SentryDSN:      cfg.Tracing.SentryDSN,
+		SampleRate:     cfg.Tracing.SampleRate,
+		Environment:    cfg.Tracing.GetEnvironment(cfg.Environment),
+		ServiceName:    cfg.Tracing.GetServiceName(cfg.ServiceName),
+		ServiceVersion: cfg.Tracing.GetServiceVersion(cfg.ServiceVersion),
+	}
+	
+	cleanup, err := tracing.InitializeTracing(tracingCfg)
+	if err != nil {
+		log.Fatalf("Failed to initialize tracing: %v", err)
+	}
+	defer cleanup()
+	
 	startTime := time.Now()
 	port := cfg.GetPort()
 	
@@ -102,7 +120,13 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	// Create gRPC server with tracing interceptors
+	// Spec: docs/specs/004-opentelemetry-tracing.md#2-grpc-interceptors
+	unaryInterceptor, streamInterceptor := tracing.NewServerInterceptors()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(unaryInterceptor),
+		grpc.StreamInterceptor(streamInterceptor),
+	)
 	pb.RegisterManifestServer(grpcServer, manifestServer)
 	pb.RegisterHealthServer(grpcServer, healthServer)
 	pb.RegisterPayrollServiceServer(grpcServer, srv)

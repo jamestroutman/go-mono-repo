@@ -61,16 +61,18 @@ func InitializeTracing(cfg TracingConfig) (func(), error) {
 		return func() {}, nil
 	}
 
-	// Initialize Sentry with tracing enabled
-	err := sentry.Init(sentry.ClientOptions{
-		Dsn:              cfg.SentryDSN,
-		Environment:      cfg.GetEnvironment("development"),
-		Release:          cfg.GetServiceVersion("v1.0.0"),
-		EnableTracing:    true,
-		TracesSampleRate: cfg.SampleRate,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to initialize Sentry: %w", err)
+	// Initialize Sentry with tracing enabled only if DSN is provided
+	if cfg.SentryDSN != "" {
+		err := sentry.Init(sentry.ClientOptions{
+			Dsn:              cfg.SentryDSN,
+			Environment:      cfg.GetEnvironment("development"),
+			Release:          cfg.GetServiceVersion("v1.0.0"),
+			EnableTracing:    true,
+			TracesSampleRate: cfg.SampleRate,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("failed to initialize Sentry: %w", err)
+		}
 	}
 
 	// Create resource with service identification
@@ -81,26 +83,38 @@ func InitializeTracing(cfg TracingConfig) (func(), error) {
 		semconv.DeploymentEnvironment(cfg.GetEnvironment("development")),
 	)
 
-	// Create tracer provider with Sentry span processor
-	tp := sdktrace.NewTracerProvider(
+	// Create tracer provider options
+	tpOpts := []sdktrace.TracerProviderOption{
 		sdktrace.WithResource(res),
-		sdktrace.WithSpanProcessor(sentryotel.NewSentrySpanProcessor()),
 		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(cfg.SampleRate)),
-	)
+	}
+	
+	// Add Sentry span processor only if DSN is provided
+	if cfg.SentryDSN != "" {
+		tpOpts = append(tpOpts, sdktrace.WithSpanProcessor(sentryotel.NewSentrySpanProcessor()))
+	}
+	
+	// Create tracer provider
+	tp := sdktrace.NewTracerProvider(tpOpts...)
 
-	// Set global tracer provider and propagator
+	// Set global tracer provider
 	otel.SetTracerProvider(tp)
-	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(
-		sentryotel.NewSentryPropagator(),
-		propagation.TraceContext{},
-		propagation.Baggage{},
-	))
+	
+	// Set propagator - include Sentry propagator only if DSN is provided
+	var propagators []propagation.TextMapPropagator
+	if cfg.SentryDSN != "" {
+		propagators = append(propagators, sentryotel.NewSentryPropagator())
+	}
+	propagators = append(propagators, propagation.TraceContext{}, propagation.Baggage{})
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagators...))
 
 	// Return cleanup function
 	return func() {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 		defer cancel()
 		_ = tp.Shutdown(ctx)
-		sentry.Flush(2 * time.Second)
+		if cfg.SentryDSN != "" {
+			sentry.Flush(2 * time.Second)
+		}
 	}, nil
 }

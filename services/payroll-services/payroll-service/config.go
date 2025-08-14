@@ -42,8 +42,47 @@ type Config struct {
 	ServiceLabels map[string]string `envconfig:"-"`
 	RawLabels     string            `envconfig:"SERVICE_LABELS" default:"team:payroll,domain:payroll"`
 	
+	// Tracing Configuration
+	// Spec: docs/specs/004-opentelemetry-tracing.md#configuration-integration
+	Tracing TracingConfig `envconfig:""`
+	
 	// Internal - not from env
 	EnvFilePath string `envconfig:"-"`
+}
+
+// TracingConfig holds tracing configuration for the service
+// Spec: docs/specs/004-opentelemetry-tracing.md#configuration-integration
+type TracingConfig struct {
+	Enabled        bool    `envconfig:"TRACING_ENABLED" default:"true"`
+	SentryDSN      string  `envconfig:"SENTRY_DSN" default:""`
+	SampleRate     float64 `envconfig:"TRACE_SAMPLE_RATE" default:"0.01"`  // 1% default for production safety
+	Environment    string  `envconfig:"TRACE_ENVIRONMENT" default:""`       // Defaults to main Environment field
+	ServiceName    string  `envconfig:"TRACE_SERVICE_NAME" default:""`      // Defaults to main ServiceName field
+	ServiceVersion string  `envconfig:"TRACE_SERVICE_VERSION" default:""`   // Defaults to main ServiceVersion field
+}
+
+// GetEnvironment returns the tracing environment or falls back to provided default
+func (c *TracingConfig) GetEnvironment(fallback string) string {
+	if c.Environment != "" {
+		return c.Environment
+	}
+	return fallback
+}
+
+// GetServiceName returns the tracing service name or falls back to provided default
+func (c *TracingConfig) GetServiceName(fallback string) string {
+	if c.ServiceName != "" {
+		return c.ServiceName
+	}
+	return fallback
+}
+
+// GetServiceVersion returns the tracing service version or falls back to provided default
+func (c *TracingConfig) GetServiceVersion(fallback string) string {
+	if c.ServiceVersion != "" {
+		return c.ServiceVersion
+	}
+	return fallback
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -84,6 +123,18 @@ func LoadConfig() (*Config, error) {
 	// Store the loaded path for later logging if needed
 	if loadedPath != "" {
 		cfg.EnvFilePath = loadedPath
+	}
+
+	// Set default values for tracing configuration from main config if not explicitly set
+	// Spec: docs/specs/004-opentelemetry-tracing.md#configuration-integration
+	if cfg.Tracing.Environment == "" {
+		cfg.Tracing.Environment = cfg.Environment
+	}
+	if cfg.Tracing.ServiceName == "" {
+		cfg.Tracing.ServiceName = cfg.ServiceName
+	}
+	if cfg.Tracing.ServiceVersion == "" {
+		cfg.Tracing.ServiceVersion = cfg.ServiceVersion
 	}
 
 	return &cfg, nil
