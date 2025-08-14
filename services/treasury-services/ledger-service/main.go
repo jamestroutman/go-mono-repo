@@ -11,6 +11,7 @@ import (
 	"time"
 
 	pb "example.com/go-mono-repo/proto/ledger"
+	"example.com/go-mono-repo/common/tracing"
 	"clarity/treasury-services/ledger-service/account"
 	"clarity/treasury-services/ledger-service/pkg/migration"
 	"google.golang.org/grpc"
@@ -44,6 +45,35 @@ func main() {
 	
 	// Setup logging
 	setupLogging(cfg)
+	
+	// Initialize tracing
+	// Spec: docs/specs/004-opentelemetry-tracing.md#3-service-integration-pattern
+	var tracingCleanup func()
+	if cfg.Tracing != nil {
+		// Convert local TracingConfig to tracing.TracingConfig
+		tracingCfg := tracing.TracingConfig{
+			Enabled:        cfg.Tracing.Enabled,
+			SentryDSN:      cfg.Tracing.SentryDSN,
+			SampleRate:     cfg.Tracing.SampleRate,
+			Environment:    cfg.Tracing.Environment,
+			ServiceName:    cfg.Tracing.ServiceName,
+			ServiceVersion: cfg.Tracing.ServiceVersion,
+		}
+		
+		var err error
+		tracingCleanup, err = tracing.InitializeTracing(tracingCfg)
+		if err != nil {
+			log.Printf("Warning: Failed to initialize tracing: %v", err)
+			log.Printf("Service will continue without distributed tracing")
+			tracingCleanup = func() {} // No-op cleanup
+		} else {
+			log.Printf("Tracing initialized (enabled=%v, sample_rate=%.2f%%)", 
+				cfg.Tracing.Enabled, cfg.Tracing.SampleRate*100)
+		}
+		defer tracingCleanup()
+	} else {
+		log.Println("Tracing configuration not found, running without distributed tracing")
+	}
 	
 	startTime := time.Now()
 	port := cfg.GetPort()
@@ -137,7 +167,18 @@ func main() {
 		log.Fatalf("Failed to listen: %v", err)
 	}
 
-	grpcServer := grpc.NewServer()
+	// Create gRPC server with tracing interceptors if tracing is enabled
+	// Spec: docs/specs/004-opentelemetry-tracing.md#3-service-integration-pattern
+	var grpcOpts []grpc.ServerOption
+	if cfg.Tracing != nil && cfg.Tracing.Enabled {
+		unaryInterceptor, streamInterceptor := tracing.NewServerInterceptors()
+		grpcOpts = append(grpcOpts,
+			grpc.UnaryInterceptor(unaryInterceptor),
+			grpc.StreamInterceptor(streamInterceptor),
+		)
+	}
+	
+	grpcServer := grpc.NewServer(grpcOpts...)
 	pb.RegisterManifestServer(grpcServer, manifestServer)
 	pb.RegisterHealthServer(grpcServer, healthServer)
 	
@@ -164,6 +205,11 @@ func main() {
 		signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 		<-sigChan
 		fmt.Println("\nShutting down gracefully...")
+		
+		// Cleanup tracing before shutting down
+		if tracingCleanup != nil {
+			tracingCleanup()
+		}
 		
 		// Disconnect from ImmuDB if connected
 		// Spec: docs/specs/001-immudb-connection.md#story-2-connection-pool-management

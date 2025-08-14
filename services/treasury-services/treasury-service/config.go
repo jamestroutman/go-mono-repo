@@ -52,6 +52,10 @@ type Config struct {
 	// Spec: docs/specs/002-database-migrations.md
 	Migration MigrationConfig `envconfig:"-"`
 
+	// Tracing Configuration
+	// Spec: docs/specs/004-opentelemetry-tracing.md
+	Tracing TracingConfig `envconfig:"-"`
+
 	// Dependency Services
 	// Note: When running in devcontainer, ledger service runs on same host (localhost)
 	// When running as separate containers, use service name (ledger-service)
@@ -80,6 +84,41 @@ type DatabaseConfig struct {
 	ConnectionMaxIdleTime time.Duration `envconfig:"-"`
 	HealthCheckInterval   time.Duration `envconfig:"-"`
 	PingTimeout           time.Duration `envconfig:"-"`
+}
+
+// TracingConfig holds all configuration for distributed tracing
+// Spec: docs/specs/004-opentelemetry-tracing.md#configuration-integration
+type TracingConfig struct {
+	Enabled        bool    `envconfig:"TRACING_ENABLED" default:"true"`
+	SentryDSN      string  `envconfig:"SENTRY_DSN" default:""`
+	SampleRate     float64 `envconfig:"TRACE_SAMPLE_RATE" default:"0.01"`  // 1% default for production safety
+	Environment    string  `envconfig:"TRACE_ENVIRONMENT" default:""`       // Defaults to main Environment field
+	ServiceName    string  `envconfig:"TRACE_SERVICE_NAME" default:""`      // Defaults to main ServiceName field
+	ServiceVersion string  `envconfig:"TRACE_SERVICE_VERSION" default:""`   // Defaults to main ServiceVersion field
+}
+
+// GetEnvironment returns the tracing environment or falls back to provided default
+func (c *TracingConfig) GetEnvironment(fallback string) string {
+	if c.Environment != "" {
+		return c.Environment
+	}
+	return fallback
+}
+
+// GetServiceName returns the tracing service name or falls back to provided default
+func (c *TracingConfig) GetServiceName(fallback string) string {
+	if c.ServiceName != "" {
+		return c.ServiceName
+	}
+	return fallback
+}
+
+// GetServiceVersion returns the tracing service version or falls back to provided default
+func (c *TracingConfig) GetServiceVersion(fallback string) string {
+	if c.ServiceVersion != "" {
+		return c.ServiceVersion
+	}
+	return fallback
 }
 
 // LoadConfig loads configuration from environment variables and .env file
@@ -137,6 +176,12 @@ func LoadConfig() (*Config, error) {
 	cfg.Migration.DryRun = parseBoolFromEnv("MIGRATION_DRY_RUN", false)
 	cfg.Migration.MaxRetries = parseIntFromEnv("MIGRATION_MAX_RETRIES", 3)
 	cfg.Migration.RetryDelay = parseDurationFromEnv("MIGRATION_RETRY_DELAY", 5*time.Second)
+
+	// Load tracing configuration
+	// Spec: docs/specs/004-opentelemetry-tracing.md#configuration-integration
+	if err := envconfig.Process("", &cfg.Tracing); err != nil {
+		return nil, fmt.Errorf("failed to process tracing config: %w", err)
+	}
 
 	// Store the loaded path for later logging if needed
 	if loadedPath != "" {

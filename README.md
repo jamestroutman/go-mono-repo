@@ -1,10 +1,11 @@
-# Go Monorepo
+# Clarity Monorepo
 
 A Go monorepo using **Go Workspaces** for managing multiple microservices with shared protocol buffer definitions. Development is containerized using VS Code Dev Containers for a consistent, isolated environment.
 
 ## Architecture
 
 ### Monorepo Structure
+
 ```
 .
 ├── .devcontainer/           # VS Code dev container configuration
@@ -49,6 +50,7 @@ This monorepo uses **Go Workspaces** (Go 1.18+) for dependency management:
 ## Protobuf Design
 
 ### Service Definition Pattern
+
 Each service defines its own `.proto` files in `services/{domain}/{service}/proto/`:
 
 ```protobuf
@@ -63,6 +65,7 @@ service Manifest {
 ```
 
 ### Code Generation
+
 - **Input**: Service-specific `.proto` files
 - **Output**: Generated Go code in `proto/{package}/`
 - **Module**: All generated code uses the root module path
@@ -71,6 +74,7 @@ service Manifest {
 ## Getting Started
 
 ### Prerequisites
+
 - **VS Code** with [Dev Containers extension](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers)
 - **Docker Desktop** (Windows/Mac) or Docker Engine (Linux)
 - **Git** for version control
@@ -78,29 +82,33 @@ service Manifest {
 ### Quick Start
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd go-mono-repo
    ```
 
 2. **Open in VS Code**:
+
    ```bash
    code .
    ```
 
 3. **Reopen in Container**:
+
    - VS Code will prompt "Reopen in Container" - click it
    - Or use Command Palette: `Dev Containers: Reopen in Container`
    - Wait for container build (first time takes a few minutes)
 
 4. **Start services** (from devcontainer terminal):
+
    ```bash
    # Start ledger service
    make ledger-service
-   
+
    # Or start treasury service
    make treasury-service
-   
+
    # Or start all services
    make all-services
    ```
@@ -114,36 +122,41 @@ For detailed setup instructions, see [docs/DEVCONTAINER.md](docs/DEVCONTAINER.md
 **Note**: All `make` commands should be run from within the devcontainer terminal.
 
 #### Development
-| Command | Description |
-|---------|-------------|
-| `make dev` | Start ledger service (default) |
+
+| Command             | Description                    |
+| ------------------- | ------------------------------ |
+| `make dev`          | Start ledger service (default) |
 | `make all-services` | Start all application services |
-| `go work sync` | Sync workspace modules |
+| `go work sync`      | Sync workspace modules         |
 
 #### Container Management (from host)
-| Command | Description |
-|---------|-------------|
-| `docker compose -f .devcontainer/docker-compose.yml ps` | View container status |
-| `docker compose -f .devcontainer/docker-compose.yml logs [service]` | View service logs |
-| `docker compose -f .devcontainer/docker-compose.yml restart [service]` | Restart a service |
-| `docker compose -f .devcontainer/docker-compose.yml down -v` | Remove all containers and data |
+
+| Command                                                                | Description                    |
+| ---------------------------------------------------------------------- | ------------------------------ |
+| `docker compose -f .devcontainer/docker-compose.yml ps`                | View container status          |
+| `docker compose -f .devcontainer/docker-compose.yml logs [service]`    | View service logs              |
+| `docker compose -f .devcontainer/docker-compose.yml restart [service]` | Restart a service              |
+| `docker compose -f .devcontainer/docker-compose.yml down -v`           | Remove all containers and data |
 
 #### Services
-| Command | Description |
-|---------|-------------|
-| `make ledger-service` | Generate protos and start ledger service |
+
+| Command                 | Description                                |
+| ----------------------- | ------------------------------------------ |
+| `make ledger-service`   | Generate protos and start ledger service   |
 | `make treasury-service` | Generate protos and start treasury service |
-| `make payroll-service` | Generate protos and start payroll service |
+| `make payroll-service`  | Generate protos and start payroll service  |
 
 ## Services
 
 ### Ledger Service
+
 - **Port**: `:50051`
 - **Protocol**: gRPC
 - **Endpoint**: `ledger.Manifest/GetManifest`
 - **Response**: Returns `{"message": "ledger-service"}`
 
 #### Testing the Service
+
 ```bash
 # From devcontainer terminal
 # Start the service
@@ -155,12 +168,14 @@ grpcurl -plaintext localhost:50051 ledger.Health/GetHealth
 ```
 
 ### Treasury Service
+
 - **Port**: `:50052`
 - **Protocol**: gRPC
 - **Endpoint**: `treasury.Manifest/GetManifest`
 - **Response**: Returns `{"message": "treasury-service"}`
 
 #### Testing the Service
+
 ```bash
 # From devcontainer terminal
 # Start the service
@@ -172,9 +187,10 @@ grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
 ```
 
 ### Payroll Service
+
 - **Port**: `:50053`
 - **Protocol**: gRPC
-- **Endpoints**: 
+- **Endpoints**:
   - `payroll.Manifest/GetManifest` - Service identification
   - `payroll.Health/GetHealth` - Health check
   - `payroll.Health/GetLiveness` - Liveness check
@@ -182,6 +198,7 @@ grpcurl -plaintext localhost:50052 treasury.Health/GetHealth
 - **Response**: Returns `{"message": "payroll-service"}` for Manifest
 
 #### Testing the Service
+
 ```bash
 # From devcontainer terminal
 # Start the service
@@ -199,6 +216,7 @@ grpcurl -plaintext -d '{"name": "Developer"}' localhost:50053 payroll.PayrollSer
 All infrastructure services are automatically started with the devcontainer.
 
 ### PostgreSQL Database
+
 - **Connection from devcontainer**: `postgres:5432`
 - **Connection from host**: `localhost:5432`
 - **Database**: `monorepo_dev`
@@ -207,6 +225,7 @@ All infrastructure services are automatically started with the devcontainer.
 - **Data persistence**: Docker volume `postgres_data`
 
 ### ImmuDB Database
+
 - **gRPC from devcontainer**: `immudb:3322`
 - **gRPC from host**: `localhost:3322`
 - **PostgreSQL wire**: Port 5433
@@ -214,19 +233,22 @@ All infrastructure services are automatically started with the devcontainer.
 - **Data persistence**: Docker volume `immudb_data`
 
 ### Redis Cache
+
 - **Connection from devcontainer**: `redis:6379`
 - **Connection from host**: `localhost:6379`
 - **Admin UI**: http://localhost:8081 (Redis Commander - admin/admin)
 - **Data persistence**: Docker volume `redis_data` with AOF
 
 ### Web Admin Interfaces
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| pgAdmin | http://localhost:5050 | admin@example.com / admin |
-| ImmuDB Console | http://localhost:8080 | immudb / immudb |
-| Redis Commander | http://localhost:8081 | admin / admin |
+
+| Service         | URL                   | Credentials               |
+| --------------- | --------------------- | ------------------------- |
+| pgAdmin         | http://localhost:5050 | admin@example.com / admin |
+| ImmuDB Console  | http://localhost:8080 | immudb / immudb           |
+| Redis Commander | http://localhost:8081 | admin / admin             |
 
 ### Connection Examples
+
 ```bash
 # PostgreSQL (from devcontainer)
 psql -h postgres -U postgres -d monorepo_dev
@@ -247,6 +269,7 @@ For detailed infrastructure documentation, see [docs/INFRASTRUCTURE.md](docs/INF
 All development should be done within the VS Code devcontainer.
 
 ### Adding a New Service
+
 1. Open terminal in devcontainer
 2. Create service directory: `services/{domain}/{service-name}/`
 3. Add `go.mod`: `go mod init {org}/{service-name}`
@@ -258,12 +281,14 @@ All development should be done within the VS Code devcontainer.
 For detailed instructions, see [docs/SERVICE_DEVELOPMENT.md](docs/SERVICE_DEVELOPMENT.md).
 
 ### Adding New Proto Definitions
+
 1. Define `.proto` files in service directory
 2. Update `go_package` option to use root module path
 3. Add protoc generation to Makefile
 4. Import generated types from `example.com/go-mono-repo/proto/{package}`
 
 ### Working with Workspaces
+
 ```bash
 # From devcontainer terminal
 # Sync all workspace modules
@@ -287,17 +312,20 @@ go work edit -print
 ## Project Standards
 
 ### Module Naming
+
 - **Root Module**: `example.com/go-mono-repo`
 - **Service Modules**: `{org}/{domain}/{service-name}`
 - **Proto Packages**: Use root module path for `go_package`
 
 ### Service Patterns
+
 - Each service runs on a unique port
 - gRPC with reflection enabled for debugging
 - Manifest endpoint for service identification
 - Clean shutdown handling recommended
 
 ### Dependency Management
+
 - Shared dependencies in root `go.mod`
 - Service-specific dependencies in service `go.mod`
 - No replace directives (handled by workspace)

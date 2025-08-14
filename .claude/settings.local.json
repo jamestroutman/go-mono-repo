@@ -37,7 +37,11 @@
       "Bash(go mod init:*)",
       "Bash(go work:*)",
       "Bash(find:*)",
-      "Bash(go vet:*)"
+      "Bash(go vet:*)",
+      "WebFetch(domain:docs.sentry.io)",
+      "Bash(go mod:*)",
+      "Bash(lsof:*)",
+      "Bash(timeout:*)"
     ],
     "deny": [],
     "ask": [],

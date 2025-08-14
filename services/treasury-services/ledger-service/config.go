@@ -53,8 +53,23 @@ type Config struct {
 	// Spec: docs/specs/002-database-migrations.md
 	Migration *migration.MigrationConfig `envconfig:"-"`
 	
+	// Tracing Configuration
+	// Spec: docs/specs/004-opentelemetry-tracing.md
+	Tracing *TracingConfig `envconfig:"-"`
+	
 	// Internal - not from env
 	EnvFilePath string `envconfig:"-"`
+}
+
+// TracingConfig holds tracing configuration for the service
+// Spec: docs/specs/004-opentelemetry-tracing.md
+type TracingConfig struct {
+	Enabled        bool    
+	SentryDSN      string  
+	SampleRate     float64 
+	Environment    string  
+	ServiceName    string  
+	ServiceVersion string  
 }
 
 // ImmuDBConfig holds ImmuDB connection parameters
@@ -126,6 +141,11 @@ func LoadConfig() (*Config, error) {
 	// Spec: docs/specs/002-database-migrations.md
 	migrationConfig := LoadMigrationConfig()
 	cfg.Migration = migrationConfig
+
+	// Load Tracing configuration
+	// Spec: docs/specs/004-opentelemetry-tracing.md
+	tracingConfig := LoadTracingConfig(&cfg)
+	cfg.Tracing = tracingConfig
 
 	// Store the loaded path for later logging if needed
 	if loadedPath != "" {
@@ -299,4 +319,27 @@ func LoadMigrationConfig() *migration.MigrationConfig {
 		TableName:      getEnvString("LEDGER_MIGRATION_TABLE", "ledger_schema_migrations"),
 		ServiceName:    "ledger",
 	}
+}
+
+// LoadTracingConfig loads tracing configuration from environment
+// Spec: docs/specs/004-opentelemetry-tracing.md
+func LoadTracingConfig(cfg *Config) *TracingConfig {
+	return &TracingConfig{
+		Enabled:        getEnvBool("TRACING_ENABLED", true),
+		SentryDSN:      getEnvString("SENTRY_DSN", ""),
+		SampleRate:     getEnvFloat("TRACE_SAMPLE_RATE", 0.01),
+		Environment:    getEnvString("TRACE_ENVIRONMENT", cfg.Environment),
+		ServiceName:    getEnvString("TRACE_SERVICE_NAME", cfg.ServiceName),
+		ServiceVersion: getEnvString("TRACE_SERVICE_VERSION", cfg.ServiceVersion),
+	}
+}
+
+// getEnvFloat gets a float64 value from environment or returns default
+func getEnvFloat(key string, defaultValue float64) float64 {
+	if value := os.Getenv(key); value != "" {
+		if floatVal, err := strconv.ParseFloat(value, 64); err == nil {
+			return floatVal
+		}
+	}
+	return defaultValue
 }
