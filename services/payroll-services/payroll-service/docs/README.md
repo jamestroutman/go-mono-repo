@@ -6,6 +6,7 @@ The Payroll Service manages payroll-related operations within the monorepo archi
 ## Specifications
 
 - [001 - Service Initialization](./specs/001-service-initialization.md) - Initial service setup with hello-world API
+- [002 - Manifest Implementation](./specs/002-manifest-implementation.md) - Comprehensive manifest service implementation
 
 ## Architecture Decision Records
 

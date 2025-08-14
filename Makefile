@@ -72,7 +72,12 @@ run-payroll:
 		services/payroll-services/payroll-service/proto/payroll_service.proto
 	@echo "✓ Protobuf code generated"
 	@echo "Running payroll service..."
-	@go run ./services/payroll-services/payroll-service/
+	@BUILD_COMMIT=$$(git rev-parse HEAD 2>/dev/null || echo 'unknown') \
+		BUILD_BRANCH=$$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown') \
+		BUILD_TIME=$$(date -u +%Y-%m-%dT%H:%M:%SZ) \
+		BUILD_USER=$$(whoami)@$$(hostname) \
+		BUILD_DIRTY=$$(git diff --quiet 2>/dev/null && echo 'false' || echo 'true') \
+		go run ./services/payroll-services/payroll-service/
 
 # Alias for consistency
 payroll-service: run-payroll

@@ -34,7 +34,8 @@
       "Bash(nslookup:*)",
       "Bash(mv:*)",
       "Bash(go run:*)",
-      "Bash(go mod init:*)"
+      "Bash(go mod init:*)",
+      "Bash(go work:*)"
     ],
     "deny": [],
     "ask": []
